@@ -5929,7 +5929,7 @@ window.FormaExcelExport = (() => {
     return result;
   };
 
-  function workbookSheet(doc, inputs, pageParts) {
+  function workbookSheet(doc, result, inputs, pageParts) {
     const params = new Map(doc.params.map(p => [p.id, p]));
     const choices = new Map((doc.choiceParams || []).map(p => [p.id, p]));
     const positive = new Set(doc.dimensions.filter(d => d.driving && d.kind !== 'computed').map(d => d.param));
@@ -5939,9 +5939,15 @@ window.FormaExcelExport = (() => {
     function cell(c, r, value, style, formula) {
       if (!rows.has(r)) rows.set(r, new Map());
       const attributes = ' r="' + col(c) + r + '"' + (style ? ' s="' + style + '"' : '');
-      const content = typeof value === 'number'
-        ? '>' + (formula ? '<f>' + xml(formula) + '</f>' : '') + '<v>' + value + '</v>'
-        : ' t="inlineStr"><is><t xml:space="preserve">' + literal(value) + '</t></is>';
+      let content;
+      if (formula) {
+        const type = typeof value === 'number' ? '' : ' t="str"';
+        content = type + '><f>' + xml(formula) + '</f><v>' + literal(value) + '</v>';
+      } else {
+        content = typeof value === 'number'
+          ? '><v>' + value + '</v>'
+          : ' t="inlineStr"><is><t xml:space="preserve">' + literal(value) + '</t></is>';
+      }
       rows.get(r).set(c, '<c' + attributes + content + '</c>');
     }
     function validation(type, row, formula1, formula2, message) {
@@ -5960,7 +5966,11 @@ window.FormaExcelExport = (() => {
 
     let nextColumn = 11;
     const fixedFormulas = new Map();
-    const unit = p => p.quantity === 'scalar' ? '' : p.quantity === 'angle' ? '°' : doc.units;
+    const originalInputChecks = [];
+    const unit = p => {
+      const quantity = window.FormaUnits.quantity(doc,p);
+      return quantity === 'scalar' ? '' : quantity === 'angle' ? '°' : doc.units;
+    };
     function visibleRow(row, p, value, style, units, formula) {
       heights.set(row, p.label && p.label.length > 60 ? 48 : p.label && p.label.length > 36 ? 32 : 21);
       cell(1,row,p.id,6);
@@ -5979,6 +5989,8 @@ window.FormaExcelExport = (() => {
         visibleRow(row,choice,choice.choices[selectedIndex].label,8,'');
         validation('list',row,list,undefined,'Seleziona una voce del menu.');
         cell(8,row,'E');
+        cell(10,row,selectedIndex+1);
+        originalInputChecks.push('I'+row+'=J'+row);
         cell(9,row,selectedIndex+1,0,
           'IF(B'+row+'="",NA(),MATCH(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(B'+row+',"~","~~"),"*","~*"),"?","~?"),'+list+',0))');
         for (const target of choice.targets) {
@@ -5991,6 +6003,8 @@ window.FormaExcelExport = (() => {
         const p = params.get(id);
         visibleRow(row,p,p.value,3,unit(p));
         cell(8,row,positive.has(id) ? 'P' : 'N');
+        cell(10,row,p.value);
+        originalInputChecks.push('ISNUMBER(B'+row+')','B'+row+'=J'+row);
         validation('decimal',row,positive.has(id) ? '0' : '-10000000000','10000000000','Inserisci un numero valido.');
       }
     });
@@ -6001,10 +6015,41 @@ window.FormaExcelExport = (() => {
     cell(3,fixedRow,'Unità',5);
     cell(4,fixedRow,'Descrizione',5);
     heights.set(fixedRow,23);
-    for (const [index,p] of doc.params.filter(item => item.kind === 'fixed').entries()) {
+    const fixed = doc.params.filter(p => p.kind === 'fixed');
+    for (const [index,p] of fixed.entries()) {
       visibleRow(fixedRow+1+index,p,p.value,4,unit(p),fixedFormulas.get(p.id));
     }
-    if (!doc.params.some(p => p.kind === 'fixed')) cell(1,fixedRow+1,'Nessuna quota fissa',2);
+    if (!fixed.length) cell(1,fixedRow+1,'Nessuna quota fissa',2);
+
+    const calculated = doc.params.filter(p => p.kind === 'computed' || p.kind === 'driven');
+    const order = Array.isArray(doc.parameterDisplayOrder) ? doc.parameterDisplayOrder : [];
+    const calculatedById = new Map(calculated.map(p=>[p.id,p]));
+    const calculatedIds = [...new Set([...order.filter(id=>calculatedById.has(id)), ...calculatedById.keys()])];
+    const calculatedRow = fixedRow + Math.max(fixed.length,1) + 2;
+    const noteRow = calculatedRow + 1;
+    ['Quote calcolate','Valore','Unità','Formula in Forma'].forEach((label,i) => cell(i+1,calculatedRow,label,5));
+    heights.set(calculatedRow,23);
+    heights.set(noteRow,23);
+    const originalNote = 'Valori calcolati al momento dell’esportazione da Forma.';
+    const changedNote = 'Parametri modificati. Il DXF userà le quote ricalcolate. Qui vedi i valori iniziali.';
+    // Group comparisons to stay within Excel's per-function argument limit.
+    const checkGroups = [];
+    for (let i=0;i<originalInputChecks.length;i+=50) {
+      checkGroups.push('AND('+originalInputChecks.slice(i,i+50).join(',')+')');
+    }
+    const noteFormula = checkGroups.length
+      ? 'IF(IFERROR(AND('+checkGroups.join(',')+'),FALSE),"'+originalNote+'","'+changedNote+'")'
+      : undefined;
+    cell(1,noteRow,calculated.length?originalNote:'Nessuna quota calcolata.',2,calculated.length?noteFormula:undefined);
+    for (const [index,id] of calculatedIds.entries()) {
+      const p = calculatedById.get(id), row = noteRow+index+1;
+      const expression = E.parameterExpression(p);
+      const formulaText = '= '+expression;
+      visibleRow(row,p,result.params[id],4,unit(p));
+      cell(4,row,formulaText,7);
+      heights.set(row,Math.max(21,15*Math.ceil(formulaText.length/38)));
+    }
+
     const sheetRows = [...rows].sort((a,b) => a[0]-b[0]).map(([r, cells]) => (
       '<row r="'+r+'"'+(heights.has(r) ? ' ht="'+heights.get(r)+'" customHeight="1"' : '')+'>'+
       [...cells].sort((a,b) => a[0]-b[0]).map(([,content]) => content).join('')+'</row>'
@@ -6012,6 +6057,8 @@ window.FormaExcelExport = (() => {
     return template['xl/worksheets/sheet1.xml']
       .replace('A1:H8','A1:'+col(nextColumn-1)+Math.max(...rows.keys()))
       .replace(/<sheetData>.*?<\/sheetData>/s, () => '<sheetData>'+sheetRows+'</sheetData>')
+      .replace('<mergeCells count="4">','<mergeCells count="5">')
+      .replace('</mergeCells>','<mergeCell ref="A'+noteRow+':D'+noteRow+'"/></mergeCells>')
       .replace('<pageMargins', validations.length ? '<dataValidations count="'+validations.length+'">'+validations.join('')+'</dataValidations><pageMargins' : '<pageMargins');
   }
 
@@ -6078,7 +6125,7 @@ window.FormaExcelExport = (() => {
 
   async function build(document) {
     const doc = E.clone(document);
-    E.validate(doc);
+    const result = E.evaluate(doc);
     const ids = new Set([...doc.params.filter(p => p.kind === 'input'), ...(doc.choiceParams || [])].map(p => p.id));
     const configuredOrder = Array.isArray(doc.autolispExport?.parameters) ? doc.autolispExport.parameters.map(p=>p.id) : [];
     const inputs = [...new Set([...configuredOrder.filter(id=>ids.has(id)), ...ids])];
@@ -6087,7 +6134,7 @@ window.FormaExcelExport = (() => {
     const parts = page.match(/(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[^]){1,12000}/gu);
     const book = new JSZip();
     for (const [name,content] of Object.entries(template)) {
-      if (name === 'xl/worksheets/sheet1.xml') book.file(name,workbookSheet(doc,inputs,parts));
+      if (name === 'xl/worksheets/sheet1.xml') book.file(name,workbookSheet(doc,result,inputs,parts));
       else book.file(name,content,{base64:name.endsWith('.bin')});
     }
     return {filename:X.filename(doc.name)+'_DXF.xlsm',bytes:await book.generateAsync({type:'uint8array',compression:'DEFLATE'})};
