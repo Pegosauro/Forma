@@ -598,7 +598,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.1</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.2</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -2809,6 +2809,43 @@ window.FormaCanvas = (()=>{
     const a=screen(p),c=Math.cos(angle),s=-Math.sin(angle),b={x:a.x-c*size,y:a.y-s*size};
     return `<path d="M ${a.x} ${a.y} L ${b.x-s*size*.28} ${b.y+c*size*.28} L ${b.x+s*size*.28} ${b.y-c*size*.28} Z" fill="${color}"/>`;
   }
+  function boundaryMarks(doc){
+    const extended=new Map(),removed=new Map(),derived=new Set(),coloredOwners=new Set();
+    for(const op of doc.operations||[]){
+      if(op.type==='offset'||op.type==='mirror'){
+        coloredOwners.add(op.id);
+        for(const ref of op.outputs)if(ref.type==='segment')derived.add(ref.id);
+      }
+      if(!op.target)continue;
+      const id=op.target.id,original=op.sourceEnds,end=op.ends;
+      const changedStart=original.a!==end.a;
+      if(op.type==='extend'){
+        const span=changedStart?[end.a,original.a]:[original.b,end.b];
+        extended.set(id,[...(extended.get(id)||[]),span]);
+      }else if(op.type==='trim'){
+        const split=op.outputs[0]&&doc.segments.find(s=>s.id===op.outputs[0].id);
+        const span=split?[end.b,split.a]:changedStart?[original.a,end.a]:[end.b,original.b];
+        removed.set(id,[...(removed.get(id)||[]),{span,id:op.id}]);
+        // Both pieces can inherit an earlier extension. Clip it to the visible piece when drawing.
+        if(split&&extended.has(id))extended.set(split.id,extended.get(id));
+        if(split&&derived.has(id)){
+          derived.add(split.id);
+          coloredOwners.add(op.id);
+        }
+      }
+    }
+    return {extended,removed,coloredOwners};
+  }
+  function clipToSegment(segment,a,b){
+    if(!a||!b)return null;
+    const {p,q}=segment,dx=q.x-p.x,dy=q.y-p.y,length2=dx*dx+dy*dy;
+    if(!length2)return null;
+    const position=point=>((point.x-p.x)*dx+(point.y-p.y)*dy)/length2;
+    const t=position(a),u=position(b),start=Math.max(0,Math.min(t,u)),end=Math.min(1,Math.max(t,u));
+    if(end-start<=1e-9)return null;
+    const at=k=>({x:p.x+k*dx,y:p.y+k*dy});
+    return [at(start),at(end)];
+  }
   function render(doc,result,selected,draft,tool){
     if(doc)last={...last,doc,result,selected,draft,tool:tool||'select'};
     if(!last.doc||!svg)return;
@@ -2816,9 +2853,8 @@ window.FormaCanvas = (()=>{
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
-    const operationIds=new Set(preview?[]:(doc.operations||[])
-      .filter(op=>op.target||op.type==='offset'||op.type==='mirror').map(op=>op.id));
-    const usesOperationColor=item=>item.patternId||operationIds.has(item.modifyOperation)||operationIds.has(item.operationId);
+    const marks=preview?null:boundaryMarks(doc);
+    const usesOperationColor=item=>item.patternId||marks?.coloredOwners.has(item.operationId);
     const selectedRelation=!preview&&!last.selectionBox&&selected?.type==='constraint'?doc.constraints.find(k=>k.id===selected.id):null;
     width=host.clientWidth;height=host.clientHeight;
     svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
@@ -2855,7 +2891,15 @@ window.FormaCanvas = (()=>{
       ['trim','extend','offset','mirror'].includes(tool)?window.FormaModifyUI?.canPickSegment:
       ['dimension','chamfer','fillet'].includes(tool)?window.FormaNativeUI?.canPickSegment:
       tool==='rules'?window.FormaRulesUI?.canPickSegment:null;
-    for(const s of visibleSegments(doc,result)){
+    const segments=visibleSegments(doc,result);
+    if(marks?.removed.size)for(const s of segments){
+      for(const cut of marks.removed.get(s.id)||[]){
+        const [a,b]=cut.span.map(id=>result.points[id]);
+        if(a&&b)content.push(line(a,b,definitionColors.repetition,s.construction?style.constructionWidth:style.lineWidth,
+          `stroke-dasharray="6 5" stroke-opacity=".78" pointer-events="none" aria-hidden="true" data-rule-inactive="${s.ruleActive===false}" data-boundary-cut="${esc(cut.id)}"`));
+      }
+    }
+    for(const s of segments){
       const sel=isSelected('segment',s.id)||s.featureId&&isSelected('feature',s.featureId)||s.patternId&&isSelected('pattern',s.patternId)||selectedRelation&&(selectedRelation.target===s.id||selectedRelation.reference===s.id||selectedRelation.refs?.some(ref=>ref.type==='segment'&&ref.id===s.id));
       if(sel){
         const selection=sketchSelectionStroke;
@@ -2868,6 +2912,11 @@ window.FormaCanvas = (()=>{
       content.push(line(s.p,s.q,color,weight,dash+' data-rule-inactive="'+(s.ruleActive===false)+'" data-definition="'+status+'" data-display-segment="'+esc(s.id)+'"'));
       content.push(line(s.p,s.q,'transparent',sketchHitWidth,`data-segment="${esc(s.id)}" class="segment-hit"`));
       if(pickSegment?.(s))content.push(line(s.p,s.q,color,weight+.55,sketchHoverStroke(color,dash)));
+      if(!usesOperationColor(s))for(const span of marks?.extended.get(s.id)||[]){
+        const clipped=clipToSegment(s,...span.map(id=>result.points[id]));
+        if(clipped)content.push(line(...clipped,definitionColors.repetition,weight,
+          dash+` pointer-events="none" aria-hidden="true" data-rule-inactive="${s.ruleActive===false}" data-boundary-extension="${esc(s.id)}"`));
+      }
       if(!preview&&doc.view.labels)content.push(text({x:(s.p.x+s.q.x)/2,y:(s.p.y+s.q.y)/2},s.id,'#a9bac8',10,0,'dy="-12"'));
     }
     const curvePicks=[...picks,...(selectedRelation?.refs||[]),...(selectedRelation?.arc?[{type:'arc',id:selectedRelation.arc}]:[])];
@@ -3638,7 +3687,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.1 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.2 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
