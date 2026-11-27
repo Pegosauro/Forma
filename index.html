@@ -594,11 +594,19 @@ dialog::backdrop{background:#080d1499}
 .operation-badge:focus-visible{outline:none}
 .operation-badge .icon [stroke]:not([stroke="none"]){stroke:currentColor}
 </style>
+<style>
+.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing,
+.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is(.point-hit,.segment-hit,.dimension,.dimension text){cursor:var(--sketch-pointer,crosshair)}
+.operation-badge .icon{width:14px;height:14px}
+.cursor-options{display:grid;grid-template-columns:minmax(0,1fr) 102px;align-items:center;gap:14px}
+#options-cursor-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
+@media(max-width:510px){.cursor-options .form-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
 </head>
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.3</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.4</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -2615,11 +2623,39 @@ window.FormaEngine.exportBlockers=(doc,result,options={})=>{
 const coincidentPath='M -6.4 0 H -2.5 M 1.75 -1.75 5.8 -5.8 M 2.45 0 A 2.45 2.45 0 1 0 -2.45 0 A 2.45 2.45 0 1 0 2.45 0 Z';
 const pointOnLinePath='M -6 0 H -2 M 2 0 H 6 M 0 -2 V 2';
 const constraintGlyphs={tangent:'M -6 4 H 6 M 4 0 A 4 4 0 1 0 -4 0 A 4 4 0 1 0 4 0',origin:'M -6 0 H -3 M 3 0 H 6 M 0 -6 V -3 M 0 3 V 6 M 3 0 A 3 3 0 1 0 -3 0 A 3 3 0 1 0 3 0',horizontal:'M -5 0 H 5',vertical:'M 0 -5 V 5',perpendicular:'M -4 -5 V 4 H 5',parallel:'M -5 4 1 -4 M -1 4 5 -4',equal:'M -5 -2 H 5 M -5 2 H 5',coincident:coincidentPath,fixed:'M -4 0 H 4 V 5 H -4 Z M -2 0 V -3 A 2 2 0 0 1 2 -3 V 0',collinear:'M -6 0 H -1 M 1 0 H 6 M -4 -2 H -1 M 1 2 H 4',pointOnLine:pointOnLinePath,sameX:'M 0 -5 V 5 M -3 -5 H 3 M -3 5 H 3',length:'M -5 -4 V 4 M 5 -4 V 4 M -5 0 H 5',midpoint:'M -5 4 0 -5 5 4 Z'};
+window.FormaPointer=(()=>{
+  const limits={span:{min:25,max:95,initial:39},box:{min:5,max:19,initial:9}};
+  const storageKey='forma-sketch-pointer-v1';
+  const normalize=value=>Object.fromEntries(Object.entries(limits).map(([key,{min,max,initial}])=>{
+    const n=Number(value?.[key]);
+    return [key,Number.isFinite(n)&&n>0?Math.round(Math.min(max,Math.max(min,n))):initial];
+  }));
+  let current=normalize();
+  try{current=normalize(JSON.parse(localStorage.getItem(storageKey)));}catch{}
+  function save(value){
+    current=normalize(value);
+    try{localStorage.setItem(storageKey,JSON.stringify(current));}catch{}
+  }
+  function picture(value){
+    const {span,box}=normalize(value),middle=Math.floor(span/2),center=middle+.5;
+    const lo=center-box/2,hi=center+box/2,edge=span-2;
+    const shape=`M2 ${center}H${lo} M${hi} ${center}H${edge} M${center} 2V${lo} M${center} ${hi}V${edge} M${lo} ${lo}H${hi}V${hi}H${lo}Z`;
+    const glyph=`<path d="${shape}" fill="none" stroke="#101820" stroke-width="3"/><path d="${shape}" fill="none" stroke="#f7fbff" stroke-width="1"/>`;
+    return {span,middle,glyph};
+  }
+  function css(){
+    const {span,middle,glyph}=picture(current);
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${span}" height="${span}" viewBox="0 0 ${span} ${span}">${glyph}</svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${middle} ${middle}, crosshair`;
+  }
+  return {limits,get:()=>({...current}),defaults:()=>normalize(),save,picture,css};
+})();
 window.FormaCanvas = (()=>{
   const E=window.FormaEngine, colors={input:'#72e76b',fixed:'#e2e8ed',computed:'#e77de8'};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const num=n=>Number(n).toFixed(3);
-  let host,svg,width=800,height=600,camera={x:1500,y:1100,scale:.22};
+  let host,svg,width=800,height=600,camera={x:1500,y:1100,scale:.22},cursorKey='';
+  const badgeRect='x="-10" y="-10" width="20" height="20" rx="4"';
   let last={doc:null,result:null,selected:null,draft:null,tool:'select'};
   function init(el){host=el;svg=el.querySelector('svg');new ResizeObserver(()=>{width=host.clientWidth;height=host.clientHeight;render();}).observe(host);}
   const screen=p=>({x:(p.x-camera.x)*camera.scale+width/2,y:height/2-(p.y-camera.y)*camera.scale});
@@ -2851,6 +2887,8 @@ window.FormaCanvas = (()=>{
     if(!last.doc||!svg)return;
     ({doc,result,selected,draft,tool}=last);
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
+    const pointer=FormaPointer.get(),pointerKey=pointer.span+':'+pointer.box;
+    if(cursorKey!==pointerKey){cursorKey=pointerKey;host.style.setProperty('--sketch-pointer',FormaPointer.css());}
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
     const marks=preview?null:boundaryMarks(doc);
@@ -2941,7 +2979,7 @@ window.FormaCanvas = (()=>{
         const candidates=[preferred,{x:preferred.x,y:preferred.y-25},{x:preferred.x+25,y:preferred.y},{x:preferred.x-25,y:preferred.y},{x:preferred.x,y:preferred.y+25},{x:preferred.x+30,y:preferred.y-30},{x:preferred.x-30,y:preferred.y-30}];
         for(const q of candidates){const trial={x:p.x+q.x,y:p.y+q.y};if(!occupied.some(k=>Math.abs(k.x-trial.x)<22&&Math.abs(k.y-trial.y)<22)){pos=trial;break;}}
         occupied.push(pos);const active=isSelected('constraint',id),excess=definition.constraints.has(id);
-        content.push(`<g ${implicit?`data-shared-point="${esc(id)}"`:`data-relation="${esc(id)}"`} class="relation-badge ${active?'active':''} ${excess?'redundant':''}" transform="translate(${pos.x} ${pos.y})"><title>${esc(title+(excess?' · Vincolo eccedente':''))}</title><rect x="-10" y="-10" width="20" height="20" rx="4" fill="${excess?'#513820':active?'#6f50a8':'#273b42'}" stroke="${excess?definitionColors.over:active?'#d5bfff':'#85bbaa'}" stroke-width="1"/><path d="${constraintGlyphs[type]||constraintGlyphs.length}" stroke="${excess?definitionColors.over:active?'#fff':'#a5d7c5'}" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+        content.push(`<g ${implicit?`data-shared-point="${esc(id)}"`:`data-relation="${esc(id)}"`} class="relation-badge ${active?'active':''} ${excess?'redundant':''}" transform="translate(${pos.x} ${pos.y})"><title>${esc(title+(excess?' · Vincolo eccedente':''))}</title><rect ${badgeRect} fill="${excess?'#513820':active?'#6f50a8':'#273b42'}" stroke="${excess?definitionColors.over:active?'#d5bfff':'#85bbaa'}" stroke-width="1"/><path d="${constraintGlyphs[type]||constraintGlyphs.length}" stroke="${excess?definitionColors.over:active?'#fff':'#a5d7c5'}" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`);
       }
       for(const k of doc.constraints){
         const excess=definition.constraints.has(k.id);if(doc.view.relations===false&&!excess)continue;
@@ -3107,16 +3145,16 @@ window.FormaCanvas = (()=>{
       let x,y;
       for(let i=0;i<options.length+occupied.length;i++){
         const [dx,dy]=options[i]||[0,0],row=i-options.length+1;
-        const px=Math.max(17,Math.min(width-17,at.x+dx));
-        const py=Math.max(14,Math.min(height-14,at.y+(row>0?42+row*24:dy)));
-        if(occupied.some(k=>Math.abs(k.x-px)<30&&Math.abs(k.y-py)<24))continue;
+        const px=Math.max(12,Math.min(width-12,at.x+dx));
+        const py=Math.max(12,Math.min(height-12,at.y+(row>0?42+row*24:dy)));
+        if(occupied.some(k=>Math.abs(k.x-px)<22&&Math.abs(k.y-py)<22))continue;
         x=px;y=py;break;
       }
       if(x===undefined)return '';
       occupied.push({x,y});
       const label=labels[type]+(name&&name!==labels[type]?' · '+name:'');
-      const icon=FormaUI.icon(type).replace('viewBox=', 'x="-8" y="-8" width="16" height="16" viewBox=');
-      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" aria-description="Clic per le proprietà, doppio clic per modificare" aria-keyshortcuts="Enter Shift+Enter" transform="translate(${x} ${y})"><title>${esc(label)} · Clic per le proprietà · Doppio clic per modificare</title><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
+      const icon=FormaUI.icon(type).replace('viewBox=', 'x="-7" y="-7" width="14" height="14" viewBox=');
+      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" aria-description="Clic per le proprietà, doppio clic per modificare" aria-keyshortcuts="Enter Shift+Enter" transform="translate(${x} ${y})"><title>${esc(label)} · Clic per le proprietà · Doppio clic per modificare</title><rect ${badgeRect}/>${icon}</g>`;
     }
     const edits=operations.map(op=>badge(op.type,op.id,op.name,
       anchor([...(op.target?[op.target]:[]),...op.outputs])||anchor(op.target?[op.target]:op.sources)));
@@ -3687,7 +3725,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.3 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.4 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4746,28 +4784,34 @@ window.FormaPatternInstances=(()=>{
 
 /* Options use a local form draft. The sketch changes only on explicit Save. */
 window.FormaOptionsUI=(()=>{
-  const E=window.FormaEngine,U=window.FormaUI,$=id=>document.getElementById(id);
+  const E=window.FormaEngine,U=window.FormaUI,P=window.FormaPointer,$=id=>document.getElementById(id);
   function open(doc,onSave){
     const base=E.getOptions(doc),defaults=E.defaultOptions(doc.units),labels={background:'Sfondo editor',defined:'Linee definite',under:'Sottodefinito',over:'Ultradefinito',dimension:'Quote modificabili / calcolate',fixedDimension:'Quote fisse',driven:'Quote pilotate',repetition:'Geometria delle operazioni e delle ripetizioni'};
+    const pointer=P.get();
     const contentChoices=[['both','Nome e valore'],['value','Solo valore'],['name','Solo nome parametro']],typedChoices=[['inherit','Usa contenuto generale'],...contentChoices];
     const number=(label,name,value,min,max,step='any')=>U.field(label,name,value,'number','min="'+min+'" max="'+max+'" step="'+step+'" required');
     U.modal('Opzioni',
       '<div id="options-form"><div class="options-tabs" role="tablist" aria-label="Categorie opzioni">'+[['appearance','Aspetto'],['dimensions','Quote'],['cad','DXF / AutoLISP']].map(([id,label],i)=>'<button type="button" role="tab" id="options-tab-'+id+'" data-options-tab="'+id+'" aria-controls="options-panel-'+id+'" aria-selected="'+(!i)+'">'+label+'</button>').join('')+'</div>'+
       '<section id="options-panel-appearance" role="tabpanel" aria-labelledby="options-tab-appearance">'+U.select('Colori della vista Modifica','palette',[['classic','Classico scuro'],['contrast','Contrasto elevato'],['light','Chiaro'],['custom','Personalizzati']],base.palette)+
       '<div class="options-colors">'+Object.entries(labels).map(([key,label])=>'<label><span>'+label+'</span><input type="color" data-color-picker="'+key+'" aria-label="Scegli colore '+label+'" value="'+base.colors[key]+'"><input type="text" name="color_'+key+'" data-color-hex="'+key+'" aria-label="Codice colore '+label+'" value="'+base.colors[key]+'" pattern="#[a-fA-F0-9]{6}" maxlength="7" required spellcheck="false"></label>').join('')+'</div><p class="panel-note">Le copie delle ripetizioni sono gialle per impostazione predefinita. I colori personalizzati si applicano a Modifica. Le definizioni eccedenti mantengono il colore Ultradefinito. Render mantiene i colori dei layer e lo sfondo scuro.</p>'+ 
-      '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div></section>'+
+      '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div>'+
+      '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+number('Ampiezza croce','cursor_span',pointer.span,P.limits.span.min,P.limits.span.max,1)+number('Quadrato centrale','cursor_box',pointer.box,P.limits.box.min,P.limits.box.max,1)+'</div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del puntatore"></svg></div></section>'+
       '<section id="options-panel-dimensions" role="tabpanel" aria-labelledby="options-tab-dimensions" hidden><h3>Dimensioni sullo schermo · pixel</h3><div class="form-grid">'+number('Altezza testo','editor_textHeight',base.editor.textHeight,6,60,1)+number('Grandezza frecce','editor_arrowSize',base.editor.arrowSize,2,40,1)+'</div><h3>Formato · editor e disegno esportato</h3><div class="form-grid">'+number('Cifre decimali','decimals',base.format.decimals,0,8,1)+U.select('Contenuto generale','content',contentChoices,base.format.content)+'</div><div class="form-grid">'+U.select('Contenuto quote modificabili','inputContent',typedChoices,base.format.inputContent)+U.select('Contenuto quote fisse','fixedContent',typedChoices,base.format.fixedContent)+'</div><label class="check-line"> <input type="checkbox" name="trimZeros" '+(base.format.trimZeros?'checked':'')+'>Nascondi gli zeri decimali finali</label><label class="check-line"><input type="checkbox" name="showUnits" '+(base.format.showUnits?'checked':'')+'>Mostra unità mm / cm nelle quote</label><p class="panel-note">I contenuti separati per fisse e modificabili valgono anche per DXF e AutoLISP. Le altre quote usano il contenuto generale. La precisione dei calcoli resta invariata. Se manca un nome parametro, viene mostrato il valore.</p></section>'+
       '<section id="options-panel-cad" role="tabpanel" aria-labelledby="options-tab-cad" hidden><h3>Dimensioni nel disegno CAD · '+doc.units+'</h3><label class="check-line"><input type="checkbox" name="cad_automatic" '+(base.cad.automatic?'checked':'')+'>Dimensioni automatiche, proporzionali al disegno</label><div id="options-cad-manual" class="form-grid">'+number('Altezza testo · '+doc.units,'cad_textHeight',base.cad.textHeight,.001,1e6)+number('Grandezza frecce · '+doc.units,'cad_arrowSize',base.cad.arrowSize,.001,1e6)+'</div><p class="panel-note">Le quote rimangono vere quote AutoCAD. Testo e frecce CAD sono indipendenti dallo zoom e dalle dimensioni sullo schermo. Il formato si sceglie nella scheda Quote.</p></section>'+
       '<div class="options-preview" aria-label="Anteprima delle opzioni"><span>Anteprima grafica</span><svg id="options-sample" viewBox="0 0 480 100" role="img" aria-label="Esempio linee e quota"></svg></div><button type="button" id="options-reset" class="btn small">Ripristina predefiniti</button></div>',data=>{
         const auto=data.cad_automatic==='on',cadValue=key=>{const n=Number(data['cad_'+key]??field('cad_'+key).value);return auto&&(!Number.isFinite(n)||n<=0||n>1e6)?defaults.cad[key]:n;};
         const value={palette:data.palette,colors:Object.fromEntries(Object.keys(labels).map(k=>[k,data['color_'+k]])),editor:Object.fromEntries(Object.keys(defaults.editor).map(k=>[k,Number(data['editor_'+k])])),format:{decimals:Number(data.decimals),trimZeros:data.trimZeros==='on',content:data.content,inputContent:data.inputContent,fixedContent:data.fixedContent,showUnits:data.showUnits==='on'},cad:{automatic:auto,textHeight:cadValue('textHeight'),arrowSize:cadValue('arrowSize')}};
         if(value.palette!=='custom'&&Object.entries(value.colors).some(([k,v])=>v.toLowerCase()!==E.optionPalettes[value.palette]?.[k]))value.palette='custom';
-        onSave(E.validateOptions(value,doc.units));
+        onSave(E.validateOptions(value,doc.units),{span:Number(data.cursor_span),box:Number(data.cursor_box)});
       },'Salva opzioni');
     $('dialog').classList.add('options-dialog');U.onModalDispose(()=>$('dialog').classList.remove('options-dialog'));
     const root=$('options-form'),field=name=>root.querySelector('[name="'+name+'"]');
     const update=()=>{
       const colors=Object.fromEntries(Object.keys(labels).map(k=>[k,/^#[a-f0-9]{6}$/i.test(field('color_'+k).value)?field('color_'+k).value:base.colors[k]]));
+      const cursor=P.picture({span:field('cursor_span').value,box:field('cursor_box').value});
+      const inset=51-cursor.middle-.5,sample=$('options-cursor-sample');
+      sample.style.background=colors.background;
+      sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
       const auto=field('cad_automatic').checked;$('options-cad-manual').hidden=auto;for(const el of $('options-cad-manual').querySelectorAll('input'))el.disabled=auto;
       const size=Math.max(6,Math.min(60,Number(field('editor_textHeight').value)||11)),arrow=Math.max(2,Math.min(20,Number(field('editor_arrowSize').value)||5)),dec=Math.max(0,Math.min(8,Number(field('decimals').value)||0));
       const label=(key,name,n)=>{let content=field(key).value;if(content==='inherit')content=field('content').value;let number=n.toFixed(dec);if(field('trimZeros').checked&&number.includes('.'))number=number.replace(/0+$/,'').replace(/\.$/,'');return content==='name'?name:(content==='both'?name+' = ':'')+number+(field('showUnits').checked?' '+doc.units:'');};
@@ -4776,6 +4820,7 @@ window.FormaOptionsUI=(()=>{
       $('options-sample').innerHTML='<rect width="480" height="100" fill="'+colors.background+'"/><path d="M25 42V15h100" fill="none" stroke="'+colors.defined+'" stroke-width="'+width('lineWidth')+'"/><path d="M150 42V15h90" fill="none" stroke="'+colors.under+'" stroke-width="'+width('lineWidth')+'"/><path d="M265 42V15h90" fill="none" stroke="'+colors.over+'" stroke-width="'+width('lineWidth')+'"/><path d="M395 15h35v27h-35z" fill="none" stroke="'+colors.repetition+'" stroke-width="'+width('lineWidth')+'"/>'+quote(25,225,'L',120,'inputContent',colors.dimension)+quote(260,455,'TP',30,'fixedContent',colors.fixedDimension);
     };
     const fill=value=>{
+      for(const [key,size] of Object.entries(P.defaults()))field('cursor_'+key).value=size;
       field('palette').value=value.palette;
       for(const k of Object.keys(labels)){field('color_'+k).value=value.colors[k];root.querySelector('[data-color-picker="'+k+'"]').value=value.colors[k];}
       for(const [k,v]of Object.entries(value.editor))field('editor_'+k).value=v;
@@ -5427,9 +5472,13 @@ window.FormaApp=(()=>{
     });
     $('add-param').onclick=()=>{U.openLeftPanel?.('parameters');parameterDialog();};
     $('change-units').onclick=unitsDialog;
-    $('options').onclick=()=>window.FormaOptionsUI?.open(state.doc,value=>{
-      state.history.push(E.clone(state.doc));if(state.history.length>60)state.history.shift();state.future=[];
-      state.doc={...state.doc,options:value};persist();redraw();
+    $('options').onclick=()=>window.FormaOptionsUI?.open(state.doc,(value,pointer)=>{
+      FormaPointer.save(pointer);
+      if(JSON.stringify(E.getOptions(state.doc))!==JSON.stringify(value)){
+        state.history.push(E.clone(state.doc));if(state.history.length>60)state.history.shift();state.future=[];
+        state.doc={...state.doc,options:value};persist();
+      }
+      redraw();
     });
     $('view-mode').onclick=()=>{
       if(patternsUI?.active())patternsUI.close(false);clearSelectionBox();draft=null;polyFirst=null;clearDimensionDraft();
