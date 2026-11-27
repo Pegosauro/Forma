@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="it">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#202830"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/forma-192.png"><link rel="apple-touch-icon" href="./icons/forma-192.png"><meta name="forma-mode" content="editor"><meta name="description" content="Editor locale per disegni 2D parametrici. Disegna, collega quote e formule, esporta in DXF."><title>Forma — Studio parametrico</title><style>:root{color-scheme:dark;--ink:#edf1f6;--muted:#b4bfcc;--line:#45515e;--accent:#80bdff;--accent-bg:#243e59;--canvas:#202830;--green:#49b94d;--purple:#af55cc;--panel:#272e36;--surface:#303943;--surface-hover:#3c4a59;--title:#38434f;--input:#1d252e;--control-border:#606f7f;--primary:#246cac;--primary-border:#4a8dc4;--warning:#ffbf80;--warning-bg:#443323;--warning-border:#9d7043;--danger:#ffb2ad;--danger-bg:#442e32;--danger-border:#a66d6a;--success:#a5d6b4;--success-bg:#273e34;--success-border:#54836b;font-family:'Segoe UI',Tahoma,Arial,system-ui,sans-serif;color:var(--ink);font-size:13px;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0;background:var(--panel)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.4}button,input,select,textarea{outline:none}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--control-border);outline-offset:2px}button{border:1px solid transparent;background:transparent;color:inherit;border-radius:6px}input,select,textarea{border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);padding:8px 10px;min-width:0}input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px #7550cc0b}input[aria-invalid=true]{border-color:var(--danger-border);background:var(--panel)}input:disabled{color:var(--muted);background:var(--panel);opacity:1}input[type=number]{font-variant-numeric:tabular-nums}input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;box-shadow:none;padding:0}svg.icon{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}button:hover{background:var(--panel)}a{color:var(--accent)}
+*{box-sizing:border-box}body{margin:0;background:var(--panel)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.4}button,input,select,textarea{outline:none}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--control-border);outline-offset:2px}button{border:1px solid transparent;background:transparent;color:inherit;border-radius:6px}input,select,textarea{border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);padding:8px 10px;min-width:0}input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px #80bdff24}input[aria-invalid=true]{border-color:var(--danger-border);background:var(--panel)}input:disabled{color:var(--muted);background:var(--panel);opacity:1}input[type=number]{font-variant-numeric:tabular-nums}input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;box-shadow:none;padding:0}svg.icon{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}button:hover{background:var(--panel)}a{color:var(--accent)}
 #app{height:100dvh;min-height:500px;display:flex;flex-direction:column;overflow:hidden}.topbar{height:67px;flex-shrink:0;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:22px;background:var(--panel);z-index:20}.brand{display:flex;align-items:center;gap:9px;white-space:nowrap}.brand svg{width:29px;height:31px}.brand strong{font-weight:700;font-size:25px;letter-spacing:-1px}.brand small{font-size:12px;font-weight:400;color:var(--muted);margin-left:6px;border-left:1px solid var(--line);padding-left:14px}.document-name{margin:auto;max-width:280px;padding:6px 10px;font-weight:600;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;font-size:14px}.top-actions{display:flex;align-items:center;gap:9px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);padding:9px 12px;white-space:nowrap;background:var(--panel);font-weight:500}.btn:hover{background:var(--panel);border-color:var(--control-border)}.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ink)}.btn.primary:hover{background:var(--accent-bg)}.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:31px;height:31px;color:var(--muted)}.icon-btn:hover{color:var(--accent);background:var(--accent-bg)}.btn.small{font-size:12px;padding:7px 10px}.export-group{display:flex;position:relative}.export-group>.primary:first-child{border-radius:6px 0 0 6px}.export-group>.export-toggle{border-radius:0 6px 6px 0;padding:9px 6px;border-left:1px solid #ffffff30}.dropdown{position:absolute;z-index:50;right:0;top:45px;min-width:220px;background:var(--panel);padding:6px;border:1px solid var(--line);border-radius:8px;box-shadow:0 12px 36px #22243821}.dropdown button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 10px;text-align:left;font-size:13px}.dropdown hr{border:0;border-top:1px solid var(--line);margin:5px 0}[hidden]{display:none!important}
 .workspace{display:grid;grid-template-columns:265px minmax(0,1fr) 285px;flex:1;min-height:0;position:relative}.panel{background:var(--panel);overflow:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--ink) transparent}.left-panel{border-right:1px solid var(--line)}.right-panel{border-left:1px solid var(--line)}.panel-section{padding:22px 20px;border-bottom:1px solid var(--line)}.panel-section:last-child{border-bottom:0}.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px;gap:8px}.section-head h2{font-size:17px;font-weight:650;letter-spacing:-.35px;margin:0}.section-head .count{margin-left:auto;color:var(--muted);font-size:11px}.section-head .icon-btn{margin-right:-5px}.param-row{display:grid;grid-template-columns:12px minmax(0,1fr) 85px 24px;align-items:center;gap:9px;margin:10px 0;position:relative}.param-row>.swatch{width:8px;height:8px;border-radius:2px;background:var(--green)}.param-row.fixed>.swatch{background:var(--surface)}.param-row.computed>.swatch{background:var(--purple)}.param-name{font-weight:600;text-align:left;padding:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.param-name:hover{background:none;color:var(--accent)}.param-value{position:relative;display:flex}.param-value input{width:100%;padding:7px 9px;height:33px;text-align:right;font-family:Consolas,'SFMono-Regular',monospace;font-size:13px}.param-row.computed input{background:var(--panel);color:var(--accent);border-color:var(--line)}.param-row.fixed input{padding-right:27px}.param-value .lock{position:absolute;right:8px;top:8px;pointer-events:none;color:var(--muted)}.param-value .lock .icon{width:13px;height:13px}.panel-note{color:var(--muted);font-size:11px;line-height:1.6;margin:13px 0 0}.more-calcs{color:var(--muted);font-size:11px;padding:6px 0;text-align:left}.geometry-row{display:flex;align-items:center;gap:9px;width:100%;padding:8px;margin:2px -5px;text-align:left;border-radius:5px;min-width:0;font-size:12px}.geometry-row>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}.geometry-row>.icon{width:15px;height:15px;color:var(--muted)}.geometry-row small{color:var(--muted);font-size:10px}.geometry-row.selected{background:var(--accent-bg);color:var(--accent)}.geometry-row.selected .icon{color:var(--accent)}.geometry-list{max-height:260px;overflow:auto;margin-right:-7px;padding-right:7px;scrollbar-width:thin}.panel-footer{display:flex;gap:7px;padding:15px 18px;border-top:1px solid var(--line)}.panel-footer .btn{flex:1}.eyebrow{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin:20px 0 10px}
 .canvas-area{min-width:0;min-height:0;position:relative;background:var(--canvas);overflow:hidden;touch-action:none;user-select:none}.canvas-area>svg.drawing{display:block;width:100%;height:100%;touch-action:none;font-family:Consolas,'SFMono-Regular',monospace}.canvas-area[data-tool=construction],.canvas-area[data-tool=line],.canvas-area[data-tool=polyline],.canvas-area[data-tool=dimension]{cursor:crosshair}.canvas-area[data-tool=pan]{cursor:grab}.canvas-area.panning{cursor:grabbing}.canvas-area[data-tool=select] .point-hit{cursor:move}.canvas-area[data-tool=select] .segment-hit,.canvas-area .dimension{cursor:pointer}.canvas-tools{display:flex;align-items:center;gap:3px;position:absolute;top:20px;left:20px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px;box-shadow:0 4px 12px #00000018;z-index:3}.tool{width:35px;height:35px;display:flex;align-items:center;justify-content:center;border-radius:5px;color:var(--muted)}.tool:hover{background:var(--panel)}.tool.active{color:var(--accent);background:var(--accent-bg)}.tool .icon{width:20px;height:20px;stroke-width:1.7}.tool-sep{height:20px;border-left:1px solid var(--line);margin:0 3px}.canvas-topright{position:absolute;right:15px;top:23px;display:flex;gap:2px}.canvas-topright .icon-btn{color:#b4c2cd;background:#ffffff08}.canvas-topright .icon-btn:hover{background:#ffffff15}.canvas-hint{position:absolute;top:80px;left:22px;right:20px;color:#9aaab9;font-size:11px;pointer-events:none;line-height:1.6}.canvas-coordinates{position:absolute;bottom:17px;left:22px;color:#899baa;font:11px Consolas,monospace;pointer-events:none}.canvas-controls{position:absolute;bottom:14px;right:20px;display:flex;align-items:center;border:1px solid #ffffff16;border-radius:5px;background:#202830;color:#abbac6;padding:2px}.canvas-controls button{color:inherit;width:29px;height:26px;display:flex;align-items:center;justify-content:center}.canvas-controls button:hover{background:#ffffff10}.canvas-controls span{width:48px;text-align:center;font-size:10px;font-family:Consolas,monospace}.canvas-controls .icon{width:14px;height:14px}.axis{position:absolute;bottom:57px;right:26px;width:44px;height:44px;pointer-events:none}.axis svg{overflow:visible;width:44px;height:44px}.axis text{font:10px Consolas,monospace}.mobile-panels{display:none}
@@ -12,7 +12,7 @@ dialog{border:1px solid var(--line);border-radius:12px;box-shadow:0 30px 100px #
 @media(max-width:1150px){.workspace{grid-template-columns:230px minmax(0,1fr) 250px}.panel-section{padding:18px 15px}.topbar{padding:0 16px;gap:12px}.brand small{display:none}.top-actions{gap:6px}.document-name{max-width:220px}.param-row{grid-template-columns:10px minmax(0,1fr) 76px 24px}.constraint-buttons button{font-size:9px}.canvas-tools{left:14px;top:16px}.canvas-topright{top:68px}.status-options{gap:12px}}
 @media(max-width:950px){.workspace,.runner .workspace{grid-template-columns:minmax(0,1fr)}.left-panel,.right-panel{display:none;position:absolute;top:0;bottom:0;width:280px;z-index:12;box-shadow:0 4px 30px #0003}.left-panel{left:0}.right-panel{right:0}#app[data-panel=left] .left-panel,#app[data-panel=right] .right-panel{display:block}.mobile-panels{display:flex;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:13;background:var(--panel);border-radius:6px;padding:3px;gap:3px;box-shadow:0 2px 8px #0003}.mobile-panels button{padding:7px 12px;font-size:11px}.mobile-panels button.active{background:var(--accent-bg);color:var(--accent)}.statusbar{padding:0 12px}.save-status span{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 @media(max-width:600px){.topbar{height:59px;padding:0 10px;gap:7px}.brand{gap:6px}.brand strong{font-size:22px}.brand svg{width:24px}.document-name{display:none}.top-actions{margin-left:auto}.top-actions .btn{padding:8px}.top-actions .btn span{display:none}.export-group .export-toggle{padding:8px 4px}.top-actions .btn.primary span{display:none}.statusbar{height:35px;padding:0 10px;gap:8px}.save-status span{display:none}.status-options{gap:10px}.units{font-size:0}.units span{font-size:10px;margin:0}.step-field{display:none}.canvas-hint{left:17px;right:45px;font-size:10px}.canvas-coordinates{left:15px;bottom:56px;font-size:10px}.canvas-controls{right:12px}.axis{right:18px}.tool{width:32px}.canvas-tools{left:12px;gap:1px}.canvas-tools .tool-sep{margin:0 2px}.status-options .labels-switch{display:none}.dialog-body,.dialog-head,.dialog-foot{padding-left:20px;padding-right:20px}.runner .canvas-topright{top:18px}}
-.relation-badge{cursor:pointer}.relation-badge:hover rect{stroke:#d3f6e4;stroke-width:1.8}.relation-badge.active rect{stroke-width:1.8}.sketch-state{position:absolute;left:22px;right:20px;top:106px;display:flex;align-items:center;gap:10px;pointer-events:none;font-size:11px;color:#83a8d5}.sketch-state [data-complete=true]{color:#9fceaf}.sketch-state .subtle-action{pointer-events:auto;color:#c7b7e5;margin:0;font-size:10px}.multi-selection{background:var(--accent-bg);padding:9px 11px;margin-bottom:14px;border-radius:5px;color:var(--accent);font-size:11px}.multi-selection span{display:block;font:10px Consolas,monospace;margin-top:5px;color:var(--accent)}.relation-detail>b{display:block;margin:8px 0;color:var(--accent)}.relation-detail>p{font:11px Consolas,monospace;color:var(--muted);margin-bottom:17px}.relation-select{padding:0!important;display:flex;align-items:center;gap:7px;flex:1;min-width:0;text-align:left}.relation-select>.icon{width:13px;height:13px}.property-name.with-icon{display:flex;align-items:center;gap:7px}.property-name.with-icon>.icon{width:14px;height:14px}.relation-select span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.constraint-row.active{background:var(--accent-bg);border-color:var(--line)}#constraint-list{max-height:190px;overflow:auto;scrollbar-width:thin}.status-options{gap:12px}.save-status>span{max-width:245px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.relation-badge{cursor:pointer}.relation-badge:hover rect{stroke:#d3f6e4;stroke-width:1.8}.relation-badge.active rect{stroke-width:1.8}.sketch-state{position:absolute;left:22px;right:20px;top:106px;display:flex;align-items:center;gap:10px;pointer-events:none;font-size:11px;color:#83a8d5}.sketch-state [data-complete=true]{color:#9fceaf}.sketch-state .subtle-action{pointer-events:auto;color:#a9d3ff;margin:0;font-size:10px}.multi-selection{background:var(--accent-bg);padding:9px 11px;margin-bottom:14px;border-radius:5px;color:var(--accent);font-size:11px}.multi-selection span{display:block;font:10px Consolas,monospace;margin-top:5px;color:var(--accent)}.relation-detail>b{display:block;margin:8px 0;color:var(--accent)}.relation-detail>p{font:11px Consolas,monospace;color:var(--muted);margin-bottom:17px}.relation-select{padding:0!important;display:flex;align-items:center;gap:7px;flex:1;min-width:0;text-align:left}.relation-select>.icon{width:13px;height:13px}.property-name.with-icon{display:flex;align-items:center;gap:7px}.property-name.with-icon>.icon{width:14px;height:14px}.relation-select span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.constraint-row.active{background:var(--accent-bg);border-color:var(--line)}#constraint-list{max-height:190px;overflow:auto;scrollbar-width:thin}.status-options{gap:12px}.save-status>span{max-width:245px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #dialog input[readonly]{background:var(--panel);color:var(--accent);border-color:var(--line)}.section-head>.icon{width:16px;height:16px;color:var(--muted)}
 @media(max-width:600px){.sketch-state{top:115px;left:17px;right:15px;font-size:10px}.status-options{gap:8px}.switch-label{font-size:10px}.statusbar{gap:5px}.save-status{display:none}.canvas-hint{max-width:310px}.sketch-state .subtle-action{font-size:9px}}
 @media(prefers-reduced-motion:no-preference){button{transition:background .12s,border-color .12s}.toast{animation:toast-in .16s ease-out}@keyframes toast-in{from{opacity:0;bottom:48px}to{opacity:1;bottom:56px}}}
@@ -258,8 +258,8 @@ input:disabled{background:var(--surface);color:var(--muted)}
 .document-name{margin:0 auto 0 0;border-left:1px solid var(--control-border);border-radius:0;padding:4px 18px;text-align:left;font-size:13px;max-width:320px}
 .top-actions{gap:6px;margin-left:auto}.top-actions .btn{min-height:30px;font-size:12px;gap:8px;padding:5px 11px;border-color:transparent;background:transparent}
 .top-actions .btn:hover{background:var(--surface-hover)}
-.top-actions .btn.primary{background:#6550ad;border-color:#8169c5;color:#fff}
-.top-actions .btn.primary:hover{background:#7862c4}
+.top-actions .btn.primary{background:#275b91;border-color:#5a9ad4;color:#fff}
+.top-actions .btn.primary:hover{background:#3274b5}
 .export-group>.primary:first-child{border-radius:3px 0 0 3px}.export-group>.export-toggle{border-radius:0 3px 3px 0;padding:5px;border-left:1px solid #ffffff30}
 .dropdown{background:var(--surface);border-color:var(--control-border);border-radius:3px;box-shadow:0 8px 24px #0006;top:36px;padding:4px}
 .dropdown button{font-size:12px;padding:9px 10px}
@@ -572,7 +572,7 @@ dialog::backdrop{background:#080d1499}
 
 @media(pointer:coarse){#modify-refs .native-pick>button:last-child:not(:first-child){min-width:44px;min-height:44px}}
 /* Presence rules and intentional instance gaps. */
-[data-rule-inactive="true"]{opacity:.25;stroke-dasharray:4 5}.rules-open>.panel-section:not(#rules-panel):not(.conflict-panel):not(.redundant-panel){display:none}#rules-panel{overflow:auto;min-height:0}#rules-panel .field{margin:12px 0}#rules-panel .native-footer{display:flex;gap:8px}#rules-panel .native-footer .btn{flex:1}.rule-scope{border-top:1px solid var(--line);padding-top:12px;margin-top:18px}.rule-condition{padding:12px;border:1px solid var(--line);border-radius:4px;margin:12px 0}.rule-row-head{display:flex;align-items:center;justify-content:space-between;font-size:12px}.rule-comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px}.rule-list{margin-top:16px}.rule-list-item{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);padding:10px 0}.rule-list-main{min-width:0;flex:1;text-align:left;background:none;border:0;padding:5px}.rule-list-main b{display:block;overflow-wrap:anywhere}.rule-list-main small{display:block;margin:5px 0;color:var(--muted)}.rule-state{display:inline-block;padding:3px 6px;font-size:10px;border:1px solid var(--line);border-radius:3px}.rule-state.active{color:#8cd7ba}.rule-state.inactive{color:#e4ad79}.rule-state.disabled{color:var(--muted)}.rule-current{padding:10px;border:1px solid var(--line);background:#78b9ff0d;font-size:12px;line-height:1.5}.pattern-skips{display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow:auto;padding:8px 0}.pattern-skips small{flex-basis:100%;color:var(--muted);line-height:1.5}.instance-chip{width:34px;height:32px;border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:3px;font-size:12px}.instance-chip.excluded{color:#ee9a9d!important;border-color:#ee9a9d!important;background:#ee9a9d12!important;text-decoration:line-through}.instance-chip:disabled{opacity:.4;cursor:default}.instance-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.rule-list-main:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.canvas-area[data-tool=rules]{cursor:crosshair}
+[data-rule-inactive="true"]{opacity:.25;stroke-dasharray:4 5}.rules-open>.panel-section:not(#rules-panel):not(.conflict-panel):not(.redundant-panel){display:none}#rules-panel{overflow:auto;min-height:0}#rules-panel .field{margin:12px 0}#rules-panel .native-footer{display:flex;gap:8px}#rules-panel .native-footer .btn{flex:1}.rule-scope{border-top:1px solid var(--line);padding-top:12px;margin-top:18px}.rule-condition{padding:12px;border:1px solid var(--line);border-radius:4px;margin:12px 0}.rule-row-head{display:flex;align-items:center;justify-content:space-between;font-size:12px}.rule-comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px}.rule-list{margin-top:16px}.rule-list-item{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);padding:10px 0}.rule-list-main{min-width:0;flex:1;text-align:left;background:none;border:0;padding:5px}.rule-list-main b{display:block;overflow-wrap:anywhere}.rule-list-main small{display:block;margin:5px 0;color:var(--muted)}.rule-state{display:inline-block;padding:3px 6px;font-size:10px;border:1px solid var(--line);border-radius:3px}.rule-state.active{color:#8cd7ba}.rule-state.inactive{color:#e4ad79}.rule-state.disabled{color:var(--muted)}.rule-current{padding:10px;border:1px solid var(--line);background:#78b9ff0d;font-size:12px;line-height:1.5}.pattern-skips{display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow:auto;padding:8px 0}.pattern-skips small{flex-basis:100%;color:var(--muted);line-height:1.5}.instance-chip{width:34px;height:32px;border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:3px;font-size:12px}.instance-chip.excluded{color:#83aaff!important;border-color:#83aaff!important;background:#83aaff12!important;text-decoration:line-through}.instance-chip:disabled{opacity:.4;cursor:default}.instance-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.rule-list-main:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.canvas-area[data-tool=rules]{cursor:crosshair}
 @media(prefers-reduced-motion:reduce){.pattern-instance-control{transition:none}}
 .dimension-inline{position:absolute;z-index:18;width:260px;padding:12px;background:var(--input);border:1px solid var(--accent);border-radius:5px;box-shadow:0 6px 24px #0006;cursor:default}.dimension-inline>label{display:block;font-size:12px;font-weight:600;margin-bottom:8px;color:var(--accent)}.dimension-inline-row{display:flex;align-items:center;gap:6px}.dimension-inline input{width:100%;min-width:0;background:var(--panel);font-variant-numeric:tabular-nums}.dimension-inline button{width:28px;height:32px;flex-shrink:0;display:grid;place-items:center}.dimension-inline small{display:block;margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)}#dimension-inline-error{color:var(--danger)}#dimension-inline-error:empty{display:none}.dimension-dragging{cursor:grabbing!important}.dimension text{cursor:grab}
 .pattern-variation-row{padding:10px;margin:10px 0;border:1px solid var(--line);border-radius:4px}.pattern-variation-row .field{margin:8px 0}.pattern-variation-row .subtle-action{color:var(--danger);font-size:11px}.pattern-variation-row input{font-family:Consolas,monospace;font-size:12px}.pattern-variation-row select{max-width:100%}
@@ -599,14 +599,14 @@ dialog::backdrop{background:#080d1499}
 .canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is(.point-hit,.segment-hit,.dimension,.dimension text){cursor:var(--sketch-pointer,crosshair)}
 .operation-badge .icon{width:14px;height:14px}
 .cursor-options{display:grid;grid-template-columns:minmax(0,1fr) 102px;align-items:center;gap:14px}
-#options-cursor-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
+#options-cursor-sample,#options-grip-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
 @media(max-width:510px){.cursor-options .form-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.4</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.5</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -672,7 +672,7 @@ dialog::backdrop{background:#080d1499}
    <div class="sketch-state"><span id="sketch-status"></span><button class="subtle-action editor-only" id="convert-sketch" hidden>Converti in schizzo</button></div><div id="draft-error" class="draft-error" hidden></div>
    <span class="canvas-hint" id="canvas-hint" role="status" aria-live="polite"></span>
    <div class="canvas-coordinates" id="coordinates">X 0,00&nbsp;&nbsp; Y 0,00</div>
-   <div class="axis" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="M8 35V6" stroke="#80ca85" stroke-width="1.2"/><path d="m5 10 3-5 3 5" stroke="#80ca85" fill="none"/><path d="M8 35h28" stroke="#ef8c85" stroke-width="1.2"/><path d="m31 32 6 3-6 3" stroke="#ef8c85" fill="none"/><circle cx="8" cy="35" r="3" stroke="#ddd2ff" fill="#8b67d1"/><text x="3" y="0" fill="#abc4ae">Y</text><text x="40" y="39" fill="#c9adb0">X</text></svg></div>
+   <div class="axis" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="M8 35V6" stroke="#80ca85" stroke-width="1.2"/><path d="m5 10 3-5 3 5" stroke="#80ca85" fill="none"/><path d="M8 35h28" stroke="#ef8c85" stroke-width="1.2"/><path d="m31 32 6 3-6 3" stroke="#ef8c85" fill="none"/><circle cx="8" cy="35" r="3" stroke="#bde0ff" fill="#417bb1"/><text x="3" y="0" fill="#abc4ae">Y</text><text x="40" y="39" fill="#c9adb0">X</text></svg></div>
 
   </section>
   </div>
@@ -2549,9 +2549,11 @@ window.FormaParameterNames=(()=>{
 })();
 
 /* Canvas primitives use the same evaluated geometry as DXF and AutoLISP. */
-const sketchSelectionStroke={color:'#b8a7ff',width:6,attributes:'class="sketch-selection" opacity=".24" pointer-events="none"'};
+const sketchAccent='#80bdff',sketchAccentLight='#bde0ff';
+const sketchReferenceColors=['#6bcfff','#83aaff','#a4d9ff'];
+const sketchSelectionStroke={color:sketchAccent,width:6,attributes:'class="sketch-selection" opacity=".24" pointer-events="none"'};
 const sketchHitWidth=15;
-const sketchHoverStroke=(color,dash)=>`class="segment-prehighlight" color="${color}" pointer-events="none" stroke-linecap="round"`+dash;
+const sketchHoverStroke=dash=>`class="segment-prehighlight" color="${sketchAccent}" pointer-events="none" stroke-linecap="round"`+dash;
 window.FormaNativeDrawing=(()=>{
  const E=FormaEngine,N=FormaNative,esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),TAU=2*Math.PI;
  function bounds(d,r){
@@ -2585,7 +2587,7 @@ window.FormaNativeDrawing=(()=>{
     out.push(stroke(selection.color,selection.width,selection.attributes));
    }
    out.push(stroke(color,weight,dash),stroke('transparent',sketchHitWidth,'class="segment-hit"'));
-   if(!render&&pickCurve?.({type,id:item.id},item))out.push(stroke(color,weight+.55,sketchHoverStroke(color,dash)));
+   if(!render&&pickCurve?.({type,id:item.id},item))out.push(stroke(sketchAccent,weight+.55,sketchHoverStroke(dash)));
    out.push('</g>');
   }
   for(const c of r.circles||[]){
@@ -2624,7 +2626,8 @@ const coincidentPath='M -6.4 0 H -2.5 M 1.75 -1.75 5.8 -5.8 M 2.45 0 A 2.45 2.45
 const pointOnLinePath='M -6 0 H -2 M 2 0 H 6 M 0 -2 V 2';
 const constraintGlyphs={tangent:'M -6 4 H 6 M 4 0 A 4 4 0 1 0 -4 0 A 4 4 0 1 0 4 0',origin:'M -6 0 H -3 M 3 0 H 6 M 0 -6 V -3 M 0 3 V 6 M 3 0 A 3 3 0 1 0 -3 0 A 3 3 0 1 0 3 0',horizontal:'M -5 0 H 5',vertical:'M 0 -5 V 5',perpendicular:'M -4 -5 V 4 H 5',parallel:'M -5 4 1 -4 M -1 4 5 -4',equal:'M -5 -2 H 5 M -5 2 H 5',coincident:coincidentPath,fixed:'M -4 0 H 4 V 5 H -4 Z M -2 0 V -3 A 2 2 0 0 1 2 -3 V 0',collinear:'M -6 0 H -1 M 1 0 H 6 M -4 -2 H -1 M 1 2 H 4',pointOnLine:pointOnLinePath,sameX:'M 0 -5 V 5 M -3 -5 H 3 M -3 5 H 3',length:'M -5 -4 V 4 M 5 -4 V 4 M -5 0 H 5',midpoint:'M -5 4 0 -5 5 4 Z'};
 window.FormaPointer=(()=>{
-  const limits={span:{min:25,max:95,initial:39},box:{min:5,max:19,initial:9}};
+  const limits={span:{min:25,max:95,initial:39},box:{min:5,max:19,initial:9},
+    gripWidth:{min:4,max:24,initial:8},gripHeight:{min:4,max:24,initial:6}};
   const storageKey='forma-sketch-pointer-v1';
   const normalize=value=>Object.fromEntries(Object.entries(limits).map(([key,{min,max,initial}])=>{
     const n=Number(value?.[key]);
@@ -2648,10 +2651,13 @@ window.FormaPointer=(()=>{
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${span}" height="${span}" viewBox="0 0 ${span} ${span}">${glyph}</svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${middle} ${middle}, crosshair`;
   }
-  return {limits,get:()=>({...current}),defaults:()=>normalize(),save,picture,css};
+  function gripRect(x,y,width,height){
+    return `x="${x-width/2}" y="${y-height/2}" width="${width}" height="${height}"`;
+  }
+  return {limits,get:()=>({...current}),normalize,save,picture,css,gripRect};
 })();
 window.FormaCanvas = (()=>{
-  const E=window.FormaEngine, colors={input:'#72e76b',fixed:'#e2e8ed',computed:'#e77de8'};
+  const E=window.FormaEngine,{gripRect}=FormaPointer;
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const num=n=>Number(n).toFixed(3);
   let host,svg,width=800,height=600,camera={x:1500,y:1100,scale:.22},cursorKey='';
@@ -2887,7 +2893,7 @@ window.FormaCanvas = (()=>{
     if(!last.doc||!svg)return;
     ({doc,result,selected,draft,tool}=last);
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
-    const pointer=FormaPointer.get(),pointerKey=pointer.span+':'+pointer.box;
+    const pointer=FormaPointer.get(),{gripWidth,gripHeight}=pointer,pointerKey=pointer.span+':'+pointer.box;
     if(cursorKey!==pointerKey){cursorKey=pointerKey;host.style.setProperty('--sketch-pointer',FormaPointer.css());}
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
@@ -2923,7 +2929,7 @@ window.FormaCanvas = (()=>{
       content.push('</g>');
     }
     const origin=screen({x:0,y:0});
-    if(!preview)content.push(`<g class="sketch-origin" transform="translate(${origin.x},${origin.y})"><title>Origine del cartiglio (0, 0)</title><path d="M -7 0 H 7 M 0 -7 V 7" stroke="#9a8fb0" stroke-width="1"/></g>`);
+    if(!preview)content.push(`<g class="sketch-origin" transform="translate(${origin.x},${origin.y})"><title>Origine del cartiglio (0, 0)</title><path d="M -7 0 H 7 M 0 -7 V 7" stroke="#7297bc" stroke-width="1"/></g>`);
     const pickSegment=preview?null:
       ['select','pattern'].includes(tool)?()=>true:
       ['trim','extend','offset','mirror'].includes(tool)?window.FormaModifyUI?.canPickSegment:
@@ -2949,7 +2955,7 @@ window.FormaCanvas = (()=>{
       const dash=s.preview?' stroke-dasharray="6 4"':s.construction?' stroke-dasharray="5 6"':'';
       content.push(line(s.p,s.q,color,weight,dash+' data-rule-inactive="'+(s.ruleActive===false)+'" data-definition="'+status+'" data-display-segment="'+esc(s.id)+'"'));
       content.push(line(s.p,s.q,'transparent',sketchHitWidth,`data-segment="${esc(s.id)}" class="segment-hit"`));
-      if(pickSegment?.(s))content.push(line(s.p,s.q,color,weight+.55,sketchHoverStroke(color,dash)));
+      if(pickSegment?.(s))content.push(line(s.p,s.q,sketchAccent,weight+.55,sketchHoverStroke(dash)));
       if(!usesOperationColor(s))for(const span of marks?.extended.get(s.id)||[]){
         const clipped=clipToSegment(s,...span.map(id=>result.points[id]));
         if(clipped)content.push(line(...clipped,definitionColors.repetition,weight,
@@ -2966,11 +2972,16 @@ window.FormaCanvas = (()=>{
     for(const p of doc.points){
       if(!visiblePoint(p,doc))continue;
       const pt=result.points[p.id],s=screen(pt),sel=isSelected('point',p.id),status=E.entityDefinition(doc,result,'point',p,definition);
-      const arcCenter=window.FormaModify.isArcCenter(doc,p.id),color=sel?'#b6a0ff':definitionColors[status];
-      if(arcCenter)content.push(`<g data-point="${esc(p.id)}" class="arc-center"><title>Centro dell’arco · ${esc(p.id)}</title><path d="M ${s.x-5} ${s.y} h 10 M ${s.x} ${s.y-5} v 10" fill="none" stroke="${color}" stroke-width="${sel?2:1.5}"/><circle cx="${s.x}" cy="${s.y}" r="2" fill="${color}"/></g>`);
-      else content.push(`<circle cx="${s.x}" cy="${s.y}" r="${sel?6:3.4}" fill="${color}" stroke="${sel?'#eee9ff':'#202830'}" stroke-width="${sel?2:1}" data-point="${esc(p.id)}"/>`);
-      content.push(`<circle cx="${s.x}" cy="${s.y}" r="10" fill="transparent" data-point="${esc(p.id)}" class="point-hit"/>`);
-      if(doc.view.labels||sel)content.push(text({x:pt.x+10/camera.scale,y:pt.y+14/camera.scale},p.id,sel?'#d3c4ff':'#a9bac8',10));
+      const id=esc(p.id),arcCenter=window.FormaModify.isArcCenter(doc,p.id),color=sel?sketchAccent:definitionColors[status];
+      const bounds=gripRect(s.x,s.y,gripWidth,gripHeight),gripClass='point-grip'+(sel?' active':'');
+      if(arcCenter){
+        const w=gripWidth/2+2,h=gripHeight/2+2;
+        content.push(`<g data-point="${id}" class="arc-center"><title>Centro dell’arco · ${id}</title><rect ${bounds} class="${gripClass}" fill="${definitionColors.background}" stroke="${color}"/><path d="M ${s.x-w} ${s.y} h ${2*w} M ${s.x} ${s.y-h} v ${2*h}" fill="none" stroke="${color}" stroke-width="1"/></g>`);
+      }else{
+        content.push(`<rect ${bounds} class="${gripClass}" fill="${color}" stroke="${sel?sketchAccentLight:definitionColors.background}" data-point="${id}"/>`);
+      }
+      content.push(`<rect ${gripRect(s.x,s.y,Math.max(20,gripWidth),Math.max(20,gripHeight))} fill="transparent" data-point="${id}" class="point-hit"/>`);
+      if(doc.view.labels||sel)content.push(text({x:pt.x+(gripWidth/2+6)/camera.scale,y:pt.y+(gripHeight/2+11)/camera.scale},p.id,sel?sketchAccentLight:'#a9bac8',10));
     }
     const occupied=[];
     if(!preview&&(doc.view.relations!==false||definition.constraints.size)){
@@ -2979,7 +2990,7 @@ window.FormaCanvas = (()=>{
         const candidates=[preferred,{x:preferred.x,y:preferred.y-25},{x:preferred.x+25,y:preferred.y},{x:preferred.x-25,y:preferred.y},{x:preferred.x,y:preferred.y+25},{x:preferred.x+30,y:preferred.y-30},{x:preferred.x-30,y:preferred.y-30}];
         for(const q of candidates){const trial={x:p.x+q.x,y:p.y+q.y};if(!occupied.some(k=>Math.abs(k.x-trial.x)<22&&Math.abs(k.y-trial.y)<22)){pos=trial;break;}}
         occupied.push(pos);const active=isSelected('constraint',id),excess=definition.constraints.has(id);
-        content.push(`<g ${implicit?`data-shared-point="${esc(id)}"`:`data-relation="${esc(id)}"`} class="relation-badge ${active?'active':''} ${excess?'redundant':''}" transform="translate(${pos.x} ${pos.y})"><title>${esc(title+(excess?' · Vincolo eccedente':''))}</title><rect ${badgeRect} fill="${excess?'#513820':active?'#6f50a8':'#273b42'}" stroke="${excess?definitionColors.over:active?'#d5bfff':'#85bbaa'}" stroke-width="1"/><path d="${constraintGlyphs[type]||constraintGlyphs.length}" stroke="${excess?definitionColors.over:active?'#fff':'#a5d7c5'}" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+        content.push(`<g ${implicit?`data-shared-point="${esc(id)}"`:`data-relation="${esc(id)}"`} class="relation-badge ${active?'active':''} ${excess?'redundant':''}" transform="translate(${pos.x} ${pos.y})"><title>${esc(title+(excess?' · Vincolo eccedente':''))}</title><rect ${badgeRect} fill="${excess?'#513820':active?'#24527e':'#273b42'}" stroke="${excess?definitionColors.over:active?sketchAccentLight:'#85bbaa'}" stroke-width="1"/><path d="${constraintGlyphs[type]||constraintGlyphs.length}" stroke="${excess?definitionColors.over:active?'#fff':'#a5d7c5'}" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`);
       }
       for(const k of doc.constraints){
         const excess=definition.constraints.has(k.id);if(doc.view.relations===false&&!excess)continue;
@@ -3029,10 +3040,10 @@ window.FormaCanvas = (()=>{
         }
         content.push(`<circle cx="${a.x}" cy="${a.y}" r="7" fill="none" stroke="#80c5ff" stroke-width="2" pointer-events="none"/>`);
       }else{
-        content.push(line(draft.start,draft.end,'#c6b9ff',1.5,'stroke-dasharray="6 5"'));
+        content.push(line(draft.start,draft.end,'#80bdff',1.5,'stroke-dasharray="6 5"'));
         if(draft.end.alignment)content.push(`<text x="${p.x+13}" y="${p.y-12}" fill="#a5d7c5" font-size="11">${draft.end.alignment==='horizontal'?'H':'V'}</text>`);
       }
-      content.push(`<circle cx="${p.x}" cy="${p.y}" r="5" fill="none" stroke="${draft.arcMode?'#80c5ff':'#c6b9ff'}" pointer-events="none"/>`);
+      content.push(`<circle cx="${p.x}" cy="${p.y}" r="5" fill="none" stroke="${draft.arcMode?'#80c5ff':'#80bdff'}" pointer-events="none"/>`);
     }
     if(!preview&&!doc.segments.length&&!doc.circles?.length&&!doc.texts?.length)content.push(`<text x="${width/2}" y="${height/2-10}" text-anchor="middle" fill="#d8e2e9" font-size="20" font-weight="500">Il tuo prossimo disegno inizia qui.</text><text x="${width/2}" y="${height/2+20}" text-anchor="middle" fill="#96a5b2" font-size="13">Scegli Linea o Cerchio per iniziare.</text>`);
     const placement=last.dimensionDraft,hover=last.hover;
@@ -3040,7 +3051,7 @@ window.FormaCanvas = (()=>{
       content.push('<g class="dimension-preview" pointer-events="none">');
       for(const id of [placement.a,placement.b].filter(Boolean)){
         const pt=result.points[id];if(!pt)continue;const s=screen(pt);
-        content.push('<circle cx="'+s.x+'" cy="'+s.y+'" r="7" fill="#c6b9ff33" stroke="#d2beff" stroke-width="1.5"/>');
+        content.push(`<rect ${gripRect(s.x,s.y,gripWidth+6,gripHeight+6)} fill="#80bdff33" stroke="${sketchAccentLight}" stroke-width="1.5"/>`);
       }
       if(placement.b&&result.points[placement.a]&&result.points[placement.b]){
         const d={...placement,p:result.points[placement.a],q:result.points[placement.b],kind:'input',param:null};
@@ -3050,7 +3061,7 @@ window.FormaCanvas = (()=>{
           if(item.type==='arrow')content.push(arrow(item.p,item.angle,definitionColors.under,style.arrowSize));
         }
         const labels={aligned:'Allineata',horizontal:'Orizzontale',vertical:'Verticale'},cursor=screen(placement.cursor);
-        content.push(text(world({x:cursor.x+55,y:cursor.y+22}),labels[placement.mode],'#c8b7e8',11));
+        content.push(text(world({x:cursor.x+55,y:cursor.y+22}),labels[placement.mode],'#b8dbff',11));
       }
       content.push('</g>');
     }
@@ -3060,7 +3071,7 @@ window.FormaCanvas = (()=>{
     }
     if(!preview&&hover&&result.points[hover.id]){
       const p=screen(result.points[hover.id]);
-      content.push('<g class="point-snap-feedback" pointer-events="none"><rect x="'+(p.x-8)+'" y="'+(p.y-8)+'" width="16" height="16" rx="2" fill="#66ec9e20" stroke="#80f2ac" stroke-width="2"/><circle cx="'+p.x+'" cy="'+p.y+'" r="3" fill="#80f2ac"/><text x="'+(p.x+15)+'" y="'+(p.y-15)+'" fill="#a3f4c3" font-size="11">Punto '+esc(hover.id)+'</text></g>');
+      content.push('<g class="point-snap-feedback" pointer-events="none"><rect x="'+(p.x-8)+'" y="'+(p.y-8)+'" width="16" height="16" rx="2" fill="#66ec9e20" stroke="#80f2ac" stroke-width="2"/><rect '+gripRect(p.x,p.y,gripWidth,gripHeight)+' fill="#80f2ac"/><text x="'+(p.x+15)+'" y="'+(p.y-15)+'" fill="#a3f4c3" font-size="11">Punto '+esc(hover.id)+'</text></g>');
     }
     if(!preview&&last.selectionBox){
       const {start,end,items}=last.selectionBox,crossing=end.x<start.x,color=crossing?'#66de9b':'#73afff';
@@ -3095,12 +3106,12 @@ window.FormaCanvas = (()=>{
       if(p.mode==='reference'){
         if(p.target?.type==='segment'){const ref=result.segments.find(s=>s.id===p.target.id);if(ref)content.push(line(ref.p,ref.q,'#85d7ac',3));}
         else if(p.target?.type==='point'){const q=screen(result.points[p.target.id]);content.push(`<circle cx="${q.x}" cy="${q.y}" r="7" stroke="#85d7ac" fill="none" stroke-width="2"/>`);}
-        for(let k=0;k<r.count;k++){const q=screen({x:r.anchor.x+r.u.x*r.step*k,y:r.anchor.y+r.u.y*r.step*k});content.push(`<circle cx="${q.x}" cy="${q.y}" r="${k===r.count-1?5:3}" stroke="#d0b7ff" fill="#202830" stroke-width="1.5"/>`);}
-        if(r.end){const q=screen(r.end),nx=-r.u.y,ny=-r.u.x;content.push(`<path d="M ${q.x-nx*40} ${q.y-ny*40} L ${q.x+nx*40} ${q.y+ny*40}" stroke="#c2a2ff" stroke-width="1" stroke-dasharray="3 4"/>`);}
+        for(let k=0;k<r.count;k++){const q=screen({x:r.anchor.x+r.u.x*r.step*k,y:r.anchor.y+r.u.y*r.step*k});content.push(`<circle cx="${q.x}" cy="${q.y}" r="${k===r.count-1?5:3}" stroke="#8bc5ff" fill="#202830" stroke-width="1.5"/>`);}
+        if(r.end){const q=screen(r.end),nx=-r.u.y,ny=-r.u.x;content.push(`<path d="M ${q.x-nx*40} ${q.y-ny*40} L ${q.x+nx*40} ${q.y+ny*40}" stroke="#83aaff" stroke-width="1" stroke-dasharray="3 4"/>`);}
         if(p.distribution==='step'){
           const shift={x:r.u.x*r.step*r.count,y:r.u.y*r.step*r.count};
-          for(const o of p.objects.filter(o=>o.type==='segment')){const s=result.segments.find(s=>s.id===o.id);if(s){const a=p.dynamic?.enabled?window.FormaPatterns.instancePoint(doc,result,p,r,s.a,r.count):{x:s.p.x+shift.x,y:s.p.y+shift.y},b=p.dynamic?.enabled?window.FormaPatterns.instancePoint(doc,result,p,r,s.b,r.count):{x:s.q.x+shift.x,y:s.q.y+shift.y};content.push(line(a,b,'#f58d97',1.3,'stroke-dasharray="3 5" opacity=".6"'));}}
-          content.push(text({x:r.anchor.x+shift.x,y:r.anchor.y+shift.y+18/camera.scale},'Esclusa','#f58d97',11));
+          for(const o of p.objects.filter(o=>o.type==='segment')){const s=result.segments.find(s=>s.id===o.id);if(s){const a=p.dynamic?.enabled?window.FormaPatterns.instancePoint(doc,result,p,r,s.a,r.count):{x:s.p.x+shift.x,y:s.p.y+shift.y},b=p.dynamic?.enabled?window.FormaPatterns.instancePoint(doc,result,p,r,s.b,r.count):{x:s.q.x+shift.x,y:s.q.y+shift.y};content.push(line(a,b,'#83aaff',1.3,'stroke-dasharray="3 5" opacity=".6"'));}}
+          content.push(text({x:r.anchor.x+shift.x,y:r.anchor.y+shift.y+18/camera.scale},'Esclusa','#83aaff',11));
         }
       }}content.push('</g>');
     }
@@ -3175,7 +3186,7 @@ window.FormaCanvas = (()=>{
     }return pts;
   }
   function referenceSVG(items){
-    const out=[],r=last.result;for(let index=0;index<items.length;index++){const item=items[index],color=item.error?E.getOptions(last.doc).colors.over:item.color||['#6bcfff','#d1aeff','#9fe0b3'][index%3],attrs='pointer-events="none" stroke-linecap="round"',points=referencePoints([item]);if(!points.length)continue;
+    const out=[],r=last.result;for(let index=0;index<items.length;index++){const item=items[index],color=item.error?E.getOptions(last.doc).colors.over:item.color||sketchReferenceColors[index%sketchReferenceColors.length],attrs='pointer-events="none" stroke-linecap="round"',points=referencePoints([item]);if(!points.length)continue;
       const arc=['arc','feature'].includes(item.type)?r.arcs.find(a=>a.id===item.id):null;
       if(arc){
         const path=FormaNativeDrawing.arcPath(arc,r.points,screen,camera.scale);
@@ -3725,7 +3736,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.4 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.5 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4767,7 +4778,7 @@ window.FormaPatternUI=(()=>{
 window.FormaPatternInstances=(()=>{
  const P=FormaPatterns,esc=FormaUI.esc,TAU=Math.PI*2;
  function svg(d,r,{pattern:p,plan:info},{screen,scale}){
-  if(!info||info.inactive)return '';const out=[],skip=new Set(p.skip||[]),color='#ef9294';
+  if(!info||info.inactive)return '';const out=[],skip=new Set(p.skip||[]),color='#83aaff';
   const line=(a,b)=>{a=screen(a);b=screen(b);return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`};
   for(let k=0;k<info.count;k++){
    const excluded=skip.has(k+1),anchor=P.position(p,info,info.anchor,k),at=screen(anchor),x=at.x,y=at.y-26,c=excluded?color:k?'#eac555':'#8bc5ff';
@@ -4787,7 +4798,10 @@ window.FormaOptionsUI=(()=>{
   const E=window.FormaEngine,U=window.FormaUI,P=window.FormaPointer,$=id=>document.getElementById(id);
   function open(doc,onSave){
     const base=E.getOptions(doc),defaults=E.defaultOptions(doc.units),labels={background:'Sfondo editor',defined:'Linee definite',under:'Sottodefinito',over:'Ultradefinito',dimension:'Quote modificabili / calcolate',fixedDimension:'Quote fisse',driven:'Quote pilotate',repetition:'Geometria delle operazioni e delle ripetizioni'};
-    const pointer=P.get();
+    const pointer=P.get(),sizeFields=keys=>keys.map(([key,label])=>{
+      const {min,max}=P.limits[key];
+      return number(label,'cursor_'+key,pointer[key],min,max,1);
+    }).join('');
     const contentChoices=[['both','Nome e valore'],['value','Solo valore'],['name','Solo nome parametro']],typedChoices=[['inherit','Usa contenuto generale'],...contentChoices];
     const number=(label,name,value,min,max,step='any')=>U.field(label,name,value,'number','min="'+min+'" max="'+max+'" step="'+step+'" required');
     U.modal('Opzioni',
@@ -4795,20 +4809,24 @@ window.FormaOptionsUI=(()=>{
       '<section id="options-panel-appearance" role="tabpanel" aria-labelledby="options-tab-appearance">'+U.select('Colori della vista Modifica','palette',[['classic','Classico scuro'],['contrast','Contrasto elevato'],['light','Chiaro'],['custom','Personalizzati']],base.palette)+
       '<div class="options-colors">'+Object.entries(labels).map(([key,label])=>'<label><span>'+label+'</span><input type="color" data-color-picker="'+key+'" aria-label="Scegli colore '+label+'" value="'+base.colors[key]+'"><input type="text" name="color_'+key+'" data-color-hex="'+key+'" aria-label="Codice colore '+label+'" value="'+base.colors[key]+'" pattern="#[a-fA-F0-9]{6}" maxlength="7" required spellcheck="false"></label>').join('')+'</div><p class="panel-note">Le copie delle ripetizioni sono gialle per impostazione predefinita. I colori personalizzati si applicano a Modifica. Le definizioni eccedenti mantengono il colore Ultradefinito. Render mantiene i colori dei layer e lo sfondo scuro.</p>'+ 
       '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div>'+
-      '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+number('Ampiezza croce','cursor_span',pointer.span,P.limits.span.min,P.limits.span.max,1)+number('Quadrato centrale','cursor_box',pointer.box,P.limits.box.min,P.limits.box.max,1)+'</div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del puntatore"></svg></div></section>'+
+      '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['span','Ampiezza croce'],['box','Quadrato centrale']])+'</div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del puntatore"></svg></div>'+
+      '<h3>Vertici · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['gripWidth','Larghezza vertice'],['gripHeight','Altezza vertice']])+'</div><svg id="options-grip-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del vertice"></svg></div></section>'+
       '<section id="options-panel-dimensions" role="tabpanel" aria-labelledby="options-tab-dimensions" hidden><h3>Dimensioni sullo schermo · pixel</h3><div class="form-grid">'+number('Altezza testo','editor_textHeight',base.editor.textHeight,6,60,1)+number('Grandezza frecce','editor_arrowSize',base.editor.arrowSize,2,40,1)+'</div><h3>Formato · editor e disegno esportato</h3><div class="form-grid">'+number('Cifre decimali','decimals',base.format.decimals,0,8,1)+U.select('Contenuto generale','content',contentChoices,base.format.content)+'</div><div class="form-grid">'+U.select('Contenuto quote modificabili','inputContent',typedChoices,base.format.inputContent)+U.select('Contenuto quote fisse','fixedContent',typedChoices,base.format.fixedContent)+'</div><label class="check-line"> <input type="checkbox" name="trimZeros" '+(base.format.trimZeros?'checked':'')+'>Nascondi gli zeri decimali finali</label><label class="check-line"><input type="checkbox" name="showUnits" '+(base.format.showUnits?'checked':'')+'>Mostra unità mm / cm nelle quote</label><p class="panel-note">I contenuti separati per fisse e modificabili valgono anche per DXF e AutoLISP. Le altre quote usano il contenuto generale. La precisione dei calcoli resta invariata. Se manca un nome parametro, viene mostrato il valore.</p></section>'+
       '<section id="options-panel-cad" role="tabpanel" aria-labelledby="options-tab-cad" hidden><h3>Dimensioni nel disegno CAD · '+doc.units+'</h3><label class="check-line"><input type="checkbox" name="cad_automatic" '+(base.cad.automatic?'checked':'')+'>Dimensioni automatiche, proporzionali al disegno</label><div id="options-cad-manual" class="form-grid">'+number('Altezza testo · '+doc.units,'cad_textHeight',base.cad.textHeight,.001,1e6)+number('Grandezza frecce · '+doc.units,'cad_arrowSize',base.cad.arrowSize,.001,1e6)+'</div><p class="panel-note">Le quote rimangono vere quote AutoCAD. Testo e frecce CAD sono indipendenti dallo zoom e dalle dimensioni sullo schermo. Il formato si sceglie nella scheda Quote.</p></section>'+
       '<div class="options-preview" aria-label="Anteprima delle opzioni"><span>Anteprima grafica</span><svg id="options-sample" viewBox="0 0 480 100" role="img" aria-label="Esempio linee e quota"></svg></div><button type="button" id="options-reset" class="btn small">Ripristina predefiniti</button></div>',data=>{
         const auto=data.cad_automatic==='on',cadValue=key=>{const n=Number(data['cad_'+key]??field('cad_'+key).value);return auto&&(!Number.isFinite(n)||n<=0||n>1e6)?defaults.cad[key]:n;};
         const value={palette:data.palette,colors:Object.fromEntries(Object.keys(labels).map(k=>[k,data['color_'+k]])),editor:Object.fromEntries(Object.keys(defaults.editor).map(k=>[k,Number(data['editor_'+k])])),format:{decimals:Number(data.decimals),trimZeros:data.trimZeros==='on',content:data.content,inputContent:data.inputContent,fixedContent:data.fixedContent,showUnits:data.showUnits==='on'},cad:{automatic:auto,textHeight:cadValue('textHeight'),arrowSize:cadValue('arrowSize')}};
         if(value.palette!=='custom'&&Object.entries(value.colors).some(([k,v])=>v.toLowerCase()!==E.optionPalettes[value.palette]?.[k]))value.palette='custom';
-        onSave(E.validateOptions(value,doc.units),{span:Number(data.cursor_span),box:Number(data.cursor_box)});
+        onSave(E.validateOptions(value,doc.units),Object.fromEntries(Object.keys(P.limits).map(key=>[key,data['cursor_'+key]])));
       },'Salva opzioni');
     $('dialog').classList.add('options-dialog');U.onModalDispose(()=>$('dialog').classList.remove('options-dialog'));
     const root=$('options-form'),field=name=>root.querySelector('[name="'+name+'"]');
     const update=()=>{
       const colors=Object.fromEntries(Object.keys(labels).map(k=>[k,/^#[a-f0-9]{6}$/i.test(field('color_'+k).value)?field('color_'+k).value:base.colors[k]]));
-      const cursor=P.picture({span:field('cursor_span').value,box:field('cursor_box').value});
+      const sizes=P.normalize(Object.fromEntries(Object.keys(P.limits).map(key=>[key,field('cursor_'+key).value])));
+      const cursor=P.picture(sizes),grip=$('options-grip-sample');
+      grip.style.background=colors.background;
+      grip.innerHTML=`<path d="M 21 77 L 51 51 H 81" fill="none" stroke="${colors.under}" stroke-width="1.5"/><rect ${P.gripRect(51,51,sizes.gripWidth,sizes.gripHeight)} fill="${sketchAccent}" stroke="${sketchAccentLight}"/>`;
       const inset=51-cursor.middle-.5,sample=$('options-cursor-sample');
       sample.style.background=colors.background;
       sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
@@ -4820,7 +4838,7 @@ window.FormaOptionsUI=(()=>{
       $('options-sample').innerHTML='<rect width="480" height="100" fill="'+colors.background+'"/><path d="M25 42V15h100" fill="none" stroke="'+colors.defined+'" stroke-width="'+width('lineWidth')+'"/><path d="M150 42V15h90" fill="none" stroke="'+colors.under+'" stroke-width="'+width('lineWidth')+'"/><path d="M265 42V15h90" fill="none" stroke="'+colors.over+'" stroke-width="'+width('lineWidth')+'"/><path d="M395 15h35v27h-35z" fill="none" stroke="'+colors.repetition+'" stroke-width="'+width('lineWidth')+'"/>'+quote(25,225,'L',120,'inputContent',colors.dimension)+quote(260,455,'TP',30,'fixedContent',colors.fixedDimension);
     };
     const fill=value=>{
-      for(const [key,size] of Object.entries(P.defaults()))field('cursor_'+key).value=size;
+      for(const [key,size] of Object.entries(P.normalize()))field('cursor_'+key).value=size;
       field('palette').value=value.palette;
       for(const k of Object.keys(labels)){field('color_'+k).value=value.colors[k];root.querySelector('[data-color-picker="'+k+'"]').value=value.colors[k];}
       for(const [k,v]of Object.entries(value.editor))field('editor_'+k).value=v;
@@ -5770,7 +5788,7 @@ window.FormaNativeUI=(()=>{
  const failure=(message,field,segment)=>Object.assign(Error(message),{field,segment});
  function baseRefs(){if(!context)return [];if(context.refs?.length)return context.refs.map((r,i)=>({...r,index:i+1}));if(context.center)return [{type:context.center.id?'point':'position',id:context.center.id,point:context.center,index:1}];if(context.item?.type==='feature'){const f=state().doc.features.find(f=>f.id===context.item.id);return f?[{type:'segment',id:f.s1,index:1},{type:'segment',id:f.s2,index:2}]:[]}return []}
  function highlight(index=null){const refs=baseRefs();C.setReferenceHighlight?.([...(index===null?refs:refs.filter((r,i)=>i===index)),...(context?.errorRefs||[])]);}
- function refsMarkup(){return `<div class="native-picks" aria-live="polite">${(context.refs||[]).map((r,i)=>`<div class="native-pick" data-ref-index="${i}"><button type="button" data-ref-focus="${i}"><i style="background:${['#6bcfff','#d1aeff'][i%2]}"></i>${i+1} · ${esc(({segment:'Segmento',circle:'Cerchio',arc:'Arco',point:'Punto'})[r.type])} ${esc(r.id)}</button><button type="button" data-unpick="${i}" aria-label="Rimuovi riferimento ${esc(r.id)}">×</button></div>`).join('')||'<span>Seleziona sul disegno</span>'}</div><button class="btn small" type="button" data-native="clear-refs">Seleziona di nuovo</button>`}
+ function refsMarkup(){return `<div class="native-picks" aria-live="polite">${(context.refs||[]).map((r,i)=>`<div class="native-pick" data-ref-index="${i}"><button type="button" data-ref-focus="${i}"><i style="background:${sketchReferenceColors[i%sketchReferenceColors.length]}"></i>${i+1} · ${esc(({segment:'Segmento',circle:'Cerchio',arc:'Arco',point:'Punto'})[r.type])} ${esc(r.id)}</button><button type="button" data-unpick="${i}" aria-label="Rimuovi riferimento ${esc(r.id)}">×</button></div>`).join('')||'<span>Seleziona sul disegno</span>'}</div><button class="btn small" type="button" data-native="clear-refs">Seleziona di nuovo</button>`}
  function command(tool){
   const d=state().doc,factor=d.units==='cm'?.1:1;context={tool,refs:[],center:null,position:null,placement:null,manual:new Set(),dirty:false,errorRefs:[]};cache=null;hover=null;
   if(tool==='line'||tool==='construction'){shell(tool==='line'?'Linee consecutive':'Costruzioni consecutive','<p class="native-help">Clicca il primo punto e poi gli estremi successivi. Ogni segmento condivide l’estremo con il precedente.</p>'+'<p class="native-help">Per un arco tangente a un segmento o a un altro arco, allontanati dall’estremo, torna sullo stesso punto e riparti. Clicca dove deve finire l’arco.</p>'+'<div class="native-guide"><kbd>Invio</kbd> termina la serie<br><kbd>Esc</kbd> torna a Seleziona<br>Clicca il primo punto per chiudere il profilo.</div>','Termina strumento');return}
