@@ -598,7 +598,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.2</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.3</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -3114,9 +3114,9 @@ window.FormaCanvas = (()=>{
       }
       if(x===undefined)return '';
       occupied.push({x,y});
-      const label='Modifica '+labels[type]+(name&&name!==labels[type]?' · '+name:'');
+      const label=labels[type]+(name&&name!==labels[type]?' · '+name:'');
       const icon=FormaUI.icon(type).replace('viewBox=', 'x="-8" y="-8" width="16" height="16" viewBox=');
-      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" transform="translate(${x} ${y})"><title>${esc(label)}</title><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
+      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" aria-description="Clic per le proprietà, doppio clic per modificare" aria-keyshortcuts="Enter Shift+Enter" transform="translate(${x} ${y})"><title>${esc(label)} · Clic per le proprietà · Doppio clic per modificare</title><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
     }
     const edits=operations.map(op=>badge(op.type,op.id,op.name,
       anchor([...(op.target?[op.target]:[]),...op.outputs])||anchor(op.target?[op.target]:op.sources)));
@@ -3687,7 +3687,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.2 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.3 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -5475,20 +5475,57 @@ window.FormaApp=(()=>{
     });
     const canvas=$('canvas');
     setupConstraintMenu(canvas);
-    function editBadge(ev){
-      const badge=ev.target.closest('[data-edit-operation]');
-      if(!badge||state.tool!=='select'||runner||state.doc.view.mode==='render'||$('dialog').open)return;
-      if(ev.type==='keydown'&&!['Enter',' '].includes(ev.key))return;
-      ev.preventDefault();ev.stopPropagation();
-      const id=badge.dataset.editOperation;
-      const repetition=badge.dataset.operationKind==='pattern';
-      if(repetition)patternsUI.open(id);
-      else window.FormaModifyUI?.editOperation(id);
-      const heading=$(repetition?'pattern-editor':'modify-tool-panel').querySelector('h2');
-      if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
+    let pendingBadge=null;
+    function canUseBadge(){return state.tool==='select'&&!runner&&state.doc.view.mode!=='render'&&!$('dialog').open;}
+    function cancelPendingBadge(){
+      if(!pendingBadge)return;
+      clearTimeout(pendingBadge.timer);
+      pendingBadge=null;
     }
-    canvas.addEventListener('click',editBadge);
-    canvas.addEventListener('keydown',editBadge);
+    function showBadge(id,repetition,edit,focus){
+      if(!canUseBadge())return;
+      let panelId='modify-tool-panel';
+      if(repetition){
+        if(!state.doc.patterns.some(p=>p.id===id))return;
+        select({type:'pattern',id});
+        if(edit)patternsUI.open(id);
+        else window.FormaWorkspaceUI?.reveal('right');
+        panelId=edit?'pattern-editor':'inspector';
+      }else if(edit)window.FormaModifyUI?.editOperation(id);
+      else window.FormaModifyUI?.inspectOperation(id);
+      if(focus){
+        const panel=$(panelId),heading=panel.querySelector('h2,strong')||panel;
+        heading.tabIndex=-1;heading.focus({preventScroll:true});
+      }
+    }
+    function activateBadge(ev){
+      const badge=ev.target.closest('[data-edit-operation]');
+      if(!badge||!canUseBadge())return;
+      const keyboard=ev.type==='keydown';
+      if(keyboard&&(!['Enter',' '].includes(ev.key)||ev.repeat))return;
+      ev.preventDefault();ev.stopPropagation();
+      const id=badge.dataset.editOperation,repetition=badge.dataset.operationKind==='pattern';
+      const record=state.doc;
+      const edit=keyboard?ev.shiftKey&&ev.key==='Enter':ev.type==='dblclick'||
+        pendingBadge?.id===id&&pendingBadge.repetition===repetition&&pendingBadge.record===record;
+      cancelPendingBadge();
+      if(keyboard||edit||ev.detail===0){showBadge(id,repetition,edit,keyboard||edit);return;}
+      // Let the second click land before a panel resize moves the marker.
+      pendingBadge={id,repetition,record,timer:setTimeout(()=>{
+        pendingBadge=null;
+        if(state.doc===record)showBadge(id,repetition,false,false);
+      },350)};
+    }
+    document.addEventListener('pointerdown',ev=>{
+      if(!pendingBadge)return;
+      const badge=ev.target.closest('[data-edit-operation]');
+      if(ev.button!==0||badge?.dataset.editOperation!==pendingBadge.id||
+        (badge.dataset.operationKind==='pattern')!==pendingBadge.repetition)cancelPendingBadge();
+    },true);
+    window.addEventListener('keydown',ev=>{if(ev.key==='Escape')cancelPendingBadge();},true);
+    canvas.addEventListener('click',activateBadge);
+    canvas.addEventListener('dblclick',activateBadge);
+    canvas.addEventListener('keydown',activateBadge);
     canvas.addEventListener('wheel',ev=>{if($('dialog').open)return;ev.preventDefault();if(gesture?.type==='box')return;C.zoom(ev.deltaY<0?1.12:1/1.12,C.local(ev));},{passive:false});
     canvas.addEventListener('pointerdown',ev=>{
       if($('dialog').open)return;
@@ -6010,6 +6047,12 @@ window.FormaModifyUI=(()=>{
  }
  function listing(s){ctx={tool:'list'};host.innerHTML='<div class="section-head"><h2>Operazioni di modifica</h2></div><p class="native-help">Seleziona un’operazione per vedere i riferimenti o modificarne la distanza.</p><div class="modify-operation-list">'+s.doc.operations.map(op=>'<button type="button" class="btn wide" data-mod-select="'+op.id+'">'+U.icon(op.type==='tangentArc'?'tangent':op.type==='freeArc'?'line':op.type)+'<span>'+esc(op.name)+'<small>'+esc(op.sources.map(s=>s.id).join(' · '))+'</small></span></button>').join('')+'</div>';}
  function refresh(s){const enabled=!s.runner&&s.doc.view.mode!=='render'&&(s.tool==='select'||tools.includes(s.tool)),op=enabled&&s.tool==='select'?operationFor(s):null,next=enabled?(tools.includes(s.tool)?'tool:'+s.tool+':'+s.doc.units:op?'op:'+op.id+':'+s.doc.units:!s.selected&&s.doc.operations?.length?'list':''):'';host.hidden=!next;document.querySelector('.right-panel').classList.toggle('modify-open',!!next);if(!next){if(key){ctx=null;preview=null;gesture=null;C.setReferenceHighlight();C.setSelectionBox();}key='';return;}if(key!==next||next.startsWith('op:')&&seenDoc!==s.doc&&!committing||next==='list'&&seenDoc!==s.doc){key=next;seenDoc=s.doc;if(next.startsWith('tool:')){const edit=s.doc.operations.find(op=>op.id===pendingEdit&&op.type===s.tool);pendingEdit=null;open(s.tool,edit);window.FormaWorkspaceUI?.reveal('right')}else if(op)property(op);else listing(s);}else if(next.startsWith('tool:')&&seenDoc!==s.doc&&!committing){seenDoc=s.doc;update();}}
+ function inspectOperation(id){
+  const op=state().doc.operations.find(op=>op.id===id);
+  if(!op)return;
+  selectOperation(op);
+  window.FormaWorkspaceUI?.reveal('right');
+ }
  function editOperation(id){
   const op=state().doc.operations.find(op=>op.id===id);
   if(!op||!tools.includes(op.type))return;
@@ -6127,7 +6170,7 @@ window.FormaModifyUI=(()=>{
   return false;
  }
  const canPickCurve=(ref,curve)=>!curve.patternId&&active()&&(ctx.pick==='limit'?pickableBoundary(ref):ctx.pick==='objects'&&supported(ref));
- refresh(state());A.redraw();return {refresh,editOperation,previewSVG,canPickSegment,canPickCurve,boundaryHint,pending:()=>!!(active()||ctx?.tool==='properties'&&ctx.dirty)};
+ refresh(state());A.redraw();return {refresh,inspectOperation,editOperation,previewSVG,canPickSegment,canPickCurve,boundaryHint,pending:()=>!!(active()||ctx?.tool==='properties'&&ctx.dirty)};
 })();
 
 /* Structured presence conditions, deliberately separate from dimensional constraints. */
