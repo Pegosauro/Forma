@@ -596,17 +596,20 @@ dialog::backdrop{background:#080d1499}
 </style>
 <style>
 .canvas-area{--sketch-active-pointer:var(--sketch-pick,crosshair)}
+.canvas-area[data-tool=select]{--sketch-active-pointer:var(--sketch-select,crosshair)}
 .canvas-area:is([data-tool=line],[data-tool=polyline],[data-tool=construction],[data-tool=circle],[data-tool=text],[data-cursor-mode=placement],.geometry-dragging,.dimension-dragging){
   --sketch-active-pointer:var(--sketch-cross,crosshair)
 }
 .canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing,
-.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is(.point-hit,.segment-hit,.dimension,.dimension text){cursor:var(--sketch-active-pointer)}
+.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is([data-point],.segment-hit,.dimension,.dimension text,[data-text],[data-relation],[data-shared-point]){cursor:var(--sketch-active-pointer)}
 .canvas-area:is(.geometry-dragging,.dimension-dragging):not(.panning){cursor:var(--sketch-active-pointer)}
 .operation-badge .icon{width:14px;height:14px}
 .cursor-options{display:grid;grid-template-columns:minmax(0,1fr) 102px;align-items:center;gap:14px}
 #options-grip-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
 .cursor-examples{display:grid;grid-template-columns:1fr 1fr;gap:4px;text-align:center;color:var(--muted);font-size:9px}
 .cursor-examples svg{display:block;width:49px;height:49px;border:1px solid var(--line);border-radius:4px;margin-bottom:4px}
+.cursor-examples>.cursor-selection-sample{grid-column:1/-1}
+#options-select-sample{width:100%;height:54px}
 @media(max-width:510px){.cursor-options .form-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 <style>
@@ -699,7 +702,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.27.1</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.27.2</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -1530,9 +1533,9 @@ window.FormaEngine = (() => {
       }
       return add(doc,{type,point});
     }
-    if(type==='midpoint'){if(points.length!==1||segments.length!==1)throw Error('Seleziona un punto e il segmento di riferimento con Ctrl + clic.');const s=doc.segments.find(s=>s.id===segments[0].id);if(!s||[s.a,s.b].includes(points[0].id))throw Error('Scegli un punto diverso dagli estremi del segmento di riferimento.');if(doc.constraints.some(k=>k.type==='midpoint'&&k.point===points[0].id&&k.reference===s.id))throw Error('Il vincolo punto medio è già presente.');doc.constraints=doc.constraints.filter(k=>!(k.type==='pointOnLine'&&k.point===points[0].id&&k.reference===s.id));return add(doc,{type:'midpoint',point:points[0].id,reference:s.id});}
+    if(type==='midpoint'){if(points.length!==1||segments.length!==1)throw Error('Seleziona un punto e il segmento di riferimento.');const s=doc.segments.find(s=>s.id===segments[0].id);if(!s||[s.a,s.b].includes(points[0].id))throw Error('Scegli un punto diverso dagli estremi del segmento di riferimento.');if(doc.constraints.some(k=>k.type==='midpoint'&&k.point===points[0].id&&k.reference===s.id))throw Error('Il vincolo punto medio è già presente.');doc.constraints=doc.constraints.filter(k=>!(k.type==='pointOnLine'&&k.point===points[0].id&&k.reference===s.id));return add(doc,{type:'midpoint',point:points[0].id,reference:s.id});}
     if(type==='pointOnLine'||type==='collinear'&&points.length){
-      if(points.length!==1||segments.length!==1)throw new Error('Seleziona un punto e un segmento con Ctrl + clic.');
+      if(points.length!==1||segments.length!==1)throw new Error('Seleziona un punto e un segmento.');
       const s=doc.segments.find(s=>s.id===segments[0].id);
       if(!s||[s.a,s.b].includes(points[0].id))throw new Error('Il punto è già un estremo del segmento.');
       return add(doc,{type:'pointOnLine',point:points[0].id,reference:s.id});
@@ -1552,12 +1555,12 @@ window.FormaEngine = (() => {
       if(!ids.size)throw new Error('Seleziona un punto o un segmento da fissare.');return add(doc,{type,points:[...ids],anchors:[...ids].map(id=>({...result.points[id]}))});
     }
     if(type==='coincident'){
-      if(points.length!==2)throw new Error('Seleziona due punti con Ctrl + clic.');if(points[0].id===points[1].id)throw new Error('Gli estremi condividono già lo stesso punto.');
+      if(points.length!==2)throw new Error('Seleziona due punti.');if(points[0].id===points[1].id)throw new Error('Gli estremi condividono già lo stesso punto.');
       const a=result.points[points[0].id],b=result.points[points[1].id];
       if(doc.segments.some(s=>[points[0].id,points[1].id].includes(s.a)&&[points[0].id,points[1].id].includes(s.b)))throw new Error('Il vincolo annullerebbe un segmento.');
       return add(doc,{type,points:points.map(p=>p.id)});
     }
-    if(segments.length!==2)throw new Error('Seleziona due segmenti con Ctrl + clic.');return E.constrain(doc,result,segments[0].id,type,segments[1].id);
+    if(segments.length!==2)throw new Error('Seleziona due segmenti.');return E.constrain(doc,result,segments[0].id,type,segments[1].id);
   };
   E.snapToOrigin=(doc,result,id)=>{
     const anchor=E.originConstraint(doc);
@@ -2736,7 +2739,9 @@ window.FormaPointer=(()=>{
     const {span,box}=normalize(value),pick=mode==='pick',size=pick?box+6:span;
     const middle=Math.floor(size/2),center=middle+.5;
     const lo=center-box/2,hi=center+box/2,edge=size-2;
-    const shape=pick?`M${lo} ${lo}H${hi}V${hi}H${lo}Z`:
+    const square=`M${lo} ${lo}H${hi}V${hi}H${lo}Z`;
+    const shape=pick?square:mode==='select'?
+      `M2 ${center}H${lo} M${hi} ${center}H${edge} M${center} 2V${lo} M${center} ${hi}V${edge} ${square}`:
       `M2 ${center}H${edge} M${center} 2V${edge}`;
     const glyph=`<path d="${shape}" fill="none" stroke="#101820" stroke-width="3"/><path d="${shape}" fill="none" stroke="#f7fbff" stroke-width="1"/>`;
     return {size,middle,glyph};
@@ -2991,6 +2996,7 @@ window.FormaCanvas = (()=>{
     const pointer=FormaPointer.get(),{gripSize}=pointer,pointerKey=pointer.span+':'+pointer.box;
     if(cursorKey!==pointerKey){
       cursorKey=pointerKey;
+      host.style.setProperty('--sketch-select',FormaPointer.css('select'));
       host.style.setProperty('--sketch-pick',FormaPointer.css('pick'));
       host.style.setProperty('--sketch-cross',FormaPointer.css('cross'));
     }
@@ -3850,7 +3856,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.27.1 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.27.2 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4476,7 +4482,7 @@ window.FormaUI = (()=>{
       if(layerItems.length)html+=propertyGroup('Proprietà comuni',layerPicker(doc,'selection-layer',layers.length===1?layers[0]:null,'Layer di segmenti e quote selezionati'));
       html+='<p class="property-help">I vincoli disponibili si applicano agli elementi selezionati. Per le proprietà individuali, scegli un solo elemento.</p><details class="property-advanced"><summary>Elementi selezionati</summary><p class="property-id-list">'+picks.map(p=>esc(p.id)).join(' · ')+'</p></details>';
     }else if(!selected){
-      html+='<div class="inspector-empty">'+icon('cursor')+'<b>Seleziona un elemento</b><p>Fai clic sul disegno per vedere e modificare le sue proprietà.</p><small>Ctrl + clic aggiunge elementi alla selezione.</small></div>';
+      html+='<div class="inspector-empty">'+icon('cursor')+'<b>Seleziona un elemento</b><p>Fai clic sul disegno per vedere e modificare le sue proprietà.</p><small>Clicca più elementi per selezionarli. Esc deseleziona tutto.</small></div>';
     }else{
       const record=doc[{segment:'segments',point:'points',dimension:'dimensions',constraint:'constraints',pattern:'patterns'}[selected.type]]?.find(x=>x.id===selected.id);
       if(record){
@@ -4493,7 +4499,7 @@ window.FormaUI = (()=>{
           if(arcCenter){
             html+=propertyGroup('Centro dell’arco · Coordinate calcolate',
               propertyMetric('X',pt.x,doc.units)+propertyMetric('Y',pt.y,doc.units)+
-              '<p class="property-help">Ctrl + clic su un altro punto per aggiungere un vincolo tra i due.</p>');
+              '<p class="property-help">Clicca un altro punto per aggiungere un vincolo tra i due.</p>');
           }else{
             html+=propertyGroup('Posizione · '+doc.units,['x','y'].map(axis=>'<label class="field coordinate-field"><span>Coordinata '+axis.toUpperCase()+'</span><input data-coordinate="'+axis+'" aria-label="Coordinata '+axis+'" value="'+esc(record[axis])+'" spellcheck="false"><small>Risultato: '+Number(pt[axis].toFixed(3))+' '+doc.units+'</small></label>').join(''));
             html+='<details class="property-advanced"><summary>Coordinate e formule</summary><p class="property-help">Usa un valore o una formula, ad esempio L+20 oppure P0.x+100. Il trascinamento rispetta quote e vincoli.</p></details>';
@@ -5005,6 +5011,7 @@ window.FormaPatternUI=(()=>{
         '<button type="submit" class="btn primary" id="pattern-apply">'+(old?'Salva ripetizione':'Crea ripetizione')+'</button></div></div></form>';
       for(const key of ['step','count','offset','angle','centerX','centerY'])bindFormula($(key),Object.values(editing.parameterIds||{}));
       pick=editing.objects.length?nextReference():'objects';
+      ctx.rememberTool('pattern');
       variationFields();sourceList();ctx.redraw();canvas.focus({preventScroll:true});
     }
     function save(ev){ev.preventDefault();try{
@@ -5298,6 +5305,7 @@ window.FormaOptionsUI=(()=>{
       '<div class="options-colors">'+Object.entries(labels).map(([key,label])=>'<label><span>'+label+'</span><input type="color" data-color-picker="'+key+'" aria-label="Scegli colore '+label+'" value="'+base.colors[key]+'"><input type="text" name="color_'+key+'" data-color-hex="'+key+'" aria-label="Codice colore '+label+'" value="'+base.colors[key]+'" pattern="#[a-fA-F0-9]{6}" maxlength="7" required spellcheck="false"></label>').join('')+'</div><p class="panel-note">Le copie delle ripetizioni sono gialle per impostazione predefinita. I colori personalizzati si applicano a Modifica. Le definizioni eccedenti mantengono il colore Ultradefinito. Render mantiene i colori dei layer e lo sfondo scuro.</p>'+ 
       '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div>'+
       '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['span','Ampiezza croce'],['box','Quadrato di selezione']])+'</div><div class="cursor-examples">'+
+        '<div class="cursor-selection-sample"><svg id="options-select-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima Seleziona elemento"></svg>Seleziona elemento</div>'+
         '<div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima della croce"></svg>Croce</div>'+
         '<div><svg id="options-pick-sample" viewBox="0 0 39 39" role="img" aria-label="Anteprima del quadrato"></svg>Selezione</div></div></div>'+
       '<h3>Vertici · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['gripSize','Lato del quadrato']])+'</div><svg id="options-grip-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del vertice"></svg></div></section>'+
@@ -5317,7 +5325,7 @@ window.FormaOptionsUI=(()=>{
       const grip=$('options-grip-sample');
       grip.style.background=colors.background;
       grip.innerHTML=`<path d="M 21 77 L 51 51 H 81" fill="none" stroke="${colors.under}" stroke-width="1.5"/><rect ${P.gripSquare(51,51,sizes.gripSize)} fill="${sketchAccent}" stroke="${sketchAccentLight}"/>`;
-      for(const [id,mode,side] of [['options-cursor-sample','cross',102],['options-pick-sample','pick',39]]){
+      for(const [id,mode,side] of [['options-select-sample','select',102],['options-cursor-sample','cross',102],['options-pick-sample','pick',39]]){
         const cursor=P.picture(sizes,mode),inset=side/2-cursor.middle-.5,sample=$(id);
         sample.style.background=colors.background;
         sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
@@ -5410,7 +5418,17 @@ window.FormaApp=(()=>{
   function boxItems(action,end){
     const seen=new Set();return [...action.base,...C.itemsInRect(action.start,end)].filter(item=>{const key=item.type+':'+item.id;if(seen.has(key))return false;seen.add(key);return true;});
   }
-  function setTool(tool){if((runner||state.doc.view.mode==='render')&&tool!=='pan')return;if(patternsUI?.active())patternsUI.close(false);clearSelectionBox();if(tool==='construction')state.doc.view.construction=true;state.tool=tool;draft=null;polyFirst=null;clearDimensionDraft();redraw();}
+  const repeatableTools=new Set(['line','polyline','construction','circle','dimension','pattern','chamfer','fillet','trim','extend','offset','mirror','rules','text']);
+  let lastTool=null;
+  function rememberTool(tool){if(repeatableTools.has(tool))lastTool=tool;}
+  function setTool(tool){
+    if((runner||state.doc.view.mode==='render')&&tool!=='pan')return;
+    if(patternsUI?.active())patternsUI.close(false);
+    clearSelectionBox();
+    if(tool==='construction')state.doc.view.construction=true;
+    rememberTool(tool);
+    state.tool=tool;draft=null;polyFirst=null;clearDimensionDraft();redraw();
+  }
   function history(back=true){if(patternsUI?.active())patternsUI.close(false);clearSelectionBox();const from=back?state.history:state.future,to=back?state.future:state.history;if(!from.length)return;to.push(E.clone(state.doc));state.doc=from.pop();state.pendingParams={};state.result=E.evaluate(state.doc);draft=null;polyFirst=null;clearDimensionDraft();clearError();persist();redraw();}
   function replaceDoc(doc){const result=E.settle(doc);if(patternsUI?.active())patternsUI.close(false);clearSelectionBox();clearDimensionDraft();state.history.push(E.clone(state.doc));state.future=[];state.doc=doc;state.pendingParams={};state.result=result;state.selected=null;draft=null;polyFirst=null;clearError();persist();redraw();C.fit(state.doc,state.result);}
   const dialogExpression=(source,self)=>E.expression(source,key=>{if(key===self)throw Error('Il parametro non può riferirsi a sé stesso.');const m=key.match(/^(.+)\.([xy])$/);if(m&&state.result.points[m[1]])return state.result.points[m[1]][m[2]];if(Object.hasOwn(state.result.params,key))return state.result.params[key];throw Error('Riferimento sconosciuto: '+key);});
@@ -5519,7 +5537,7 @@ window.FormaApp=(()=>{
     const items=state.selected?.items|| (state.selected?[state.selected]:[]),segments=items.filter(i=>i.type==='segment');
     if(segments.length===1&&!items.some(i=>i.type==='point')&&['perpendicular','parallel','equal','collinear'].includes(type)){
       const refs=state.doc.segments.filter(s=>s.id!==segments[0].id);if(!refs.length){U.toast('Disegna prima un secondo segmento.',true);return;}
-      U.modal(E.relationLabels[type],U.select('Secondo segmento','reference',refs.map(s=>[s.id,s.id+' · '+(s.name||'Segmento')]),refs[0].id)+'<p>Puoi anche selezionare direttamente due segmenti con Ctrl + clic, poi premere il vincolo.</p>',data=>apply(d=>E.addRelation(d,state.result,[segments[0],{type:'segment',id:data.reference}],type)));return;
+      U.modal(E.relationLabels[type],U.select('Secondo segmento','reference',refs.map(s=>[s.id,s.id+' · '+(s.name||'Segmento')]),refs[0].id)+'<p>Puoi selezionare entrambi i segmenti sul disegno e applicare il vincolo.</p>',data=>apply(d=>E.addRelation(d,state.result,[segments[0],{type:'segment',id:data.reference}],type)));return;
     }
     if(type==='midpoint'&&!(items.filter(i=>i.type==='point').length===1&&segments.length===1)){
       const point=items.find(i=>i.type==='point'),moving=segments[0]&&state.doc.segments.find(s=>s.id===segments[0].id),refs=state.doc.segments.filter(s=>s.id!==moving?.id&&(!point||s.a!==point.id&&s.b!==point.id));
@@ -5969,7 +5987,10 @@ window.FormaApp=(()=>{
       if(b.id==='convert-sketch')safely(()=>apply(d=>Object.assign(d,E.toSketch(d))));
       if(b.dataset.constraint){if(patternsUI?.active())patternsUI.close(false);constraint(b.dataset.constraint);}
       if(b.dataset.removeConstraint)safely(()=>apply(d=>E.removeConstraint(d,b.dataset.removeConstraint,state.result)));
-      if(b.dataset.tool)setTool(b.dataset.tool);
+      if(b.dataset.tool){
+        setTool(b.dataset.tool);
+        if(ev.detail>0&&b.classList.contains('tool'))$('canvas').focus({preventScroll:true});
+      }
       if(b.dataset.action){exportAction(b.dataset.action);$('export-menu').hidden=true;}
       if(b.dataset.panel){$('app').dataset.panel=$('app').dataset.panel===b.dataset.panel?'':b.dataset.panel;document.querySelectorAll('[data-panel]').forEach(el=>el.classList.toggle('active',el.dataset.panel===$('app').dataset.panel));}
       if(b.dataset.dimensionKind&&state.selected?.type==='dimension'){
@@ -6095,11 +6116,15 @@ window.FormaApp=(()=>{
       canvas.focus({preventScroll:true});canvas.setPointerCapture(ev.pointerId);
       if(state.doc.view.mode==='render'||state.tool==='pan'||ev.button===1){gesture={type:'pan',last:C.local(ev)};canvas.classList.add('panning');return;}
       if(['line','polyline','construction','dimension'].includes(state.tool)){gesture={type:'draw',pos:C.local(ev),hit:C.hit(ev)};return;}
-      const hit=C.hit(ev),additive=!!(ev.ctrlKey||ev.metaKey||ev.shiftKey);
-      if(!hit){gesture={type:'box',start:C.local(ev),moved:false,base:additive?(state.selected?.items||(state.selected?[{type:state.selected.type,id:state.selected.id}]:[])):[],additive};return;}
-      select(hit,additive);
-      if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.target.closest('[data-relation],[data-shared-point]'))return;
-      gesture=beginGeometryDrag(hit,C.local(ev));
+      const hit=C.hit(ev),modified=ev.ctrlKey||ev.metaKey||ev.shiftKey,pos=C.local(ev);
+      if(!hit){
+        const base=state.selected?.items||(state.selected?[state.selected]:[]);
+        gesture={type:'box',start:pos,moved:false,base,keepOnClick:modified};
+        return;
+      }
+      if(!modified&&!ev.target.closest('[data-relation],[data-shared-point]'))gesture=beginGeometryDrag(hit,pos);
+      if(gesture)gesture.hit=hit;
+      else select(hit,true);
     });
     canvas.addEventListener('pointermove',ev=>{
       if($('dialog').open)return;
@@ -6112,8 +6137,10 @@ window.FormaApp=(()=>{
         gesture.moved=true;C.setSelectionBox({start:gesture.start,end:pos,items:boxItems(gesture,pos)});return;
       }
       if(gesture?.type==='drag'){
-        if(Math.hypot(pos.x-gesture.start.x,pos.y-gesture.start.y)<3&&!gesture.moved)return;
-        canvas.classList.add('geometry-dragging');
+        if(!gesture.started){
+          if(Math.hypot(pos.x-gesture.start.x,pos.y-gesture.start.y)<3)return;
+          gesture.started=true;canvas.classList.add('geometry-dragging');
+        }
         try{
           const next=moveGeometryDrag(gesture,pt);
           state.doc=next.doc;state.result=next.result;gesture.moved=true;
@@ -6143,13 +6170,16 @@ window.FormaApp=(()=>{
       if(action.type==='box'){
         C.setSelectionBox();
         if(!cancel){
-          const end=C.local(ev),moved=action.moved||Math.hypot(end.x-action.start.x,end.y-action.start.y)>=4,items=moved?boxItems(action,end):action.base;
+          const end=C.local(ev),moved=action.moved||Math.hypot(end.x-action.start.x,end.y-action.start.y)>=4;
+          const items=moved?boxItems(action,end):action.keepOnClick?action.base:[];
           state.selected=items.length?{...items[items.length-1],items}:null;
         }redraw();return;
       }
       if(action.type==='drag'){
-        if(cancel){state.doc=action.original;state.result=E.evaluate(state.doc);}
-        else if(action.moved){state.history.push(action.original);state.future=[];persist();}redraw();
+        if(!cancel&&!action.started){select(action.hit,true);return;}
+        if(cancel&&action.moved){state.doc=action.original;state.result=E.evaluate(state.doc);}
+        else if(action.moved){state.history.push(action.original);state.future=[];persist();}
+        redraw();
       }
       if(action.type==='draw'&&!cancel&&Math.hypot(C.local(ev).x-action.pos.x,C.local(ev).y-action.pos.y)<8)handleDraw(ev,action.hit);
     }
@@ -6159,11 +6189,12 @@ window.FormaApp=(()=>{
       const typing=/INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)||$('dialog').open;
       if(ev.key==='Escape'){
         if(patternsUI?.active()){ev.preventDefault();patternsUI.close();return;}
-        if(gesture?.type==='drag'){ev.preventDefault();finish(ev,true);return;}
-        if(gesture?.type==='box'){ev.preventDefault();clearSelectionBox();redraw();return;}
+        if(gesture?.type==='drag'){ev.preventDefault();finish(ev,true);select(null);return;}
+        if(gesture?.type==='box'){ev.preventDefault();clearSelectionBox();select(null);return;}
         if(state.layerMenuOpen){state.layerMenuOpen=false;U.renderLayers(state);$('current-layer-toggle').focus();return;}
         if($('dialog').open)return;
         if(Object.keys(state.pendingParams).length||draftError){state.pendingParams={};clearError();redraw();return;}
+        if(state.tool==='select'&&state.selected){ev.preventDefault();select(null);return;}
         draft=null;polyFirst=null;if(!typing)setTool(runner?'pan':'select');else redraw();return;
       }
       if(ev.key==='Enter'&&typing&&!$('dialog').open){ev.preventDefault();if(ev.target.dataset.paramValue||ev.target.dataset.choiceValue)commitParameters(ev.target);else ev.target.dispatchEvent(new Event('change',{bubbles:true}));return;}
@@ -6176,10 +6207,19 @@ window.FormaApp=(()=>{
       if(runner||state.doc.view.mode==='render')return;
       const tools={v:'select',l:'line',c:'construction',d:'dimension',h:'pan',o:'circle',t:'text',r:'fillet',m:'chamfer'};if(tools[ev.key.toLowerCase()])setTool(tools[ev.key.toLowerCase()]);
       if(ev.key==='Delete'||ev.key==='Backspace'){ev.preventDefault();removeSelected();}
-      if(ev.key==='Enter'&&['line','construction'].includes(state.tool)&&draft){ev.preventDefault();draft=null;polyFirst=null;redraw();}
+      if(ev.key==='Enter'&&['line','polyline','construction'].includes(state.tool)&&draft){
+        ev.preventDefault();draft=null;polyFirst=null;redraw();return;
+      }
+      if(ev.key!=='Enter'||ev.defaultPrevented||ev.repeat||ev.ctrlKey||ev.metaKey||ev.altKey||ev.shiftKey)return;
+      if(state.tool!=='select'||gesture||!lastTool||state.layerMenuOpen||!$('export-menu').hidden||
+        Object.keys(state.pendingParams).length||draftError)return;
+      if(ev.target.isContentEditable||ev.target.closest?.('button,summary,a[href],[role="button"],[role="menuitem"],[role="tab"]'))return;
+      ev.preventDefault();
+      if(lastTool==='pattern')patternsUI.open();
+      else setTool(lastTool);
     });
   }
-  patternsUI=window.FormaPatternUI.init({state,apply,redraw,setTool});
+  patternsUI=window.FormaPatternUI.init({state,apply,redraw,setTool,rememberTool});
   setupEvents();redraw();requestAnimationFrame(()=>C.fit(state.doc,state.result));persist();
   return {getState:()=>E.clone({doc:state.doc,result:state.result,selected:state.selected,tool:state.tool}),apply,replaceDoc,select,exportAction,setTool,redraw,getLiveState:()=>state};
 })();
@@ -6701,7 +6741,7 @@ window.FormaModifyUI=(()=>{
  host.addEventListener('focusout',ev=>{if(ev.target.closest('[data-boundary-choice]')&&!ev.relatedTarget?.closest('[data-boundary-choice]')&&ctx)setHoverPlan(null);});
  canvas.addEventListener('pointerup',ev=>{if(navigating||ev.button===1){navigating=false;return}if(!active()||!gesture)return;ev.stopImmediatePropagation();const g=gesture;gesture=null;if(!boundaryTool(ctx.tool))C.setSelectionBox();try{if(g.moved&&ctx.pick==='objects'){const list=[...g.base,...C.itemsInRect(g.start,C.local(ev)).filter(supported)];ctx.sources=list.filter((s,i,a)=>a.findIndex(x=>x.type===s.type&&x.id===s.id)===i);update();}else if(!boundaryTool(ctx.tool)||Math.hypot(C.local(ev).x-g.start.x,C.local(ev).y-g.start.y)<8)pick(g.hit,C.local(ev));}catch(e){message(e.message,true)}},true);
  canvas.addEventListener('pointercancel',()=>{gesture=null;navigating=false;C.setSelectionBox();},true);
- document.addEventListener('keydown',ev=>{if(!ctx||$('dialog').open)return;if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();close();}else if(ev.key==='Enter'&&active()&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName)){ev.preventDefault();ev.stopImmediatePropagation();commit();}},true);
+ document.addEventListener('keydown',ev=>{if(!ctx||$('dialog').open)return;if(ev.key==='Escape'&&active()){ev.preventDefault();ev.stopImmediatePropagation();close();}else if(ev.key==='Enter'&&active()&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName)){ev.preventDefault();ev.stopImmediatePropagation();commit();}},true);
  function previewSVG({screen,scale}){if(ctx?.tool==='properties'){const op=state().doc.operations.find(o=>o.id===ctx.opId);if(op?.sourceEnds){const a=screen(state().result.points[op.sourceEnds.a]),b=screen(state().result.points[op.sourceEnds.b]);return '<g class="modify-theoretical" pointer-events="none"><line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="#93a7b9" opacity=".65" stroke-dasharray="3 5"/><text x="'+((a.x+b.x)/2)+'" y="'+((a.y+b.y)/2-12)+'" fill="#93a7b9" font-size="11" text-anchor="middle">Segmento teorico</text></g>';}}
   if(!active()||!boundaryTool(ctx.tool)&&!input('preview')?.checked)return '';const out=[],line=(a,b,color,dash='6 4',width=2)=>{const p=screen(a),q=screen(b);return '<line x1="'+p.x+'" y1="'+p.y+'" x2="'+q.x+'" y2="'+q.y+'" stroke="'+color+'" stroke-width="'+width+'" stroke-dasharray="'+dash+'"/>'};
   try{if(boundaryTool(ctx.tool)){
@@ -6794,11 +6834,14 @@ window.FormaDimensionUI=(()=>{
  field.addEventListener('input',()=>{field.removeAttribute('aria-invalid');error.textContent='';if(creating)FormaNativeUI.dimensionValue(field.value)});
  root.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){ev.preventDefault();commit();}if(ev.key==='Escape'){ev.preventDefault();if(creating)A.setTool('select');close()}});
  canvas.addEventListener('dblclick',ev=>{if(!enabled()||root.contains(ev.target))return;const q=rawHit(ev);if(!q)return;ev.preventDefault();ev.stopImmediatePropagation();open(q,C.world(C.local(ev)))},true);
- canvas.addEventListener('pointerdown',ev=>{if(root.contains(ev.target)||!enabled()||state().tool!=='select'||ev.button!==0||ev.ctrlKey||ev.shiftKey||ev.metaKey)return;const q=rawHit(ev);if(!q)return;if(lastTap&&lastTap.id===source(q)?.id&&Date.now()-lastTap.time<400&&Math.hypot(C.local(ev).x-lastTap.pos.x,C.local(ev).y-lastTap.pos.y)<6){lastTap=null;ev.preventDefault();ev.stopImmediatePropagation();open(q,C.world(C.local(ev)));return;}close();drag={q:E.clone(q),source:E.clone(source(q)),start:C.local(ev),world:C.world(C.local(ev)),moved:false};ev.preventDefault();ev.stopImmediatePropagation();canvas.setPointerCapture(ev.pointerId)},true);
+ canvas.addEventListener('pointerdown',ev=>{if(root.contains(ev.target)||!enabled()||state().tool!=='select'||ev.button!==0||ev.ctrlKey||ev.shiftKey||ev.metaKey)return;const q=rawHit(ev),item=q&&!q.patternId&&source(q);if(!item)return;if(lastTap&&lastTap.id===item.id&&Date.now()-lastTap.time<400&&Math.hypot(C.local(ev).x-lastTap.pos.x,C.local(ev).y-lastTap.pos.y)<6){lastTap=null;ev.preventDefault();ev.stopImmediatePropagation();open(q,C.world(C.local(ev)));return;}close();canvas.focus({preventScroll:true});drag={q:E.clone(q),source:E.clone(item),start:C.local(ev),world:C.world(C.local(ev)),moved:false};ev.preventDefault();ev.stopImmediatePropagation();canvas.setPointerCapture(ev.pointerId)},true);
  canvas.addEventListener('pointermove',ev=>{if(!drag){refresh();return;}ev.stopImmediatePropagation();const pos=C.local(ev);if(Math.hypot(pos.x-drag.start.x,pos.y-drag.start.y)<4&&!drag.moved)return;drag.moved=true;lastTap=null;canvas.classList.add('dimension-dragging');const world=C.world(pos),q=drag.q,base=drag.source,delta={x:world.x-drag.world.x,y:world.y-drag.world.y},next=E.clone(base);if(q.radial){const rotation=q.patternRotation||0,c=Math.cos(-rotation),s=Math.sin(-rotation);next.radialShift={x:(base.radialShift?.x||0)+delta.x*c-delta.y*s,y:(base.radialShift?.y||0)+delta.x*s+delta.y*c};}else if(q.mode==='angle'){const v=state().result.points[q.vertex];next.offset=Math.max(1/C.getCamera().scale,base.offset+Math.hypot(world.x-v.x,world.y-v.y)-Math.hypot(drag.world.x-v.x,drag.world.y-v.y));}else{const angle=q.mode==='horizontal'?0:q.mode==='vertical'?-Math.PI/2:Math.atan2(q.q.y-q.p.y,q.q.x-q.p.x);next.offset=base.offset-delta.x*Math.sin(angle)+delta.y*Math.cos(angle);}drag.next=next;const doc=E.clone(state().doc);Object.assign(doc.dimensions.find(x=>x.id===base.id),next);const result=E.evaluate(doc);C.render(doc,result,{type:'dimension',id:q.id},null,'select')},true);
- function finish(ev,cancel=false){if(!drag)return;ev.stopImmediatePropagation();const g=drag;drag=null;canvas.classList.remove('dimension-dragging');if(g.moved&&!cancel)A.apply(d=>Object.assign(d.dimensions.find(x=>x.id===g.source.id),g.next));else{if(!cancel)lastTap={id:g.source.id,time:Date.now(),pos:C.local(ev)};A.select({type:'dimension',id:g.source.id});A.redraw()}}
+ function finish(ev,cancel=false){if(!drag)return;ev.stopImmediatePropagation();const g=drag;drag=null;canvas.classList.remove('dimension-dragging');if(g.moved&&!cancel)A.apply(d=>Object.assign(d.dimensions.find(x=>x.id===g.source.id),g.next));else if(cancel)A.redraw();else{
+  lastTap={id:g.source.id,time:Date.now(),pos:C.local(ev)};
+  A.select({type:'dimension',id:g.source.id},true);
+ }}
  canvas.addEventListener('pointerup',ev=>finish(ev),true);canvas.addEventListener('pointercancel',ev=>finish(ev,true),true);
- document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&drag){ev.preventDefault();ev.stopImmediatePropagation();drag=null;canvas.classList.remove('dimension-dragging');A.redraw()}else if(creating&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName)&&/^[0-9.,+\-]$/.test(ev.key)){ev.preventDefault();ev.stopImmediatePropagation();if(field.readOnly){U.toast('Quota pilotata: modifica le quote che ne determinano il valore.');return;}field.focus();field.value=ev.key===','?'.':ev.key;FormaNativeUI.dimensionValue(field.value)}},true);
+ document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&drag){ev.preventDefault();ev.stopImmediatePropagation();drag=null;canvas.classList.remove('dimension-dragging');A.select(null)}else if(creating&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName)&&/^[0-9.,+\-]$/.test(ev.key)){ev.preventDefault();ev.stopImmediatePropagation();if(field.readOnly){U.toast('Quota pilotata: modifica le quote che ne determinano il valore.');return;}field.focus();field.value=ev.key===','?'.':ev.key;FormaNativeUI.dimensionValue(field.value)}},true);
  return {refresh,focusCreation:()=>{refresh();if(creating){field.focus();field.select();}},pending:()=>!!edit};
 })();
 </script>
