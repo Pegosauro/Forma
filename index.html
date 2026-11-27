@@ -574,7 +574,7 @@ dialog::backdrop{background:#080d1499}
 /* Presence rules and intentional instance gaps. */
 [data-rule-inactive="true"]{opacity:.25;stroke-dasharray:4 5}.rules-open>.panel-section:not(#rules-panel):not(.conflict-panel):not(.redundant-panel){display:none}#rules-panel{overflow:auto;min-height:0}#rules-panel .field{margin:12px 0}#rules-panel .native-footer{display:flex;gap:8px}#rules-panel .native-footer .btn{flex:1}.rule-scope{border-top:1px solid var(--line);padding-top:12px;margin-top:18px}.rule-condition{padding:12px;border:1px solid var(--line);border-radius:4px;margin:12px 0}.rule-row-head{display:flex;align-items:center;justify-content:space-between;font-size:12px}.rule-comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px}.rule-list{margin-top:16px}.rule-list-item{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);padding:10px 0}.rule-list-main{min-width:0;flex:1;text-align:left;background:none;border:0;padding:5px}.rule-list-main b{display:block;overflow-wrap:anywhere}.rule-list-main small{display:block;margin:5px 0;color:var(--muted)}.rule-state{display:inline-block;padding:3px 6px;font-size:10px;border:1px solid var(--line);border-radius:3px}.rule-state.active{color:#8cd7ba}.rule-state.inactive{color:#e4ad79}.rule-state.disabled{color:var(--muted)}.rule-current{padding:10px;border:1px solid var(--line);background:#78b9ff0d;font-size:12px;line-height:1.5}.pattern-skips{display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow:auto;padding:8px 0}.pattern-skips small{flex-basis:100%;color:var(--muted);line-height:1.5}.instance-chip{width:34px;height:32px;border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:3px;font-size:12px}.instance-chip.excluded{color:#83aaff!important;border-color:#83aaff!important;background:#83aaff12!important;text-decoration:line-through}.instance-chip:disabled{opacity:.4;cursor:default}.instance-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.rule-list-main:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.canvas-area[data-tool=rules]{cursor:crosshair}
 @media(prefers-reduced-motion:reduce){.pattern-instance-control{transition:none}}
-.dimension-inline{position:absolute;z-index:18;width:260px;padding:12px;background:var(--input);border:1px solid var(--accent);border-radius:5px;box-shadow:0 6px 24px #0006;cursor:default}.dimension-inline>label{display:block;font-size:12px;font-weight:600;margin-bottom:8px;color:var(--accent)}.dimension-inline-row{display:flex;align-items:center;gap:6px}.dimension-inline input{width:100%;min-width:0;background:var(--panel);font-variant-numeric:tabular-nums}.dimension-inline button{width:28px;height:32px;flex-shrink:0;display:grid;place-items:center}.dimension-inline small{display:block;margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)}#dimension-inline-error{color:var(--danger)}#dimension-inline-error:empty{display:none}.dimension-dragging{cursor:grabbing!important}.dimension text{cursor:grab}
+.dimension-inline{position:absolute;z-index:18;width:260px;padding:12px;background:var(--input);border:1px solid var(--accent);border-radius:5px;box-shadow:0 6px 24px #0006;cursor:default}.dimension-inline>label{display:block;font-size:12px;font-weight:600;margin-bottom:8px;color:var(--accent)}.dimension-inline-row{display:flex;align-items:center;gap:6px}.dimension-inline input{width:100%;min-width:0;background:var(--panel);font-variant-numeric:tabular-nums}.dimension-inline button{width:28px;height:32px;flex-shrink:0;display:grid;place-items:center}.dimension-inline small{display:block;margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)}#dimension-inline-error{color:var(--danger)}#dimension-inline-error:empty{display:none}.dimension text{cursor:grab}
 .pattern-variation-row{padding:10px;margin:10px 0;border:1px solid var(--line);border-radius:4px}.pattern-variation-row .field{margin:8px 0}.pattern-variation-row .subtle-action{color:var(--danger);font-size:11px}.pattern-variation-row input{font-family:Consolas,monospace;font-size:12px}.pattern-variation-row select{max-width:100%}
 .dimension-inline .dimension-inline-name-label{font-size:11px;color:var(--muted);margin:0 0 5px}.dimension-inline #dimension-inline-name{width:100%;margin-bottom:10px}.dimension-inline-name-label+input{font-family:Consolas,monospace}
 
@@ -595,11 +595,18 @@ dialog::backdrop{background:#080d1499}
 .operation-badge .icon [stroke]:not([stroke="none"]){stroke:currentColor}
 </style>
 <style>
+.canvas-area{--sketch-active-pointer:var(--sketch-pick,crosshair)}
+.canvas-area:is([data-tool=line],[data-tool=polyline],[data-tool=construction],[data-tool=circle],[data-tool=text],[data-cursor-mode=placement],.geometry-dragging,.dimension-dragging){
+  --sketch-active-pointer:var(--sketch-cross,crosshair)
+}
 .canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing,
-.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is(.point-hit,.segment-hit,.dimension,.dimension text){cursor:var(--sketch-pointer,crosshair)}
+.canvas-area[data-view-mode=edit]:not([data-tool=pan]):not(.panning) > .drawing :is(.point-hit,.segment-hit,.dimension,.dimension text){cursor:var(--sketch-active-pointer)}
+.canvas-area:is(.geometry-dragging,.dimension-dragging):not(.panning){cursor:var(--sketch-active-pointer)}
 .operation-badge .icon{width:14px;height:14px}
 .cursor-options{display:grid;grid-template-columns:minmax(0,1fr) 102px;align-items:center;gap:14px}
-#options-cursor-sample,#options-grip-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
+#options-grip-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
+.cursor-examples{display:grid;grid-template-columns:1fr 1fr;gap:4px;text-align:center;color:var(--muted);font-size:9px}
+.cursor-examples svg{display:block;width:49px;height:49px;border:1px solid var(--line);border-radius:4px;margin-bottom:4px}
 @media(max-width:510px){.cursor-options .form-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 <style>
@@ -692,7 +699,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.27.0</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.27.1</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -2725,17 +2732,19 @@ window.FormaPointer=(()=>{
     current=normalize(value);
     try{localStorage.setItem(storageKey,JSON.stringify(current));}catch{}
   }
-  function picture(value){
-    const {span,box}=normalize(value),middle=Math.floor(span/2),center=middle+.5;
-    const lo=center-box/2,hi=center+box/2,edge=span-2;
-    const shape=`M2 ${center}H${lo} M${hi} ${center}H${edge} M${center} 2V${lo} M${center} ${hi}V${edge} M${lo} ${lo}H${hi}V${hi}H${lo}Z`;
+  function picture(value,mode){
+    const {span,box}=normalize(value),pick=mode==='pick',size=pick?box+6:span;
+    const middle=Math.floor(size/2),center=middle+.5;
+    const lo=center-box/2,hi=center+box/2,edge=size-2;
+    const shape=pick?`M${lo} ${lo}H${hi}V${hi}H${lo}Z`:
+      `M2 ${center}H${edge} M${center} 2V${edge}`;
     const glyph=`<path d="${shape}" fill="none" stroke="#101820" stroke-width="3"/><path d="${shape}" fill="none" stroke="#f7fbff" stroke-width="1"/>`;
-    return {span,middle,glyph};
+    return {size,middle,glyph};
   }
-  function css(){
-    const {span,middle,glyph}=picture(current);
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${span}" height="${span}" viewBox="0 0 ${span} ${span}">${glyph}</svg>`;
-    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${middle} ${middle}, crosshair`;
+  function css(mode){
+    const {size,middle,glyph}=picture(current,mode);
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${glyph}</svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${middle} ${middle}, ${mode==='pick'?'default':'crosshair'}`;
   }
   function gripSquare(x,y,size){
     return `x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}"`;
@@ -2980,7 +2989,11 @@ window.FormaCanvas = (()=>{
     ({doc,result,selected,draft,tool}=last);
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
     const pointer=FormaPointer.get(),{gripSize}=pointer,pointerKey=pointer.span+':'+pointer.box;
-    if(cursorKey!==pointerKey){cursorKey=pointerKey;host.style.setProperty('--sketch-pointer',FormaPointer.css());}
+    if(cursorKey!==pointerKey){
+      cursorKey=pointerKey;
+      host.style.setProperty('--sketch-pick',FormaPointer.css('pick'));
+      host.style.setProperty('--sketch-cross',FormaPointer.css('cross'));
+    }
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
     const marks=preview?null:boundaryMarks(doc);
@@ -3208,7 +3221,9 @@ window.FormaCanvas = (()=>{
     if(!preview)content.push(window.FormaNativeUI?.previewSVG({screen,scale:camera.scale})||'');
     if(!preview)content.push(window.FormaModifyUI?.previewSVG({screen,scale:camera.scale})||'');
     svg.innerHTML=content.join('');
-    host.dataset.tool=preview?'pan':tool;host.dataset.viewMode=preview?'render':'edit';
+    const canvasTool=preview?'pan':tool;
+    if(host.dataset.tool!==canvasTool)delete host.dataset.cursorMode;
+    host.dataset.tool=canvasTool;host.dataset.viewMode=preview?'render':'edit';
     document.getElementById('zoom-value').textContent=Math.round(camera.scale*100)+'%';
   }
   function operationBadges(doc,result,occupied){
@@ -3300,7 +3315,11 @@ window.FormaCanvas = (()=>{
   function setInteraction(dimensionDraft=null,hover=null){last.dimensionDraft=dimensionDraft;last.hover=hover;render();}
   function setSelectionBox(box=null){last.selectionBox=box;render();}
   function setPatternPreview(info=null){last.patternPreview=info;render();}
-  return {setReferenceHighlight,focusItems,init,render,fit,zoom,pan,snap,tangentReference,nearestPoint,screen,world,local,hit,setDraft,setInteraction,itemsInRect,setSelectionBox,setPatternPreview,getCamera:()=>({...camera}),getSize:()=>({width,height})};
+  function setCursorMode(mode){
+    if(mode)host.dataset.cursorMode=mode;
+    else if(host.dataset.cursorMode)delete host.dataset.cursorMode;
+  }
+  return {setReferenceHighlight,focusItems,init,render,fit,zoom,pan,snap,tangentReference,nearestPoint,screen,world,local,hit,setDraft,setInteraction,itemsInRect,setSelectionBox,setPatternPreview,setCursorMode,getCamera:()=>({...camera}),getSize:()=>({width,height})};
 })();
 
 window.FormaExport = (()=>{
@@ -3831,7 +3850,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.27.0 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.27.1 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4856,6 +4875,7 @@ window.FormaPatternUI=(()=>{
       host.querySelectorAll('[data-pattern-setting]').forEach(b=>b.setAttribute('aria-pressed',String($(b.dataset.patternSetting).value===b.dataset.value)));
       host.querySelectorAll('[data-pattern-flip]').forEach(b=>b.setAttribute('aria-pressed',String($(b.dataset.patternFlip).checked)));
       host.querySelectorAll('[data-pattern-pick]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.patternPick===pick)));
+      C.setCursorMode(pick==='center'?'placement':null);
       const hints={center:'Clicca un punto o una posizione sul disegno.',centerA:'Clicca il primo segmento.',centerB:'Clicca il secondo segmento non parallelo.',
         objects:p.objects.length?'Aggiungi altri oggetti o premi Invio per continuare.':'Clicca gli oggetti o usa un riquadro. Ctrl o Shift aggiunge.',direction:'Clicca il segmento di direzione.',target:'Clicca il punto o il segmento limite.',anchor:'Clicca un riferimento sugli oggetti originali.'};
       host.querySelector('#pattern-pick-hint').textContent=pick?.startsWith('guide:')?'Clicca la guida per '+pick.slice(6)+'.':
@@ -5179,6 +5199,7 @@ window.FormaPatternUI=(()=>{
       if(!candidates.length)return;
       const idx=candidates.findIndex(item=>sameRef(item,keyboardRef)),forward=ev.key==='ArrowRight'||ev.key==='ArrowDown';
       keyboardRef=candidates[idx<0?(forward?0:candidates.length-1):(idx+candidates.length+(forward?1:-1))%candidates.length];
+      if(pick==='center')C.setCursorMode('reference');
       highlight();
       host.querySelector('#pattern-pick-hint').textContent=titleFor(keyboardRef)+' · Invio seleziona';
     });
@@ -5218,7 +5239,11 @@ window.FormaPatternUI=(()=>{
       if(box&&!box.instance&&pick==='objects'){
         box.end=C.local(ev);box.moved=Math.hypot(box.end.x-box.start.x,box.end.y-box.start.y)>4;
         if(box.moved)C.setSelectionBox({start:box.start,end:box.end,items:C.itemsInRect(box.start,box.end).filter(supported)});
-      }else if(['target','anchor','center'].includes(pick))C.setInteraction(null,C.nearestPoint(C.local(ev),true));
+      }else if(['target','anchor','center'].includes(pick)){
+        const near=C.nearestPoint(C.local(ev),true);
+        if(pick==='center')C.setCursorMode(near?'reference':'placement');
+        C.setInteraction(null,near);
+      }
       return true;
     }
     function pointerUp(ev,cancel=false){
@@ -5272,7 +5297,9 @@ window.FormaOptionsUI=(()=>{
       '<section id="options-panel-appearance" role="tabpanel" aria-labelledby="options-tab-appearance">'+U.select('Colori della vista Modifica','palette',[['classic','Classico scuro'],['contrast','Contrasto elevato'],['light','Chiaro'],['custom','Personalizzati']],base.palette)+
       '<div class="options-colors">'+Object.entries(labels).map(([key,label])=>'<label><span>'+label+'</span><input type="color" data-color-picker="'+key+'" aria-label="Scegli colore '+label+'" value="'+base.colors[key]+'"><input type="text" name="color_'+key+'" data-color-hex="'+key+'" aria-label="Codice colore '+label+'" value="'+base.colors[key]+'" pattern="#[a-fA-F0-9]{6}" maxlength="7" required spellcheck="false"></label>').join('')+'</div><p class="panel-note">Le copie delle ripetizioni sono gialle per impostazione predefinita. I colori personalizzati si applicano a Modifica. Le definizioni eccedenti mantengono il colore Ultradefinito. Render mantiene i colori dei layer e lo sfondo scuro.</p>'+ 
       '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div>'+
-      '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['span','Ampiezza croce'],['box','Quadrato centrale']])+'</div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del puntatore"></svg></div>'+
+      '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['span','Ampiezza croce'],['box','Quadrato di selezione']])+'</div><div class="cursor-examples">'+
+        '<div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima della croce"></svg>Croce</div>'+
+        '<div><svg id="options-pick-sample" viewBox="0 0 39 39" role="img" aria-label="Anteprima del quadrato"></svg>Selezione</div></div></div>'+
       '<h3>Vertici · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['gripSize','Lato del quadrato']])+'</div><svg id="options-grip-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del vertice"></svg></div></section>'+
       '<section id="options-panel-dimensions" role="tabpanel" aria-labelledby="options-tab-dimensions" hidden><h3>Dimensioni sullo schermo · pixel</h3><div class="form-grid">'+number('Altezza testo','editor_textHeight',base.editor.textHeight,6,60,1)+number('Grandezza frecce','editor_arrowSize',base.editor.arrowSize,2,40,1)+'</div><h3>Formato · editor e disegno esportato</h3><div class="form-grid">'+number('Cifre decimali','decimals',base.format.decimals,0,8,1)+U.select('Contenuto generale','content',contentChoices,base.format.content)+'</div><div class="form-grid">'+U.select('Contenuto quote modificabili','inputContent',typedChoices,base.format.inputContent)+U.select('Contenuto quote fisse','fixedContent',typedChoices,base.format.fixedContent)+'</div><label class="check-line"> <input type="checkbox" name="trimZeros" '+(base.format.trimZeros?'checked':'')+'>Nascondi gli zeri decimali finali</label><label class="check-line"><input type="checkbox" name="showUnits" '+(base.format.showUnits?'checked':'')+'>Mostra unità mm / cm nelle quote</label><p class="panel-note">I contenuti separati per fisse e modificabili valgono anche per DXF e AutoLISP. Le altre quote usano il contenuto generale. La precisione dei calcoli resta invariata. Se manca un nome parametro, viene mostrato il valore.</p></section>'+
       '<section id="options-panel-cad" role="tabpanel" aria-labelledby="options-tab-cad" hidden><h3>Dimensioni nel disegno CAD · '+doc.units+'</h3><label class="check-line"><input type="checkbox" name="cad_automatic" '+(base.cad.automatic?'checked':'')+'>Dimensioni automatiche, proporzionali al disegno</label><div id="options-cad-manual" class="form-grid">'+number('Altezza testo · '+doc.units,'cad_textHeight',base.cad.textHeight,.001,1e6)+number('Grandezza frecce · '+doc.units,'cad_arrowSize',base.cad.arrowSize,.001,1e6)+'</div><p class="panel-note">Le quote rimangono vere quote AutoCAD. Testo e frecce CAD sono indipendenti dallo zoom e dalle dimensioni sullo schermo. Il formato si sceglie nella scheda Quote.</p></section>'+
@@ -5287,12 +5314,14 @@ window.FormaOptionsUI=(()=>{
     const update=()=>{
       const colors=Object.fromEntries(Object.keys(labels).map(k=>[k,/^#[a-f0-9]{6}$/i.test(field('color_'+k).value)?field('color_'+k).value:base.colors[k]]));
       const sizes=P.normalize(Object.fromEntries(Object.keys(P.limits).map(key=>[key,field('cursor_'+key).value])));
-      const cursor=P.picture(sizes),grip=$('options-grip-sample');
+      const grip=$('options-grip-sample');
       grip.style.background=colors.background;
       grip.innerHTML=`<path d="M 21 77 L 51 51 H 81" fill="none" stroke="${colors.under}" stroke-width="1.5"/><rect ${P.gripSquare(51,51,sizes.gripSize)} fill="${sketchAccent}" stroke="${sketchAccentLight}"/>`;
-      const inset=51-cursor.middle-.5,sample=$('options-cursor-sample');
-      sample.style.background=colors.background;
-      sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
+      for(const [id,mode,side] of [['options-cursor-sample','cross',102],['options-pick-sample','pick',39]]){
+        const cursor=P.picture(sizes,mode),inset=side/2-cursor.middle-.5,sample=$(id);
+        sample.style.background=colors.background;
+        sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
+      }
       const auto=field('cad_automatic').checked;$('options-cad-manual').hidden=auto;for(const el of $('options-cad-manual').querySelectorAll('input'))el.disabled=auto;
       const size=Math.max(6,Math.min(60,Number(field('editor_textHeight').value)||11)),arrow=Math.max(2,Math.min(20,Number(field('editor_arrowSize').value)||5)),dec=Math.max(0,Math.min(8,Number(field('decimals').value)||0));
       const label=(key,name,n)=>{let content=field(key).value;if(content==='inherit')content=field('content').value;let number=n.toFixed(dec);if(field('trimZeros').checked&&number.includes('.'))number=number.replace(/0+$/,'').replace(/\.$/,'');return content==='name'?name:(content==='both'?name+' = ':'')+number+(field('showUnits').checked?' '+doc.units:'');};
@@ -6084,6 +6113,7 @@ window.FormaApp=(()=>{
       }
       if(gesture?.type==='drag'){
         if(Math.hypot(pos.x-gesture.start.x,pos.y-gesture.start.y)<3&&!gesture.moved)return;
+        canvas.classList.add('geometry-dragging');
         try{
           const next=moveGeometryDrag(gesture,pt);
           state.doc=next.doc;state.result=next.result;gesture.moved=true;
@@ -6109,7 +6139,7 @@ window.FormaApp=(()=>{
     canvas.addEventListener('pointerleave',()=>{if(!$('dialog').open)C.setInteraction(dimensionDraft);});
     function finish(ev,cancel=false){
       if(patternsUI?.pointerUp(ev,cancel))return;
-      const action=gesture;gesture=null;canvas.classList.remove('panning');if(!action)return;
+      const action=gesture;gesture=null;canvas.classList.remove('panning','geometry-dragging');if(!action)return;
       if(action.type==='box'){
         C.setSelectionBox();
         if(!cancel){
@@ -6124,10 +6154,12 @@ window.FormaApp=(()=>{
       if(action.type==='draw'&&!cancel&&Math.hypot(C.local(ev).x-action.pos.x,C.local(ev).y-action.pos.y)<8)handleDraw(ev,action.hit);
     }
     canvas.addEventListener('pointerup',ev=>finish(ev));canvas.addEventListener('pointercancel',ev=>finish(ev,true));
+    canvas.addEventListener('lostpointercapture',ev=>{if(gesture?.type==='drag')finish(ev,true);});
     document.addEventListener('keydown',ev=>{
       const typing=/INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)||$('dialog').open;
       if(ev.key==='Escape'){
         if(patternsUI?.active()){ev.preventDefault();patternsUI.close();return;}
+        if(gesture?.type==='drag'){ev.preventDefault();finish(ev,true);return;}
         if(gesture?.type==='box'){ev.preventDefault();clearSelectionBox();redraw();return;}
         if(state.layerMenuOpen){state.layerMenuOpen=false;U.renderLayers(state);$('current-layer-toggle').focus();return;}
         if($('dialog').open)return;
@@ -6274,7 +6306,10 @@ window.FormaNativeUI=(()=>{
   const layer=select.value==='__current__'?current:doc.layers.find(l=>l.id===select.value);
   if($('native-layer-note'))$('native-layer-note').textContent=layer?(select.value==='__current__'?'Segue il layer corrente: ':'Assegnazione esplicita: ')+layer.name:'';
  }
- function updatePhase(){if(!context)return;let phase=1;if(context.tool==='circle')phase=context.radiusPicked&&context.center?3:context.center?2:1;else if(context.tool==='dimension')phase=context.placement?3:cache?2:1;else if(['chamfer','fillet'].includes(context.tool))phase=context.refs.length===2?3:1;else if(context.tool==='text')phase=context.position?3:1;panel.querySelectorAll('[data-phase]').forEach(el=>{const n=Number(el.dataset.phase);el.dataset.complete=String(n<phase);if(n===phase)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current')});}
+ function updatePhase(){if(!context)return;let phase=1;if(context.tool==='circle')phase=context.radiusPicked&&context.center?3:context.center?2:1;else if(context.tool==='dimension'){
+   phase=context.placement?3:cache?2:1;
+   C.setCursorMode(cache?'placement':null);
+  }else if(['chamfer','fillet'].includes(context.tool))phase=context.refs.length===2?3:1;else if(context.tool==='text')phase=context.position?3:1;panel.querySelectorAll('[data-phase]').forEach(el=>{const n=Number(el.dataset.phase);el.dataset.complete=String(n<phase);if(n===phase)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current')});}
  function focusMeasure(name){const el=input(name);if(el){el.focus({preventScroll:true});el.select?.()}}
  function syncKind(){const kind=get('kind')||context.measureKind||'';const arc=!!cache?.arc;
   if(context.tool==='dimension'&&input('kind'))input('kind').disabled=arc;
@@ -6361,7 +6396,13 @@ window.FormaNativeUI=(()=>{
  canvas.addEventListener('pointerdown',ev=>{if(ev.target.closest('.dimension-inline'))return;if(ev.button===1){navigating=true;return}if(ev.target===inline){ev.stopImmediatePropagation();return}if(!interactive()||ev.button!==0)return;ev.preventDefault();ev.stopImmediatePropagation();down=C.local(ev)},true);
  canvas.addEventListener('pointerup',ev=>{if(ev.target.closest('.dimension-inline'))return;if(navigating||ev.button===1){navigating=false;return}if(!interactive()||ev.button!==0)return;ev.stopImmediatePropagation();if(down&&Math.hypot(C.local(ev).x-down.x,C.local(ev).y-down.y)<8)try{pick(ev)}catch(e){error(e)}down=null;window.FormaDimensionUI?.refresh();window.FormaWorkspaceUI?.refreshExport()},true);
  canvas.addEventListener('pointercancel',()=>{navigating=false;down=null},true);
- canvas.addEventListener('pointermove',ev=>{if(ev.target.closest('.dimension-inline'))return;if(navigating||(ev.buttons&4)||!interactive())return;ev.stopImmediatePropagation();hover=C.snap(C.local(ev));const w=C.world(C.local(ev));$('coordinates').textContent='X '+w.x.toFixed(2)+'   Y '+w.y.toFixed(2);if(context.tool==='circle'&&context.center&&!context.radiusPicked&&!context.manual.has('value')){input('value').value=fmt(Math.hypot(hover.x-context.center.x,hover.y-context.center.y)*(get('radial')==='diameter'?2:1));try{context.lastValidRadius=N.val(get('value'),state().result)/(get('radial')==='diameter'?2:1)}catch{}}C.setInteraction(null,hover.id||hover.segment?hover:null)},true);
+ canvas.addEventListener('pointermove',ev=>{if(ev.target.closest('.dimension-inline'))return;if(navigating||(ev.buttons&4)||!interactive())return;ev.stopImmediatePropagation();
+  const pos=C.local(ev);
+  if(context.tool==='dimension'&&cache){
+   const hit=C.hit(ev);
+   C.setCursorMode(C.nearestPoint(pos,true)||['point','segment','circle','arc'].includes(hit?.type)?'reference':'placement');
+  }
+  hover=C.snap(pos);const w=C.world(pos);$('coordinates').textContent='X '+w.x.toFixed(2)+'   Y '+w.y.toFixed(2);if(context.tool==='circle'&&context.center&&!context.radiusPicked&&!context.manual.has('value')){input('value').value=fmt(Math.hypot(hover.x-context.center.x,hover.y-context.center.y)*(get('radial')==='diameter'?2:1));try{context.lastValidRadius=N.val(get('value'),state().result)/(get('radial')==='diameter'?2:1)}catch{}}C.setInteraction(null,hover.id||hover.segment?hover:null)},true);
  canvas.addEventListener('dblclick',ev=>{if(state().doc.view.mode==='render')return;const item=C.hit(ev);if(item?.type==='text'){A.select(item);openInline(state().result.texts.find(t=>t.id===item.id).p,state().doc.texts.find(t=>t.id===item.id));ev.stopImmediatePropagation()}},true);
  document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&context&&!$('dialog').open){closeInline();context=null;key='';A.setTool('select');return}if(ev.key==='Enter'&&interactive()&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(ev.target.tagName)){ev.preventDefault();ev.stopImmediatePropagation();commit()}},true);
  function previewSVG({screen,scale}){if(!context||context.tool==='properties')return '';const out=[],color=context.previewInvalid?E.getOptions(state().doc).colors.over:'#7db9ff',line=(a,b,dash=true)=>{const p=screen(a),q=screen(b);return `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" stroke="${color}" stroke-width="2" ${dash?'stroke-dasharray="6 4"':''}/>`};
