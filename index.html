@@ -606,7 +606,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.5</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.6</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -2627,10 +2627,10 @@ const pointOnLinePath='M -6 0 H -2 M 2 0 H 6 M 0 -2 V 2';
 const constraintGlyphs={tangent:'M -6 4 H 6 M 4 0 A 4 4 0 1 0 -4 0 A 4 4 0 1 0 4 0',origin:'M -6 0 H -3 M 3 0 H 6 M 0 -6 V -3 M 0 3 V 6 M 3 0 A 3 3 0 1 0 -3 0 A 3 3 0 1 0 3 0',horizontal:'M -5 0 H 5',vertical:'M 0 -5 V 5',perpendicular:'M -4 -5 V 4 H 5',parallel:'M -5 4 1 -4 M -1 4 5 -4',equal:'M -5 -2 H 5 M -5 2 H 5',coincident:coincidentPath,fixed:'M -4 0 H 4 V 5 H -4 Z M -2 0 V -3 A 2 2 0 0 1 2 -3 V 0',collinear:'M -6 0 H -1 M 1 0 H 6 M -4 -2 H -1 M 1 2 H 4',pointOnLine:pointOnLinePath,sameX:'M 0 -5 V 5 M -3 -5 H 3 M -3 5 H 3',length:'M -5 -4 V 4 M 5 -4 V 4 M -5 0 H 5',midpoint:'M -5 4 0 -5 5 4 Z'};
 window.FormaPointer=(()=>{
   const limits={span:{min:25,max:95,initial:39},box:{min:5,max:19,initial:9},
-    gripWidth:{min:4,max:24,initial:8},gripHeight:{min:4,max:24,initial:6}};
+    gripSize:{min:4,max:24,initial:8}};
   const storageKey='forma-sketch-pointer-v1';
   const normalize=value=>Object.fromEntries(Object.entries(limits).map(([key,{min,max,initial}])=>{
-    const n=Number(value?.[key]);
+    const n=Number(value?.[key]??(key==='gripSize'?value?.gripWidth:undefined));
     return [key,Number.isFinite(n)&&n>0?Math.round(Math.min(max,Math.max(min,n))):initial];
   }));
   let current=normalize();
@@ -2651,13 +2651,13 @@ window.FormaPointer=(()=>{
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${span}" height="${span}" viewBox="0 0 ${span} ${span}">${glyph}</svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${middle} ${middle}, crosshair`;
   }
-  function gripRect(x,y,width,height){
-    return `x="${x-width/2}" y="${y-height/2}" width="${width}" height="${height}"`;
+  function gripSquare(x,y,size){
+    return `x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}"`;
   }
-  return {limits,get:()=>({...current}),normalize,save,picture,css,gripRect};
+  return {limits,get:()=>({...current}),normalize,save,picture,css,gripSquare};
 })();
 window.FormaCanvas = (()=>{
-  const E=window.FormaEngine,{gripRect}=FormaPointer;
+  const E=window.FormaEngine,{gripSquare}=FormaPointer;
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const num=n=>Number(n).toFixed(3);
   let host,svg,width=800,height=600,camera={x:1500,y:1100,scale:.22},cursorKey='';
@@ -2893,7 +2893,7 @@ window.FormaCanvas = (()=>{
     if(!last.doc||!svg)return;
     ({doc,result,selected,draft,tool}=last);
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
-    const pointer=FormaPointer.get(),{gripWidth,gripHeight}=pointer,pointerKey=pointer.span+':'+pointer.box;
+    const pointer=FormaPointer.get(),{gripSize}=pointer,pointerKey=pointer.span+':'+pointer.box;
     if(cursorKey!==pointerKey){cursorKey=pointerKey;host.style.setProperty('--sketch-pointer',FormaPointer.css());}
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
@@ -2973,15 +2973,15 @@ window.FormaCanvas = (()=>{
       if(!visiblePoint(p,doc))continue;
       const pt=result.points[p.id],s=screen(pt),sel=isSelected('point',p.id),status=E.entityDefinition(doc,result,'point',p,definition);
       const id=esc(p.id),arcCenter=window.FormaModify.isArcCenter(doc,p.id),color=sel?sketchAccent:definitionColors[status];
-      const bounds=gripRect(s.x,s.y,gripWidth,gripHeight),gripClass='point-grip'+(sel?' active':'');
+      const bounds=gripSquare(s.x,s.y,gripSize),gripClass='point-grip'+(sel?' active':'');
       if(arcCenter){
-        const w=gripWidth/2+2,h=gripHeight/2+2;
-        content.push(`<g data-point="${id}" class="arc-center"><title>Centro dell’arco · ${id}</title><rect ${bounds} class="${gripClass}" fill="${definitionColors.background}" stroke="${color}"/><path d="M ${s.x-w} ${s.y} h ${2*w} M ${s.x} ${s.y-h} v ${2*h}" fill="none" stroke="${color}" stroke-width="1"/></g>`);
+        const arm=gripSize/2-1;
+        content.push(`<g data-point="${id}" class="arc-center"><title>Centro dell’arco · ${id}</title><rect ${bounds} class="${gripClass}" fill="${definitionColors.background}" stroke="${color}"/><path d="M ${s.x-arm} ${s.y} h ${2*arm} M ${s.x} ${s.y-arm} v ${2*arm}" fill="none" stroke="${color}" stroke-width="1"/></g>`);
       }else{
         content.push(`<rect ${bounds} class="${gripClass}" fill="${color}" stroke="${sel?sketchAccentLight:definitionColors.background}" data-point="${id}"/>`);
       }
-      content.push(`<rect ${gripRect(s.x,s.y,Math.max(20,gripWidth),Math.max(20,gripHeight))} fill="transparent" data-point="${id}" class="point-hit"/>`);
-      if(doc.view.labels||sel)content.push(text({x:pt.x+(gripWidth/2+6)/camera.scale,y:pt.y+(gripHeight/2+11)/camera.scale},p.id,sel?sketchAccentLight:'#a9bac8',10));
+      content.push(`<rect ${gripSquare(s.x,s.y,Math.max(20,gripSize))} fill="transparent" data-point="${id}" class="point-hit"/>`);
+      if(doc.view.labels||sel)content.push(text({x:pt.x+(gripSize/2+6)/camera.scale,y:pt.y+(gripSize/2+11)/camera.scale},p.id,sel?sketchAccentLight:'#a9bac8',10));
     }
     const occupied=[];
     if(!preview&&(doc.view.relations!==false||definition.constraints.size)){
@@ -3051,7 +3051,7 @@ window.FormaCanvas = (()=>{
       content.push('<g class="dimension-preview" pointer-events="none">');
       for(const id of [placement.a,placement.b].filter(Boolean)){
         const pt=result.points[id];if(!pt)continue;const s=screen(pt);
-        content.push(`<rect ${gripRect(s.x,s.y,gripWidth+6,gripHeight+6)} fill="#80bdff33" stroke="${sketchAccentLight}" stroke-width="1.5"/>`);
+        content.push(`<rect ${gripSquare(s.x,s.y,gripSize+6)} fill="#80bdff33" stroke="${sketchAccentLight}" stroke-width="1.5"/>`);
       }
       if(placement.b&&result.points[placement.a]&&result.points[placement.b]){
         const d={...placement,p:result.points[placement.a],q:result.points[placement.b],kind:'input',param:null};
@@ -3071,7 +3071,7 @@ window.FormaCanvas = (()=>{
     }
     if(!preview&&hover&&result.points[hover.id]){
       const p=screen(result.points[hover.id]);
-      content.push('<g class="point-snap-feedback" pointer-events="none"><rect x="'+(p.x-8)+'" y="'+(p.y-8)+'" width="16" height="16" rx="2" fill="#66ec9e20" stroke="#80f2ac" stroke-width="2"/><rect '+gripRect(p.x,p.y,gripWidth,gripHeight)+' fill="#80f2ac"/><text x="'+(p.x+15)+'" y="'+(p.y-15)+'" fill="#a3f4c3" font-size="11">Punto '+esc(hover.id)+'</text></g>');
+      content.push('<g class="point-snap-feedback" pointer-events="none"><rect '+gripSquare(p.x,p.y,Math.max(16,gripSize+6))+' rx="2" fill="#66ec9e20" stroke="#80f2ac" stroke-width="2"/><rect '+gripSquare(p.x,p.y,gripSize)+' fill="#80f2ac"/><text x="'+(p.x+15)+'" y="'+(p.y-15)+'" fill="#a3f4c3" font-size="11">Punto '+esc(hover.id)+'</text></g>');
     }
     if(!preview&&last.selectionBox){
       const {start,end,items}=last.selectionBox,crossing=end.x<start.x,color=crossing?'#66de9b':'#73afff';
@@ -3736,7 +3736,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.5 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.6 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4810,7 +4810,7 @@ window.FormaOptionsUI=(()=>{
       '<div class="options-colors">'+Object.entries(labels).map(([key,label])=>'<label><span>'+label+'</span><input type="color" data-color-picker="'+key+'" aria-label="Scegli colore '+label+'" value="'+base.colors[key]+'"><input type="text" name="color_'+key+'" data-color-hex="'+key+'" aria-label="Codice colore '+label+'" value="'+base.colors[key]+'" pattern="#[a-fA-F0-9]{6}" maxlength="7" required spellcheck="false"></label>').join('')+'</div><p class="panel-note">Le copie delle ripetizioni sono gialle per impostazione predefinita. I colori personalizzati si applicano a Modifica. Le definizioni eccedenti mantengono il colore Ultradefinito. Render mantiene i colori dei layer e lo sfondo scuro.</p>'+ 
       '<h3>Spessori sullo schermo · pixel</h3><div class="form-grid">'+number('Linee','editor_lineWidth',base.editor.lineWidth,.3,8,.1)+number('Costruzioni','editor_constructionWidth',base.editor.constructionWidth,.3,8,.1)+number('Quote','editor_dimensionWidth',base.editor.dimensionWidth,.3,8,.1)+'</div>'+
       '<h3>Puntatore · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['span','Ampiezza croce'],['box','Quadrato centrale']])+'</div><svg id="options-cursor-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del puntatore"></svg></div>'+
-      '<h3>Vertici · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['gripWidth','Larghezza vertice'],['gripHeight','Altezza vertice']])+'</div><svg id="options-grip-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del vertice"></svg></div></section>'+
+      '<h3>Vertici · pixel</h3><div class="cursor-options"><div class="form-grid">'+sizeFields([['gripSize','Lato del quadrato']])+'</div><svg id="options-grip-sample" viewBox="0 0 102 102" role="img" aria-label="Anteprima del vertice"></svg></div></section>'+
       '<section id="options-panel-dimensions" role="tabpanel" aria-labelledby="options-tab-dimensions" hidden><h3>Dimensioni sullo schermo · pixel</h3><div class="form-grid">'+number('Altezza testo','editor_textHeight',base.editor.textHeight,6,60,1)+number('Grandezza frecce','editor_arrowSize',base.editor.arrowSize,2,40,1)+'</div><h3>Formato · editor e disegno esportato</h3><div class="form-grid">'+number('Cifre decimali','decimals',base.format.decimals,0,8,1)+U.select('Contenuto generale','content',contentChoices,base.format.content)+'</div><div class="form-grid">'+U.select('Contenuto quote modificabili','inputContent',typedChoices,base.format.inputContent)+U.select('Contenuto quote fisse','fixedContent',typedChoices,base.format.fixedContent)+'</div><label class="check-line"> <input type="checkbox" name="trimZeros" '+(base.format.trimZeros?'checked':'')+'>Nascondi gli zeri decimali finali</label><label class="check-line"><input type="checkbox" name="showUnits" '+(base.format.showUnits?'checked':'')+'>Mostra unità mm / cm nelle quote</label><p class="panel-note">I contenuti separati per fisse e modificabili valgono anche per DXF e AutoLISP. Le altre quote usano il contenuto generale. La precisione dei calcoli resta invariata. Se manca un nome parametro, viene mostrato il valore.</p></section>'+
       '<section id="options-panel-cad" role="tabpanel" aria-labelledby="options-tab-cad" hidden><h3>Dimensioni nel disegno CAD · '+doc.units+'</h3><label class="check-line"><input type="checkbox" name="cad_automatic" '+(base.cad.automatic?'checked':'')+'>Dimensioni automatiche, proporzionali al disegno</label><div id="options-cad-manual" class="form-grid">'+number('Altezza testo · '+doc.units,'cad_textHeight',base.cad.textHeight,.001,1e6)+number('Grandezza frecce · '+doc.units,'cad_arrowSize',base.cad.arrowSize,.001,1e6)+'</div><p class="panel-note">Le quote rimangono vere quote AutoCAD. Testo e frecce CAD sono indipendenti dallo zoom e dalle dimensioni sullo schermo. Il formato si sceglie nella scheda Quote.</p></section>'+
       '<div class="options-preview" aria-label="Anteprima delle opzioni"><span>Anteprima grafica</span><svg id="options-sample" viewBox="0 0 480 100" role="img" aria-label="Esempio linee e quota"></svg></div><button type="button" id="options-reset" class="btn small">Ripristina predefiniti</button></div>',data=>{
@@ -4826,7 +4826,7 @@ window.FormaOptionsUI=(()=>{
       const sizes=P.normalize(Object.fromEntries(Object.keys(P.limits).map(key=>[key,field('cursor_'+key).value])));
       const cursor=P.picture(sizes),grip=$('options-grip-sample');
       grip.style.background=colors.background;
-      grip.innerHTML=`<path d="M 21 77 L 51 51 H 81" fill="none" stroke="${colors.under}" stroke-width="1.5"/><rect ${P.gripRect(51,51,sizes.gripWidth,sizes.gripHeight)} fill="${sketchAccent}" stroke="${sketchAccentLight}"/>`;
+      grip.innerHTML=`<path d="M 21 77 L 51 51 H 81" fill="none" stroke="${colors.under}" stroke-width="1.5"/><rect ${P.gripSquare(51,51,sizes.gripSize)} fill="${sketchAccent}" stroke="${sketchAccentLight}"/>`;
       const inset=51-cursor.middle-.5,sample=$('options-cursor-sample');
       sample.style.background=colors.background;
       sample.innerHTML=`<g transform="translate(${inset} ${inset})">${cursor.glyph}</g>`;
