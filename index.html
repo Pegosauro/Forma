@@ -579,11 +579,26 @@ dialog::backdrop{background:#080d1499}
 .dimension-inline .dimension-inline-name-label{font-size:11px;color:var(--muted);margin:0 0 5px}.dimension-inline #dimension-inline-name{width:100%;margin-bottom:10px}.dimension-inline-name-label+input{font-family:Consolas,monospace}
 
 .dimension-display-choices{display:flex;flex-wrap:wrap;gap:10px 16px}.dimension-display-choices .check-line{margin:0}.dimension-display-preview{display:block;margin-top:14px;padding:10px 12px;min-height:36px;border:1px solid var(--line);border-radius:4px;background:var(--input);color:var(--ink);font:13px Consolas,monospace;overflow-wrap:anywhere}.dimension-display-preview>span{color:var(--muted);font:12px Segoe UI,sans-serif}.dimension-display-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}.dimension-display-footer small{font-size:10px;color:var(--muted)}.dimension-display-footer .subtle-action{margin:0}
-</style></head>
+</style><style>
+#constraint-context{position:fixed;z-index:80;width:min(246px,calc(100vw - 16px));max-height:calc(100vh - 16px);overflow:auto;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:5px;box-shadow:0 10px 28px #0006;padding:4px}
+#constraint-context[hidden]{display:none}
+.constraint-context-head{padding:9px 8px;border-bottom:1px solid var(--line);display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:12px}
+#constraint-context-selection{color:var(--muted);font-size:11px;text-align:right}
+#constraint-context button{background:none;color:var(--ink);border:1px solid transparent;border-radius:3px;display:flex;align-items:center;gap:8px;padding:6px 7px;text-align:left;width:100%;min-height:31px;font:inherit;font-size:12px;cursor:pointer}
+#constraint-context button:hover,#constraint-context button:focus-visible{background:var(--accent-bg);border-color:var(--accent);outline:none}
+#constraint-context .icon{width:16px;height:16px;color:var(--accent)}
+#constraint-context .constraint-context-empty{margin:0;padding:9px 8px;color:var(--muted);font-size:12px}
+.operation-badge{color:#f4cf61;cursor:pointer}
+.operation-badge rect{fill:#302713;stroke:#b49343}
+.operation-badge:hover rect,.operation-badge:focus-visible rect{fill:#4a3a19;stroke:#ffe39b;stroke-width:1.8}
+.operation-badge:focus-visible{outline:none}
+.operation-badge .icon [stroke]:not([stroke="none"]){stroke:currentColor}
+</style>
+</head>
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.25.0</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.0</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -645,7 +660,7 @@ dialog::backdrop{background:#080d1499}
   </aside>
   <div class="cad-document">
   <section id="canvas" class="canvas-area" aria-label="Area di disegno" data-tool="select" tabindex="0">
-   <svg class="drawing" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Disegno parametrico interattivo"></svg>
+   <svg class="drawing" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Disegno parametrico interattivo"></svg>
    <div class="sketch-state"><span id="sketch-status"></span><button class="subtle-action editor-only" id="convert-sketch" hidden>Converti in schizzo</button></div><div id="draft-error" class="draft-error" hidden></div>
    <span class="canvas-hint" id="canvas-hint" role="status" aria-live="polite"></span>
    <div class="canvas-coordinates" id="coordinates">X 0,00&nbsp;&nbsp; Y 0,00</div>
@@ -2110,22 +2125,28 @@ window.FormaModify=(()=>{
   d.operations??=[];d.arcs??=[];if(d.operations.length>=40)fail('Massimo 40 operazioni di modifica.');
   const op={id:reuse?.id||E.nextId(d.operations,'OP'),type:spec.type,name:spec.name||({trim:'Taglia',extend:'Estendi',offset:'Offset',mirror:'Specchio',tangentArc:'Arco tangente'})[spec.type],sources:[],outputs:[],points:[],guards:[]};
   const point=(x,y,scalar=false,visible=false,existing)=>{
-   const id=existing||N.name(d,'MP');
+   const retained=existing||reuse?.points?.[op.points.length],id=retained||N.name(d,'MP');
    const record={id,x:E.free(String(x))?'('+x+')+0':String(x),y:E.free(String(y))?'('+y+')+0':String(y),operationOwner:op.id,hidden:!visible,...(scalar?{quantity:'scalar'}:{})};
-   if(existing)Object.assign(d.points.find(p=>p.id===id),record);
+   if(retained)Object.assign(d.points.find(p=>p.id===id),record);
    else d.points.push(record);
    op.points.push(id);
    return id;
   };
   const unit=(g)=>{const len=`hypot(${g.b}.x-${g.a}.x,${g.b}.y-${g.a}.y)`,dir=E.segmentDirection({p:g.p,q:g.q}),id=point(`(${g.b}.x-${g.a}.x+${dir.x}*max(0,0.00002-${len}))/max(0.00002,${len})`,`(${g.b}.y-${g.a}.y+${dir.y}*max(0,0.00002-${len}))/max(0.00002,${len})`,true);return id};
   const segment=(a,b,g)=>{
-   const existing=reuse?.secondary,id=existing?.id||E.nextId(d.segments,'S');
-   if(existing)Object.assign(existing,{a,b,construction:!!g.construction});
+   const existing=reuse?.secondary||reuse?.outputs?.[op.outputs.length],id=existing?.id||E.nextId(d.segments,'S');
+   if(existing)Object.assign(existing,{a,b,layer:spec.layer||existing.layer,construction:!!g.construction,name:existing.name===reuse?.oldName?op.name:existing.name});
    else d.segments.push({id,a,b,layer:spec.layer||g.layer,construction:!!g.construction,operationId:op.id,name:op.name});
    op.outputs.push({type:'segment',id});
    return id;
   };
-  const curve=(g,center,radius,a,b)=>{const collection=g.kind==='circle'?d.circles:d.arcs,id=E.nextId([...d.circles,...d.arcs],g.kind==='circle'?'C':'AR');collection.push({id,center,radius:String(radius),...(a?{a,b}:{}),layer:spec.layer||g.layer,construction:!!g.construction,operationId:op.id});op.outputs.push({type:g.kind==='circle'?'circle':'arc',id});return id};
+  const curve=(g,center,radius,a,b)=>{
+   const type=g.kind==='circle'?'circle':'arc',collection=type==='circle'?d.circles:d.arcs;
+   const existing=reuse?.outputs?.[op.outputs.length],id=existing?.id||E.nextId([...d.circles,...d.arcs],type==='circle'?'C':'AR');
+   const record={id,center,radius:String(radius),...(a?{a,b}:{}),layer:spec.layer||existing?.layer||g.layer,construction:!!g.construction,operationId:op.id};
+   if(existing)Object.assign(existing,record);else collection.push(record);
+   op.outputs.push({type,id});return id;
+  };
   if(spec.type==='trim'||spec.type==='extend'){
    const plan=trimPlan(d,r,{...spec,mode:spec.type});op.sources=[spec.source,spec.limit];op.target=spec.source;op.sourceEnds={a:plan.s.a,b:plan.s.b};op.extendLimits=!!spec.extendLimits;
    const a=plan.s.a,b=plan.s.b,u=unit(plan.s),len=`hypot(${b}.x-${a}.x,${b}.y-${a}.y)`,cutPoints=new Map();
@@ -2176,7 +2197,14 @@ window.FormaModify=(()=>{
     const mirror=id=>{if(memo.has(id))return memo.get(id);const h=point(`(${id}.x-${axis.a}.x)*${u}.x+(${id}.y-${axis.a}.y)*${u}.y`,0),p=point(`2*(${axis.a}.x+${u}.x*${h}.x)-${id}.x`,`2*(${axis.a}.y+${u}.y*${h}.x)-${id}.y`,false,true);memo.set(id,p);return p};
     for(const g of geos){if(g.kind==='line')segment(mirror(g.a),mirror(g.b),g);else curve(g,mirror(g.center),g.radiusSource,g.kind==='arc'?mirror(g.b):null,g.kind==='arc'?mirror(g.a):null)}
    }else{
-    const value=String(spec.value??'').trim(),amount=N.val(value,r);if(amount<0)fail('La distanza offset non può essere negativa.');const param=spec.param||N.name(d,'DIST');N.parameter(d,param,'Distanza '+op.name,value,spec.kind||'input').operationOwner=op.id;op.value=param;op.guards.push({type:'distance',value:param});
+    const value=String(spec.value??'').trim(),amount=N.val(value,r);if(amount<0)fail('La distanza offset non può essere negativa.');const param=spec.param||N.name(d,'DIST'),kind=spec.kind||'input';
+    if(reuse?.parameter){
+     const p=reuse.parameter;
+     if(!value||kind!=='computed'&&!E.free(value))fail('Inserisci una distanza valida o scegli Calcolata per usare una formula.');
+     p.kind=kind;
+     if(kind==='computed'){p.expr=value;delete p.value;}else{p.value=Number(value);delete p.expr;delete p.integer;}
+    }else N.parameter(d,param,'Distanza '+op.name,value,kind).operationOwner=op.id;
+    op.value=param;op.guards.push({type:'distance',value:param});
     op.sidePoint=point(op.side,0,true);const signed=`(${op.sidePoint}.x*${param})`,lines=geos.filter(g=>g.kind==='line'),pending=new Set(lines),components=[];
     const adjacency=new Map();for(const g of lines)for(const id of [g.a,g.b]){if(!adjacency.has(id))adjacency.set(id,[]);adjacency.get(id).push(g)}if([...adjacency.values()].some(a=>a.length>2))fail('Il contorno si ramifica: seleziona una catena senza biforcazioni.');
     while(pending.size){let first=[...pending].find(g=>adjacency.get(g.a).length===1||adjacency.get(g.b).length===1)||[...pending][0],start=adjacency.get(first.a).length===1?first.a:adjacency.get(first.b).length===1?first.b:first.a,at=start,chain=[];while(first&&pending.has(first)){pending.delete(first);const g=first.a===at?first:{...first,a:first.b,b:first.a,p:first.q,q:first.p};chain.push({...g,u:unit(g)});at=g.b;first=adjacency.get(at).find(g=>pending.has(g));}components.push({chain,closed:at===start});}
@@ -2223,9 +2251,12 @@ window.FormaModify=(()=>{
   d.operations.splice(index,0,next);
   const retired=new Set(old.points.filter(point=>!next.points.includes(point)));
   if(createdSegment&&!next.outputs.some(out=>out.id===createdSegment.id))retired.add(createdSegment.id);
-  if(!retired.size)return id;
-  d.points=d.points.filter(p=>!retired.has(p.id));
-  if(createdSegment&&retired.has(createdSegment.id))d.segments=d.segments.filter(s=>s!==createdSegment);
+  removeRetired(d,retired);
+  return id;
+ }
+ function removeRetired(d,retired){
+  if(!retired.size)return;
+  for(const collection of ['points','segments','circles','arcs'])d[collection]=d[collection].filter(item=>!retired.has(item.id));
   // A reference in another object or expression must not be silently dropped.
   const mentionsRetired=(value,key)=>{
    if(typeof value==='string'){
@@ -2235,7 +2266,35 @@ window.FormaModify=(()=>{
    }
    return !!value&&typeof value==='object'&&Object.entries(value).some(([key,entry])=>mentionsRetired(entry,key));
   };
-  if(mentionsRetired(d))fail('La modifica rimuoverebbe un punto o un tratto usato da altri elementi. Mantieni il lato collegato oppure modifica prima gli elementi dipendenti.');
+  if(mentionsRetired(d))fail('La modifica rimuoverebbe geometria usata da altri elementi. Mantieni i riferimenti collegati o modifica prima gli elementi dipendenti.');
+ }
+ function editDerived(d,r,id,spec){
+  const index=d.operations.findIndex(op=>op.id===id),old=d.operations[index];
+  if(!old||!['offset','mirror'].includes(old.type))fail('Operazione Offset o Specchio non trovata.');
+  const mirror=old.type==='mirror',sameRef=(a,b)=>a.type===b.type&&a.id===b.id;
+  const refs=mirror?[...spec.sources,spec.axis]:spec.sources;
+  const owners=new Set(d.operations.slice(index).map(op=>op.id));
+  if(!refs.every(ref=>ref&&!owners.has(generated(d,ref))))fail('Scegli riferimenti che precedono questa operazione.');
+  const original=mirror?old.sources.slice(0,-1):old.sources;
+  const sameSources=original.length===spec.sources.length&&original.every(ref=>spec.sources.some(s=>sameRef(ref,s)));
+  // Evaluated segments can contain cuts made after this operation. Restore the
+  // input endpoints visible at this point in the operation sequence.
+  const downstream=new Map();
+  for(const op of d.operations.slice(index+1))if(op.target&&!downstream.has(op.target.id))downstream.set(op.target.id,op.sourceEnds);
+  const base={...r,segments:r.segments.map(s=>{
+   const ends=!s.patternId&&downstream.get(s.id);
+   if(!ends)return s;
+   const p=r.points[ends.a],q=r.points[ends.b];
+   return {...s,...ends,p,q,length:dist(p,q)};
+  })};
+  const reuse={id,oldName:old.name,parameter:!mirror&&d.params.find(p=>p.id===old.value),
+   ...(sameSources?{points:old.points,outputs:old.outputs.map(ref=>raw(d,ref))}:{})};
+  d.operations.splice(index,1);
+  create(d,base,{...spec,type:old.type,name:spec.name||old.name,param:old.value,sources:sameSources?original:spec.sources},reuse);
+  const next=d.operations.pop();
+  d.operations.splice(index,0,next);
+  const kept=new Set([...next.points,...next.outputs.map(ref=>ref.id)]);
+  removeRetired(d,new Set([...old.points,...old.outputs.map(ref=>ref.id)].filter(item=>!kept.has(item))));
   return id;
  }
  function addTangentRelation(d,op){
@@ -2362,7 +2421,7 @@ window.FormaModify=(()=>{
  N.featureDefinition=(d,r,id,info=E.definitionView(d,r))=>{const owner=d.arcs.find(a=>a.id===id)?.operationId;return owner?operationDefinition(d,r,owner,info):baseFeatureDefinition(d,r,id,info)};
  const segmentDefinition=(d,s)=>{const op=(d.operations||[]).filter(o=>o.target?.id===s.id).at(-1);return op?{...s,...op.ends}:s};
  const derivedReference=(d,ref)=>!!(generated(d,ref)||(d.operations||[]).some(op=>op.target?.type===ref.type&&op.target.id===ref.id));
- return {derivedReference,segmentDefinition,create,geometry,isArcCenter,editableArc,radiusConstraint,setArcRadius,tangentArc,tangentArcFrom,outgoingTangent,trimPlan,boundaryPlans,boundaryEditResult,boundaryRefAllowed,editBoundary,intersections,insideArc,generated,check,validate};
+ return {derivedReference,segmentDefinition,create,geometry,isArcCenter,editableArc,radiusConstraint,setArcRadius,tangentArc,tangentArcFrom,outgoingTangent,trimPlan,boundaryPlans,boundaryEditResult,boundaryRefAllowed,editBoundary,editDerived,intersections,insideArc,generated,check,validate};
 })();
 
 /* Expand after curves, annotations and editing features have produced their actual geometry. */
@@ -2823,9 +2882,8 @@ window.FormaCanvas = (()=>{
       content.push(`<circle cx="${s.x}" cy="${s.y}" r="10" fill="transparent" data-point="${esc(p.id)}" class="point-hit"/>`);
       if(doc.view.labels||sel)content.push(text({x:pt.x+10/camera.scale,y:pt.y+14/camera.scale},p.id,sel?'#d3c4ff':'#a9bac8',10));
     }
+    const occupied=[];
     if(!preview&&(doc.view.relations!==false||definition.constraints.size)){
-
-      const occupied=[];
       function badge(point,type,id,title,preferred={x:15,y:-18},implicit=false){
         const p=screen(point);let pos={x:p.x+preferred.x,y:p.y+preferred.y};
         const candidates=[preferred,{x:preferred.x,y:preferred.y-25},{x:preferred.x+25,y:preferred.y},{x:preferred.x-25,y:preferred.y},{x:preferred.x,y:preferred.y+25},{x:preferred.x+30,y:preferred.y-30},{x:preferred.x-30,y:preferred.y-30}];
@@ -2956,6 +3014,8 @@ window.FormaCanvas = (()=>{
         }
       }}content.push('</g>');
     }
+    if(!preview&&tool==='select'&&!document.body.classList.contains('runner'))
+      content.push(operationBadges(doc,result,occupied));
     if(!preview&&last.patternPreview)content.push(window.FormaPatternInstances?.svg(doc,result,last.patternPreview,{screen,scale:camera.scale})||'');
     if(!preview)content.push(referenceSVG(last.referenceHighlights||[]));
     if(!preview)content.push(window.FormaNativeUI?.previewSVG({screen,scale:camera.scale})||'');
@@ -2963,6 +3023,55 @@ window.FormaCanvas = (()=>{
     svg.innerHTML=content.join('');
     host.dataset.tool=preview?'pan':tool;host.dataset.viewMode=preview?'render':'edit';
     document.getElementById('zoom-value').textContent=Math.round(camera.scale*100)+'%';
+  }
+  function operationBadges(doc,result,occupied){
+    const labels={trim:'Taglia',extend:'Estendi',offset:'Offset',mirror:'Specchio',pattern:'Ripetizione'};
+    const operations=(doc.operations||[]).filter(op=>Object.hasOwn(labels,op.type));
+    if(!operations.length&&!doc.patterns?.length)return '';
+    const refKey=ref=>ref.type+':'+ref.id;
+    const referenced=new Set([...operations.flatMap(op=>[...(op.target?[op.target]:[]),...op.outputs,...op.sources]),
+      ...(doc.patterns||[]).flatMap(pattern=>pattern.objects)].map(refKey));
+    const geometry=new Map(),instances=new Map();
+    for(const [type,list] of Object.entries({segment:result.segments,circle:result.circles,arc:result.arcs,text:result.texts})){
+      for(const item of list||[]){
+        const key=(item.featureId?'feature':type)+':'+item.id;
+        if(item.patternId?instances.has(item.patternId):!referenced.has(key))continue;
+        if(item.hidden||!FormaNative.visible(doc,item)||type==='segment'&&E.collapsedSegment(item))continue;
+        const {p,q}=item;
+        const point=type==='arc'?FormaNativeDrawing.arcMiddle(item)
+          :type==='circle'?{x:p.x+item.radius,y:p.y}
+          :q?{x:(p.x+q.x)/2,y:(p.y+q.y)/2}:p;
+        if(!point)continue;
+        const at=screen(point);
+        if(at.x<0||at.x>width||at.y<0||at.y>height)continue;
+        if(item.patternId)instances.set(item.patternId,at);
+        else geometry.set(key,at);
+      }
+    }
+    const anchor=refs=>refs.map(ref=>geometry.get(refKey(ref))).find(Boolean);
+    function badge(type,id,name,at){
+      if(!at)return '';
+      const options=[[25,-23],[-25,-23],[25,23],[-25,23],[54,-23],[-54,-23],[54,23],[-54,23],[0,-48],[0,48]];
+      let x,y;
+      for(let i=0;i<options.length+occupied.length;i++){
+        const [dx,dy]=options[i]||[0,0],row=i-options.length+1;
+        const px=Math.max(17,Math.min(width-17,at.x+dx));
+        const py=Math.max(14,Math.min(height-14,at.y+(row>0?42+row*24:dy)));
+        if(occupied.some(k=>Math.abs(k.x-px)<30&&Math.abs(k.y-py)<24))continue;
+        x=px;y=py;break;
+      }
+      if(x===undefined)return '';
+      occupied.push({x,y});
+      const label='Modifica '+labels[type]+(name&&name!==labels[type]?' · '+name:'');
+      const icon=FormaUI.icon(type).replace('viewBox=', 'x="-8" y="-8" width="16" height="16" viewBox=');
+      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" transform="translate(${x} ${y})"><title>${esc(label)}</title><path d="M0 0 L${at.x-x} ${at.y-y}" stroke="#b49343" fill="none" pointer-events="none"/><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
+    }
+    const edits=operations.map(op=>badge(op.type,op.id,op.name,
+      anchor([...(op.target?[op.target]:[]),...op.outputs])||anchor(op.target?[op.target]:op.sources)));
+    for(const pattern of doc.patterns||[]){
+      edits.push(badge('pattern',pattern.id,pattern.name,instances.get(pattern.id)||anchor(pattern.objects)));
+    }
+    return edits.join('');
   }
   function referencePoints(items){
     const pts=[],r=last.result,d=last.doc;for(const item of items){
@@ -3526,7 +3635,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.25.0 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.0 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4449,9 +4558,9 @@ window.FormaPatternUI=(()=>{
       editing=old?E.clone(old):{id:freshId,name:'Ripetizione '+freshId,mode:'spacing',distribution:'step',objects:items,direction:items.find(o=>o.type==='segment')?.id||doc.segments[0]?.id||'',reverse:false,step:'100',count:'5',offset:'0',offsetReverse:false,anchor:{type:'centroid'},target:null};
       editing={type:'linear',mode:'spacing',distribution:'step',direction:doc.segments[0]?.id||'',step:'100',count:'5',offset:'0',anchor:{type:'centroid'},center:{type:'point',id:''},circularMode:'total',angle:'360',...editing};lastGood=null;
       pick=editing.objects.length?null:'objects';previewOn=true;state().tool='pattern';
-      host.hidden=false;app.classList.add('pattern-open');
+      host.hidden=false;app.classList.add('pattern-open');window.FormaWorkspaceUI?.reveal('right');
       const card=(n,title,body,attrs='')=>'<div class="pattern-card" '+attrs+'><h3><span>'+n+'</span>'+title+'</h3>'+body+'</div>';
-      host.innerHTML='<div class="section-head pattern-title"><div><small>STRUMENTI SCHIZZO</small><h2>Ripetizione</h2></div><button type="button" class="icon-btn" data-pattern-close aria-label="Annulla ripetizione">'+U.icon('close')+'</button></div><form id="pattern-form"><div class="pattern-scroll">'+
+      host.innerHTML='<div class="section-head pattern-title"><div><small>STRUMENTI SCHIZZO</small><h2>'+(old?'Modifica ripetizione':'Ripetizione')+'</h2></div><button type="button" class="icon-btn" data-pattern-close aria-label="Annulla ripetizione">'+U.icon('close')+'</button></div><form id="pattern-form"><div class="pattern-scroll">'+
         U.select('Tipo di ripetizione','type',[['linear','Lineare'],['circular','Circolare']],editing.type)+U.field('Nome ripetizione','name',editing.name,'text','maxlength="100" required')+
         card(1,'Oggetti da ripetere','<div class="pattern-selection-bar"><small id="pattern-source-count"></small><button type="button" class="pattern-clear" data-pattern-clear>Svuota</button></div><div id="pattern-sources" class="pattern-sources"></div><button type="button" class="btn small wide" data-pattern-pick="objects">'+U.icon('cursor')+'Seleziona sul disegno</button>')+
         card(2,'Direzione','<div class="pattern-ref">'+U.select('Segmento di direzione','direction',[],editing.direction)+'<button type="button" class="icon-btn" data-pattern-pick="direction" aria-label="Scegli segmento di direzione">'+U.icon('cursor')+'</button></div><input type="checkbox" name="reverse" hidden '+(editing.reverse?'checked':'')+'><button type="button" class="btn small wide" data-pattern-flip="reverse" aria-pressed="'+!!editing.reverse+'">'+U.icon('undo')+'Inverti verso</button>','data-pattern-linear')+
@@ -4817,6 +4926,104 @@ window.FormaApp=(()=>{
       U.modal('Punto su linea',U.select('Segmento di riferimento','reference',refs.map(s=>[s.id,s.name||s.id]),refs[0].id),data=>apply(d=>E.addRelation(d,state.result,[{type:'point',id:point},{type:'segment',id:data.reference}],'pointOnLine')));return;
     }
     safely(()=>apply(d=>E.addRelation(d,state.result,items,type)));
+  }
+  function setupConstraintMenu(canvas){
+    const root=document.createElement('div');
+    root.id='constraint-context';root.hidden=true;
+    root.innerHTML='<div class="constraint-context-head"><strong id="constraint-context-title">Vincoli</strong><span id="constraint-context-selection"></span></div><div role="menu" aria-labelledby="constraint-context-title" tabindex="-1"></div>';
+    $('app').append(root);
+    const menu=root.querySelector('[role="menu"]');
+    let selection=null;
+    const buttons=()=>[...menu.querySelectorAll('button')];
+    function close(restoreFocus=false){
+      if(root.hidden)return;
+      root.hidden=true;selection=null;
+      if(restoreFocus)canvas.focus({preventScroll:true});
+    }
+    function choices(items){
+      const d=state.doc,points=items.filter(i=>i.type==='point'),segments=items.filter(i=>i.type==='segment');
+      const derived=items.some(item=>FormaModify.generated(d,item)&&!(item.type==='point'&&FormaModify.isArcCenter(d,item.id)));
+      const result=[];
+      if(!derived){
+        if(items.length===1&&points.length)result.push('fixed','origin');
+        if(items.length===1&&segments.length)result.push('horizontal','vertical','fixed');
+        if(items.length===2&&segments.length===2)result.push('parallel','perpendicular','equal','collinear','horizontal','vertical','fixed');
+        if(items.length===2&&points.length===2)result.push('coincident','horizontal','vertical','fixed');
+      }
+      if(items.length===2&&points.length===1&&segments.length===1){
+        const segment=d.segments.find(s=>s.id===segments[0].id),point=points[0];
+        if(segment&&![segment.a,segment.b].includes(point.id)){
+          if(!derived)result.push('pointOnLine');
+          if(!FormaModify.generated(d,point)||FormaModify.isArcCenter(d,point.id))result.push('midpoint');
+        }
+        if(!derived)result.push('fixed');
+      }
+      if(E.canTangent(d,items))result.push('tangent');
+      return result;
+    }
+    function open(x,y){
+      if(runner||state.doc.view.mode==='render'||state.tool!=='select'||!state.selected||gesture||$('dialog').open)return false;
+      selection=state.selected;
+      const items=selection.items||[selection],points=items.filter(i=>i.type==='point').length,segments=items.filter(i=>i.type==='segment').length;
+      $('constraint-context-selection').textContent=points===1&&segments===1&&items.length===2?'Punto + segmento'
+        :points===items.length?(points===1?'1 punto':points+' punti')
+        :segments===items.length?(segments===1?'1 segmento':segments+' segmenti')
+        :items.length===1?'1 elemento':items.length+' elementi';
+      menu.replaceChildren();
+      for(const type of choices(items)){
+        const command=$('constraint-actions').querySelector('[data-constraint="'+type+'"]');
+        if(!command||command.disabled)continue;
+        const item=document.createElement('button');
+        item.type='button';item.setAttribute('role','menuitem');item.tabIndex=-1;
+        item.dataset.contextConstraint=type;
+        item.innerHTML=command.innerHTML;
+        menu.append(item);
+      }
+      if(!menu.childElementCount){
+        const empty=document.createElement('p');
+        empty.className='constraint-context-empty';empty.textContent='Nessun vincolo disponibile per la selezione.';
+        menu.append(empty);
+      }
+      root.hidden=false;
+      const width=root.offsetWidth,height=root.offsetHeight;
+      const left=x+width+5>innerWidth-8?x-width-5:x+5;
+      const top=y+height+5>innerHeight-8?y-height-5:y+5;
+      root.style.left=Math.max(8,Math.min(left,innerWidth-width-8))+'px';
+      root.style.top=Math.max(8,Math.min(top,innerHeight-height-8))+'px';
+      (buttons()[0]||menu).focus({preventScroll:true});
+      return true;
+    }
+    canvas.addEventListener('contextmenu',ev=>{
+      if(ev.target.closest('button,.canvas-topright,.operation-badge,.dimension-inline'))return;
+      if(open(ev.clientX,ev.clientY))ev.preventDefault();
+    });
+    root.addEventListener('contextmenu',ev=>ev.preventDefault());
+    menu.addEventListener('click',ev=>{
+      const type=ev.target.closest('[data-context-constraint]')?.dataset.contextConstraint;
+      if(!type)return;
+      const current=state.selected===selection;
+      close(true);
+      if(current)constraint(type);
+    });
+    document.addEventListener('pointerdown',ev=>{if(!root.contains(ev.target))close();},true);
+    document.addEventListener('focusin',ev=>{if(!root.hidden&&!root.contains(ev.target))close();});
+    window.addEventListener('resize',()=>close());
+    window.addEventListener('blur',()=>close());
+    window.addEventListener('keydown',ev=>{
+      if((ev.key==='ContextMenu'||ev.shiftKey&&ev.key==='F10')&&ev.target===canvas){
+        const bounds=canvas.getBoundingClientRect();
+        if(!open(bounds.left+bounds.width/2,bounds.top+bounds.height/2))return;
+      }else{
+        if(root.hidden)return;
+        if(ev.key==='Tab'){close(true);return;}
+        if(ev.key==='Escape')close(true);
+        else if(['ArrowDown','ArrowUp','Home','End'].includes(ev.key)){
+          const items=buttons(),i=items.indexOf(document.activeElement);
+          if(items.length)items[ev.key==='Home'?0:ev.key==='End'?items.length-1:(items.length+i+(ev.key==='ArrowDown'?1:-1))%items.length].focus();
+        }else return;
+      }
+      ev.preventDefault();ev.stopImmediatePropagation();
+    },true);
   }
   function removeSelected(){
     if(!state.selected)return;
@@ -5215,10 +5422,25 @@ window.FormaApp=(()=>{
       if(ev.target.id==='bind-dimension'){const d=state.doc.dimensions.find(d=>d.id===state.selected.id);newDimension(d.a,d.b,d.id);}
     });
     const canvas=$('canvas');
+    setupConstraintMenu(canvas);
+    function editBadge(ev){
+      const badge=ev.target.closest('[data-edit-operation]');
+      if(!badge||state.tool!=='select'||runner||state.doc.view.mode==='render'||$('dialog').open)return;
+      if(ev.type==='keydown'&&!['Enter',' '].includes(ev.key))return;
+      ev.preventDefault();ev.stopPropagation();
+      const id=badge.dataset.editOperation;
+      const repetition=badge.dataset.operationKind==='pattern';
+      if(repetition)patternsUI.open(id);
+      else window.FormaModifyUI?.editOperation(id);
+      const heading=$(repetition?'pattern-editor':'modify-tool-panel').querySelector('h2');
+      if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
+    }
+    canvas.addEventListener('click',editBadge);
+    canvas.addEventListener('keydown',editBadge);
     canvas.addEventListener('wheel',ev=>{if($('dialog').open)return;ev.preventDefault();if(gesture?.type==='box')return;C.zoom(ev.deltaY<0?1.12:1/1.12,C.local(ev));},{passive:false});
     canvas.addEventListener('pointerdown',ev=>{
       if($('dialog').open)return;
-      if(ev.target.closest('button,.canvas-tools,.canvas-topright,.canvas-controls'))return;
+      if(ev.target.closest('button,.canvas-tools,.canvas-topright,.canvas-controls,[data-edit-operation]'))return;
       if(ev.button!==0&&ev.button!==1)return;
       if(gesture)return;
       if(state.doc.view.mode!=='render'&&patternsUI?.pointerDown(ev))return;
@@ -5545,7 +5767,7 @@ window.FormaNativeUI=(()=>{
 /* Docked editing commands share stable reference chips, formula fields and non-destructive previews. */
 window.FormaModifyUI=(()=>{
  'use strict';const A=FormaApp,E=FormaEngine,M=FormaModify,N=FormaNative,C=FormaCanvas,U=FormaUI,$=id=>document.getElementById(id),host=$('modify-tool-panel'),canvas=$('canvas'),esc=U.esc,tools=['trim','extend','offset','mirror'];
- let key='',ctx=null,preview=null,gesture=null,navigating=false,committing=false,seenDoc=null,pendingEdit=null,chosenOperation=null;
+ let key='',ctx=null,preview=null,gesture=null,navigating=false,committing=false,seenDoc=null,pendingEdit=null,chosenOperation=null,previewTimer;
  const state=()=>A.getLiveState(),input=n=>host.querySelector('[name="'+n+'"]'),value=n=>input(n)?.value||'',labels={trim:'Taglia',extend:'Estendi',offset:'Offset parametrico',mirror:'Specchio associativo'},names={segment:'Segmento',circle:'Cerchio',feature:'Spigolo',arc:'Arco'};
  const data=()=>Object.fromEntries(new FormData(host.querySelector('form'))),fmt=n=>String(Number(n.toFixed(4)));
  const supported=item=>item&&['segment','circle','feature','arc'].includes(item.type)&&!!state().doc[{segment:'segments',circle:'circles',feature:'features',arc:'arcs'}[item.type]]?.some(s=>s.id===item.id);
@@ -5557,11 +5779,17 @@ window.FormaModifyUI=(()=>{
  function chips(){if(!$('modify-refs'))return;$('modify-refs').innerHTML=references().map((ref,i)=>'<div class="native-pick"><button type="button" data-mod-locate="'+i+'">'+esc((ctx.tool==='mirror'&&i===ctx.sources.length?'Asse':boundaryTool(ctx.tool)?(ref===ctx.source?'Segmento':'Limite'):names[ref.type]||'Riferimento')+' '+ref.id)+'</button><button type="button" data-mod-unpick="'+i+'" aria-label="Rimuovi riferimento '+esc(ref.id)+'">×</button></div>').join('')||'<span class="panel-note">Nessun riferimento selezionato.</span>';host.querySelectorAll('[data-mod-pick]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.modPick===ctx.pick)));}
  function highlight(){const impact=boundaryTool(ctx?.tool)&&preview?.op.impact,extra=impact?[...impact.dimensions.map(id=>({type:'dimension',id,color:'#9fe0b3',index:id})),...impact.constraints.map(id=>({type:'constraint',id,color:'#9fe0b3',index:id}))]:[];C.setReferenceHighlight([...references(),...extra]);}
  function message(text,error=false){const el=$('modify-error');if(el){el.textContent=text;el.hidden=!text;}host.classList.toggle('modify-invalid',error);const control=input('value')||input('radius');if(error)control?.setAttribute('aria-invalid','true');else control?.removeAttribute('aria-invalid');}
- function open(tool,edit){const s=state(),selected=(s.selected?.items||(s.selected?[s.selected]:[])).filter(supported),factor=s.doc.units==='cm'?.1:1;ctx={tool,sources:selected,source:selected.find(i=>i.type==='segment')||null,limit:null,axis:null,plans:[],hoverPlan:null,pick:boundaryTool(tool)?(selected.some(i=>i.type==='segment')?'limit':'source'):selected.length?tool==='mirror'?'axis':null:'objects',side:1};preview=null;
+ function open(tool,edit){clearTimeout(previewTimer);const s=state(),selected=(s.selected?.items||(s.selected?[s.selected]:[])).filter(supported),factor=s.doc.units==='cm'?.1:1;ctx={tool,sources:selected,source:selected.find(i=>i.type==='segment')||null,limit:null,axis:null,plans:[],hoverPlan:null,pick:boundaryTool(tool)?(selected.some(i=>i.type==='segment')?'limit':'source'):selected.length?tool==='mirror'?'axis':null:'objects',side:1};preview=null;
+  const boundary=boundaryTool(tool),distance=edit&&s.doc.params.find(p=>p.id===edit.value);
   if(edit){
    ctx.editId=edit.id;
-   [ctx.source,ctx.limit]=edit.sources;
-   ctx.pick='portion';
+   ctx.pick=boundary?'portion':null;
+   if(boundary)[ctx.source,ctx.limit]=edit.sources;
+   else{
+    ctx.sources=tool==='mirror'?edit.sources.slice(0,-1):[...edit.sources];
+    ctx.axis=edit.axis||null;
+    ctx.side=edit.side===-1?-1:1;
+   }
   }
   let body='';
   if(boundaryTool(tool)){
@@ -5569,23 +5797,24 @@ window.FormaModifyUI=(()=>{
    body=section(1,'Riferimenti','<div class="modify-pick-buttons"><button type="button" class="btn" data-mod-pick="source">Segmento da '+(extending?'estendere':'tagliare')+'</button><button type="button" class="btn" data-mod-pick="limit">Limite</button></div><div id="modify-refs"></div><label class="check-line"><input type="checkbox" name="extendLimits" '+(edit?.extendLimits?'checked':'')+'>Prolunga il limite lineare</label>')
      +'<div id="modify-boundary-picks" class="modify-boundary-picks" hidden></div>';
   }
-  else body=section(1,'Oggetti','<p class="native-help">Seleziona segmenti, cerchi e archi con clic o riquadro. Ctrl/Shift aggiunge alla selezione.</p><div id="modify-refs"></div><div class="modify-pick-buttons"><button type="button" class="btn" data-mod-pick="objects">Seleziona sul disegno</button><button type="button" class="btn" data-mod-clear>Svuota</button></div>')+(tool==='mirror'?section(2,'Asse di simmetria','<p class="native-help">Scegli un segmento o una linea di costruzione. Le copie seguono l’asse e gli originali.</p><button type="button" class="btn wide" data-mod-pick="axis">Seleziona asse sul disegno</button>'):section(2,'Distanza','<div class="native-expression-head"><button type="button" data-mod-formula="number" aria-pressed="true">123 Valore</button><button type="button" data-mod-formula="formula" aria-pressed="false">ƒx Formula</button></div>'+field('Distanza · '+s.doc.units,'value',10*factor,'required spellcheck="false"')+U.select('Tipo di misura','kind',[['input','Modificabile · parametro'],['fixed','Fissa'],['computed','Calcolata · formula']],'input')+'<button type="button" class="btn wide" data-mod-flip>Inverti lato</button><p class="native-help">I contorni di segmenti si uniscono agli spigoli. Cerchi e archi hanno un offset radiale.</p>'));
-  const advanced='<details class="native-advanced"><summary>Avanzate · nome e layer</summary>'+field('Nome operazione','name',labels[tool],'required maxlength="80"')+(tool==='offset'?field('Codice parametro distanza','param',N.name(s.doc,'DIST'),'required pattern="[A-Za-z_][A-Za-z_0-9]*" maxlength="30"'):'')+U.select('Layer dei nuovi elementi','layer',[['','Mantieni i layer degli originali'],...s.doc.layers.map(l=>[l.id,l.name])],'')+'</details>';
-  host.innerHTML='<div class="section-head"><h2>'+(edit?'Modifica ':'')+labels[tool]+'</h2><button type="button" class="icon-btn" data-mod-close aria-label="Annulla comando">'+U.icon('close')+'</button></div><form autocomplete="off">'+body+(edit?'':advanced)+'<p id="modify-hint" class="modify-hint" role="status"></p>'+(boundaryTool(tool)?'':'<label class="check-line"><input type="checkbox" name="preview" checked>Mostra anteprima</label>')+'<p id="modify-summary" role="status"></p><p id="modify-error" class="native-error" role="alert" hidden></p><div class="native-footer"><button type="submit" class="btn primary" id="modify-apply" disabled>'+(edit?'Salva modifiche':boundaryTool(tool)?(tool==='extend'?'Applica estensione':'Applica taglio'):'Crea operazione')+'</button><button type="button" class="btn" data-mod-close>Annulla</button></div></form>';
-  if(input('value'))window.FormaFormulaUI?.bind(input('value'),s.doc,s.result,{onInsert:()=>{input('kind').value='computed';update()}});chips();
-  if(edit)ctx.preferredSide=edit.type==='extend'?edit.guards[0]?.end:edit.outputs.length?'middle':edit.ends.a!==edit.sourceEnds.a?'a':'b';
+  else body=section(1,'Oggetti','<p class="native-help">Seleziona segmenti, cerchi e archi con clic o riquadro. Ctrl/Shift aggiunge alla selezione.</p><div id="modify-refs"></div><div class="modify-pick-buttons"><button type="button" class="btn" data-mod-pick="objects">Seleziona sul disegno</button><button type="button" class="btn" data-mod-clear>Svuota</button></div>')+(tool==='mirror'?section(2,'Asse di simmetria','<p class="native-help">Scegli un segmento o una linea di costruzione. Le copie seguono l’asse e gli originali.</p><button type="button" class="btn wide" data-mod-pick="axis">Seleziona asse sul disegno</button>'):section(2,'Distanza','<div class="native-expression-head"><button type="button" data-mod-formula="number" aria-pressed="true">123 Valore</button><button type="button" data-mod-formula="formula" aria-pressed="false">ƒx Formula</button></div>'+field('Distanza · '+s.doc.units,'value',distance?.expr??distance?.value??10*factor,'required spellcheck="false"')+U.select('Tipo di misura','kind',[['input','Modificabile · parametro'],['fixed','Fissa'],['computed','Calcolata · formula']],distance?.kind||'input')+'<button type="button" class="btn wide" data-mod-flip>Inverti lato</button><p class="native-help">I contorni di segmenti si uniscono agli spigoli. Cerchi e archi hanno un offset radiale.</p>'));
+  const advanced='<details class="native-advanced"><summary>Avanzate · nome e layer</summary>'+field('Nome operazione','name',edit?.name||labels[tool],'required maxlength="80"')+(tool==='offset'?field('Codice parametro distanza','param',edit?.value||N.name(s.doc,'DIST'),'required pattern="[A-Za-z_][A-Za-z_0-9]*" maxlength="30"'+(edit?' readonly':'')):'')+U.select('Layer dei nuovi elementi','layer',[['',edit?'Mantieni i layer attuali':'Mantieni i layer degli originali'],...s.doc.layers.map(l=>[l.id,l.name])],'')+'</details>';
+  host.innerHTML='<div class="section-head"><h2>'+(edit?'Modifica ':'')+labels[tool]+'</h2><button type="button" class="icon-btn" data-mod-close aria-label="Annulla comando">'+U.icon('close')+'</button></div><form autocomplete="off">'+body+(edit&&boundary?'':advanced)+'<p id="modify-hint" class="modify-hint" role="status"></p>'+(boundaryTool(tool)?'':'<label class="check-line"><input type="checkbox" name="preview" checked>Mostra anteprima</label>')+'<p id="modify-summary" role="status"></p><p id="modify-error" class="native-error" role="alert" hidden></p><div class="native-footer"><button type="submit" class="btn primary" id="modify-apply" disabled>'+(edit?'Salva modifiche':boundaryTool(tool)?(tool==='extend'?'Applica estensione':'Applica taglio'):'Crea operazione')+'</button><button type="button" class="btn" data-mod-close>Annulla</button></div></form>';
+  if(input('value'))window.FormaFormulaUI?.bind(input('value'),s.doc,s.result,{exclude:distance?[distance.id]:[],onInsert:()=>{input('kind').value='computed';update()}});
+  if(edit&&boundary)ctx.preferredSide=edit.type==='extend'?edit.guards[0]?.end:edit.outputs.length?'middle':edit.ends.a!==edit.sourceEnds.a?'a':'b';
   update();
  }
  const editingOp=()=>ctx?.editId&&state().doc.operations.find(op=>op.id===ctx.editId);
  const pickableBoundary=ref=>supported(ref)&&(!editingOp()||M.boundaryRefAllowed(state().doc,editingOp(),ref));
  function spec(){const v=data();return boundaryTool(ctx.tool)?{type:ctx.tool,name:v.name,source:ctx.source,limit:ctx.limit,extendLimits:v.extendLimits==='on',layer:v.layer||undefined}:{type:ctx.tool,name:v.name,sources:ctx.sources,axis:ctx.axis,value:v.value,kind:v.kind,param:v.param,side:ctx.side,layer:v.layer||undefined};}
- function update(){if(!ctx||ctx.tool==='properties'||ctx.tool==='list')return;if(boundaryTool(ctx.tool)){updateBoundary();return;}message('');chips();preview=null;const b=$('modify-apply');b.disabled=true;
+ function applyDerived(d,r,options){return ctx.editId?M.editDerived(d,r,ctx.editId,options):M.create(d,r,options);}
+ function update(){clearTimeout(previewTimer);if(!ctx||ctx.tool==='properties'||ctx.tool==='list')return;if(boundaryTool(ctx.tool)){updateBoundary();return;}message('');chips();preview=null;const b=$('modify-apply');b.disabled=true;
   host.querySelector('[data-mod-flip]')?.setAttribute('aria-pressed',String(ctx.side===-1));const pick=ctx.pick;hint(pick==='objects'?'Clic o riquadro: → contiene, ← interseca.':pick==='source'?(ctx.tool==='extend'?'Clicca il segmento da estendere.':'Clicca il segmento da tagliare.'):pick==='limit'?'Clicca il limite: segmento, cerchio o arco.':pick==='axis'?'Clicca il segmento che definisce l’asse.':pick==='portion'?(ctx.tool==='extend'?'Clicca vicino all’estremo da prolungare, sul segmento.':'Clicca la porzione del segmento da eliminare.'):'Controlla l’anteprima e conferma.');
   if(ctx.tool==='offset')host.querySelectorAll('[data-mod-formula]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.modFormula===(value('kind')==='computed'?'formula':'number'))));
   try{
    if(ctx.tool==='mirror'&&!ctx.axis||!ctx.sources.length)return;
    if(ctx.tool==='offset'&&value('kind')!=='computed'&&!E.free(value('value')))throw Error('È una formula: scegli ƒx Formula per mantenere il collegamento.');
-   const d=E.clone(state().doc),id=M.create(d,state().result,spec()),r=E.settle(d),op=d.operations.find(o=>o.id===id);preview={d,r,op};b.disabled=false;$('modify-summary').textContent=op.outputs.length+' '+(op.outputs.length===1?'elemento associativo':'elementi associativi');
+   const d=E.clone(state().doc),id=applyDerived(d,state().result,spec()),r=E.settle(d),op=d.operations.find(o=>o.id===id);preview={d,r,op};b.disabled=false;$('modify-summary').textContent=op.outputs.length+' '+(op.outputs.length===1?'elemento associativo':'elementi associativi');
   }catch(e){message(e.message,true);$('modify-summary').textContent='Correggi i riferimenti o la misura.';}
   finally{highlight();C.render();window.FormaWorkspaceUI?.refreshExport();}
  }
@@ -5728,16 +5957,25 @@ window.FormaModifyUI=(()=>{
   if(input('value')){window.FormaFormulaUI?.bind(input('value'),state().doc,state().result,{exclude:[p.id],onInsert:()=>input('kind').value='computed'});input('kind').value=p.kind;}
  }
  function listing(s){ctx={tool:'list'};host.innerHTML='<div class="section-head"><h2>Operazioni di modifica</h2></div><p class="native-help">Seleziona un’operazione per vedere i riferimenti o modificarne la distanza.</p><div class="modify-operation-list">'+s.doc.operations.map(op=>'<button type="button" class="btn wide" data-mod-select="'+op.id+'">'+U.icon(op.type==='tangentArc'?'tangent':op.type==='freeArc'?'line':op.type)+'<span>'+esc(op.name)+'<small>'+esc(op.sources.map(s=>s.id).join(' · '))+'</small></span></button>').join('')+'</div>';}
- function refresh(s){const enabled=!s.runner&&s.doc.view.mode!=='render',op=enabled?operationFor(s):null,next=enabled?(tools.includes(s.tool)?'tool:'+s.tool+':'+s.doc.units:op?'op:'+op.id+':'+s.doc.units:!s.selected&&s.doc.operations?.length?'list':''):'';host.hidden=!next;document.querySelector('.right-panel').classList.toggle('modify-open',!!next);if(!next){if(key){ctx=null;preview=null;gesture=null;C.setReferenceHighlight();C.setSelectionBox();}key='';return;}if(key!==next||next.startsWith('op:')&&seenDoc!==s.doc&&!committing||next==='list'&&seenDoc!==s.doc){key=next;seenDoc=s.doc;if(next.startsWith('tool:')){const edit=pendingEdit;pendingEdit=null;open(s.tool,edit);window.FormaWorkspaceUI?.reveal('right')}else if(op)property(op);else listing(s);}else if(next.startsWith('tool:')&&seenDoc!==s.doc&&!committing){seenDoc=s.doc;update();}}
+ function refresh(s){const enabled=!s.runner&&s.doc.view.mode!=='render'&&(s.tool==='select'||tools.includes(s.tool)),op=enabled&&s.tool==='select'?operationFor(s):null,next=enabled?(tools.includes(s.tool)?'tool:'+s.tool+':'+s.doc.units:op?'op:'+op.id+':'+s.doc.units:!s.selected&&s.doc.operations?.length?'list':''):'';host.hidden=!next;document.querySelector('.right-panel').classList.toggle('modify-open',!!next);if(!next){if(key){ctx=null;preview=null;gesture=null;C.setReferenceHighlight();C.setSelectionBox();}key='';return;}if(key!==next||next.startsWith('op:')&&seenDoc!==s.doc&&!committing||next==='list'&&seenDoc!==s.doc){key=next;seenDoc=s.doc;if(next.startsWith('tool:')){const edit=s.doc.operations.find(op=>op.id===pendingEdit&&op.type===s.tool);pendingEdit=null;open(s.tool,edit);window.FormaWorkspaceUI?.reveal('right')}else if(op)property(op);else listing(s);}else if(next.startsWith('tool:')&&seenDoc!==s.doc&&!committing){seenDoc=s.doc;update();}}
+ function editOperation(id){
+  const op=state().doc.operations.find(op=>op.id===id);
+  if(!op||!tools.includes(op.type))return;
+  pendingEdit=id;key='';A.setTool(op.type);
+ }
  function close(){
   const edit=editingOp();
   ctx=null;preview=null;key='';gesture=null;C.setReferenceHighlight();C.setSelectionBox();A.setTool('select');
   if(edit)selectOperation(edit);else A.select(null);
  }
  function saveDistance(d,op,v){if(!String(v.value||'').trim())throw Error('Inserisci la distanza offset.');if(v.kind!=='computed'&&!E.free(v.value))throw Error('Scegli Calcolata per usare una formula.');const p=d.params.find(p=>p.id===op.value);p.kind=v.kind;if(v.kind==='computed'){p.expr=v.value;delete p.value}else{p.value=Number(v.value);delete p.expr}}
- function commit(){if(!ctx)return;if(boundaryTool(ctx.tool)){commitBoundary(ctx.editId?ctx.chosenPlan:currentPlan());return;}try{committing=true;if(ctx.tool==='properties'){const op=state().doc.operations.find(op=>op.id===ctx.opId),v=data();if(v.radiusLocked&&!input('radius').checkValidity())throw Error('Inserisci un raggio valido.');A.apply(d=>{if(['tangentArc','freeArc'].includes(op.type))M.setArcRadius(d,op.outputs[0].id,v.radiusLocked?(v.radius===ctx.radiusDisplay?ctx.arcRadius:v.radius):'');else saveDistance(d,op,v);});property(state().doc.operations.find(o=>o.id===op.id));return;}update();if(!preview)return;const s=spec();let created;A.apply(d=>created=M.create(d,state().result,s));const op=state().doc.operations.find(op=>op.id===created),item=op.target||op.outputs[0];ctx=null;preview=null;key='';C.setReferenceHighlight();A.setTool('select');if(item)A.select(item);U.toast('Operazione associativa creata.');}catch(e){message(e.message,true)}finally{committing=false;window.FormaWorkspaceUI?.refreshExport()}}
+ function commit(){if(!ctx)return;if(boundaryTool(ctx.tool)){commitBoundary(ctx.editId?ctx.chosenPlan:currentPlan());return;}try{committing=true;if(ctx.tool==='properties'){const op=state().doc.operations.find(op=>op.id===ctx.opId),v=data();if(v.radiusLocked&&!input('radius').checkValidity())throw Error('Inserisci un raggio valido.');A.apply(d=>{if(['tangentArc','freeArc'].includes(op.type))M.setArcRadius(d,op.outputs[0].id,v.radiusLocked?(v.radius===ctx.radiusDisplay?ctx.arcRadius:v.radius):'');else saveDistance(d,op,v);});property(state().doc.operations.find(o=>o.id===op.id));return;}update();if(!preview)return;const s=spec(),editing=!!ctx.editId;let created;A.apply(d=>created=applyDerived(d,state().result,s));const op=state().doc.operations.find(op=>op.id===created);ctx=null;preview=null;key='';C.setReferenceHighlight();A.setTool('select');selectOperation(op);U.toast(editing?'Operazione aggiornata. Ctrl+Z annulla.':'Operazione associativa creata.');}catch(e){message(e.message,true)}finally{committing=false;window.FormaWorkspaceUI?.refreshExport()}}
  host.addEventListener('submit',ev=>{ev.preventDefault();ev.stopPropagation();commit()});
- host.addEventListener('input',()=>{if(!ctx)return;ctx.dirty=true;const submit=host.querySelector('[type="submit"]');if(ctx.tool!=='properties'&&submit)submit.disabled=true;hint('Valore in attesa · Invio conferma la modifica.');window.FormaWorkspaceUI?.refreshExport()});
+ host.addEventListener('input',ev=>{if(!ctx)return;ctx.dirty=true;
+  if(ctx.editId&&ctx.tool==='offset'&&ev.target.name==='value'){
+   clearTimeout(previewTimer);previewTimer=setTimeout(update,120);return;
+  }
+  const submit=host.querySelector('[type="submit"]');if(ctx.tool!=='properties'&&submit)submit.disabled=true;hint('Valore in attesa · Invio conferma la modifica.');window.FormaWorkspaceUI?.refreshExport()});
  host.addEventListener('change',ev=>{if(!ctx)return;if(ctx.tool==='properties'){
    if(ev.target.name==='radiusLocked'){
     const radius=input('radius');
@@ -5750,8 +5988,7 @@ window.FormaModifyUI=(()=>{
  host.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!ctx)return;try{
   if(b.hasAttribute('data-mod-close')){close();return}if(b.dataset.boundaryChoice!==undefined){chooseBoundary(ctx.plans[Number(b.dataset.boundaryChoice)]);return}
   if(b.hasAttribute('data-mod-edit-boundary')){
-   pendingEdit=state().doc.operations.find(op=>op.id===ctx.opId);
-   if(pendingEdit)A.setTool(pendingEdit.type);
+   editOperation(ctx.opId);
    return;
   }
   if(b.dataset.modPick){
@@ -5838,7 +6075,7 @@ window.FormaModifyUI=(()=>{
   return false;
  }
  const canPickCurve=(ref,curve)=>!curve.patternId&&active()&&(ctx.pick==='limit'?pickableBoundary(ref):ctx.pick==='objects'&&supported(ref));
- refresh(state());A.redraw();return {refresh,previewSVG,canPickSegment,canPickCurve,boundaryHint,pending:()=>!!(active()||ctx?.tool==='properties'&&ctx.dirty)};
+ refresh(state());A.redraw();return {refresh,editOperation,previewSVG,canPickSegment,canPickCurve,boundaryHint,pending:()=>!!(active()||ctx?.tool==='properties'&&ctx.dirty)};
 })();
 
 /* Structured presence conditions, deliberately separate from dimensional constraints. */
