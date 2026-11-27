@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'forma-pwa-' + self.registration.scope + '-';
-const CACHE_NAME = CACHE_PREFIX + 'fc5d8d63305e67';
+const CACHE_NAME = CACHE_PREFIX + '141f7c163fe808';
 const ASSETS = ['./index.html', './manifest.webmanifest', './icons/forma-192.png', './icons/forma-512.png'];
 const absolute = path => new URL(path, self.registration.scope).href;
 const entry = absolute('./index.html');
