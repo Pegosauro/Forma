@@ -5081,7 +5081,7 @@ window.FormaApp=(()=>{
         return;
       }
       window.FormaExcelExport.download(state.doc).then(
-        ()=>U.toast('File Excel con macro esportato.'),
+        vba=>U.toast(vba?'File Excel e DXF diretto in VBA.':'File Excel esportato. Questo progetto richiede Node.js.'),
         error=>U.toast(error.message||'Esportazione Excel non riuscita.',true)
       );
     }
@@ -5919,6 +5919,8 @@ window.FormaExcelExport = (() => {
   const E = window.FormaEngine;
   const X = window.FormaExport;
   const template = {"[Content_Types].xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"vml\" ContentType=\"application/vnd.openxmlformats-officedocument.vmlDrawing\"/><Default Extension=\"bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/><Override PartName=\"/xl/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.ms-excel.sheet.macroEnabled.main+xml\"/><Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/></Types>","_rels/.rels":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/></Relationships>","xl/_rels/workbook.xml.rels":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/><Relationship Id=\"rId4\" Type=\"http://schemas.microsoft.com/office/2006/relationships/vbaProject\" Target=\"vbaProject.bin\"/></Relationships>","xl/worksheets/sheet1.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><sheetPr codeName=\"Sheet1\"><pageSetUpPr fitToPage=\"1\"/></sheetPr><dimension ref=\"A1:H8\"/><sheetViews><sheetView showGridLines=\"0\" tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"8\" topLeftCell=\"A9\" activePane=\"bottomLeft\" state=\"frozen\"/><selection pane=\"bottomLeft\"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight=\"15\"/><cols><col min=\"1\" max=\"1\" width=\"26.7109375\" customWidth=\"1\"/><col min=\"2\" max=\"2\" width=\"34.7109375\" customWidth=\"1\"/><col min=\"3\" max=\"3\" width=\"14.7109375\" customWidth=\"1\"/><col min=\"4\" max=\"4\" width=\"46.7109375\" customWidth=\"1\"/><col min=\"5\" max=\"5\" width=\"3.7109375\" customWidth=\"1\"/><col min=\"6\" max=\"6\" width=\"0\" hidden=\"1\" customWidth=\"1\"/><col min=\"7\" max=\"7\" width=\"3.7109375\" customWidth=\"1\"/><col min=\"8\" max=\"16384\" width=\"0\" hidden=\"1\" customWidth=\"1\"/></cols><sheetData><row r=\"1\" spans=\"8:8\"><c r=\"H1\" s=\"1\"><v>1</v></c></row><row r=\"2\" spans=\"8:8\"><c r=\"H2\" s=\"2\"><v>2</v></c></row><row r=\"3\" spans=\"8:8\"><c r=\"H3\" s=\"3\"><v>3</v></c></row><row r=\"4\" spans=\"8:8\"><c r=\"H4\" s=\"4\"><v>4</v></c></row><row r=\"5\" spans=\"8:8\"><c r=\"H5\" s=\"5\"><v>5</v></c></row><row r=\"6\" spans=\"8:8\"><c r=\"H6\" s=\"6\"><v>6</v></c></row><row r=\"7\" spans=\"8:8\"><c r=\"H7\" s=\"7\"><v>7</v></c></row><row r=\"8\" spans=\"8:8\"><c r=\"H8\" s=\"8\"><v>8</v></c></row></sheetData><sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\"/><mergeCells count=\"4\"><mergeCell ref=\"A1:D1\"/><mergeCell ref=\"A2:D2\"/><mergeCell ref=\"A6:D6\"/><mergeCell ref=\"A7:D7\"/></mergeCells><pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/><pageSetup fitToHeight=\"0\" orientation=\"landscape\"/><legacyDrawing r:id=\"rId1\"/></worksheet>","xl/workbook.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><fileVersion appName=\"xl\" lastEdited=\"4\" lowestEdited=\"4\" rupBuild=\"4505\" codeName=\"{28389E77-7640-9E18-AD5C-E98E2F4A8B83}\"/><workbookPr codeName=\"ThisWorkbook\" defaultThemeVersion=\"124226\"/><bookViews><workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"16095\" windowHeight=\"9660\"/></bookViews><sheets><sheet name=\"Parametri\" sheetId=\"1\" r:id=\"rId1\"/></sheets><calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/></workbook>","xl/drawings/vmlDrawing1.vml":"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t201\" coordsize=\"21600,21600\" o:spt=\"201\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path shadowok=\"f\" o:extrusionok=\"f\" strokeok=\"f\" fillok=\"f\" o:connecttype=\"rect\"/><o:lock v:ext=\"edit\" shapetype=\"t\"/></v:shapetype><v:shape id=\"_x0000_s1025\" type=\"#_x0000_t201\" alt=\"Crea un disegno DXF\" style=\"position:absolute;margin-left:322.5pt;margin-top:45pt;width:156pt;height:25.5pt;z-index:1;mso-wrap-style:tight\" o:button=\"t\" fillcolor=\"buttonFace [67]\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\"><v:fill color2=\"buttonFace [67]\" o:detectmouseclick=\"t\"/><o:lock v:ext=\"edit\" rotation=\"t\"/><v:textbox style=\"mso-direction-alt:auto\" o:singleclick=\"f\"><div style=\"text-align:center\"><font face=\"Calibri\" size=\"220\" color=\"#000000\">Crea DXF</font></div></v:textbox><x:ClientData ObjectType=\"Button\"><x:Anchor>2, 0, 3, 0, 3, 105, 4, 14</x:Anchor><x:PrintObject>False</x:PrintObject><x:AutoFill>False</x:AutoFill><x:FmlaMacro>[0]!CreaDXF</x:FmlaMacro><x:TextHAlign>Center</x:TextHAlign><x:TextVAlign>Center</x:TextVAlign></x:ClientData></v:shape></xml>","xl/styles.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><numFmts count=\"2\"><numFmt numFmtId=\"164\" formatCode=\"0.###############\"/><numFmt numFmtId=\"165\" formatCode=\"@\"/></numFmts><fonts count=\"6\"><font><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><b/><sz val=\"19\"/><color rgb=\"FF153350\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><sz val=\"11\"/><color rgb=\"FF46586B\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><sz val=\"11\"/><color rgb=\"FF123D60\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><b/><sz val=\"11\"/><color rgb=\"FFFFFFFF\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><b/><sz val=\"11\"/><color rgb=\"FF153350\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font></fonts><fills count=\"5\"><fill><patternFill patternType=\"none\"/></fill><fill><patternFill patternType=\"gray125\"/></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFD8EFFF\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFFFFFFF\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FF264967\"/><bgColor indexed=\"64\"/></patternFill></fill></fills><borders count=\"3\"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style=\"thin\"><color rgb=\"FFA7CBE4\"/></left><right style=\"thin\"><color rgb=\"FFA7CBE4\"/></right><top style=\"thin\"><color rgb=\"FFA7CBE4\"/></top><bottom style=\"thin\"><color rgb=\"FFA7CBE4\"/></bottom><diagonal/></border><border><left style=\"thin\"><color rgb=\"FFDFE5EB\"/></left><right style=\"thin\"><color rgb=\"FFDFE5EB\"/></right><top style=\"thin\"><color rgb=\"FFDFE5EB\"/></top><bottom style=\"thin\"><color rgb=\"FFDFE5EB\"/></bottom><diagonal/></border></borders><cellStyleXfs count=\"1\"><xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/></cellStyleXfs><cellXfs count=\"9\"><xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/><xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf><xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf><xf numFmtId=\"164\" fontId=\"3\" fillId=\"2\" borderId=\"1\" xfId=\"0\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment vertical=\"center\"/><protection locked=\"0\"/></xf><xf numFmtId=\"164\" fontId=\"0\" fillId=\"3\" borderId=\"2\" xfId=\"0\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"4\" borderId=\"0\" xfId=\"0\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf><xf numFmtId=\"0\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf><xf numFmtId=\"165\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment vertical=\"center\" wrapText=\"1\"/></xf><xf numFmtId=\"165\" fontId=\"3\" fillId=\"2\" borderId=\"1\" xfId=\"0\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment vertical=\"center\"/><protection locked=\"0\"/></xf></cellXfs><cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles><dxfs count=\"0\"/><tableStyles count=\"0\" defaultTableStyle=\"TableStyleMedium9\" defaultPivotStyle=\"PivotStyleLight16\"/></styleSheet>","xl/theme/theme1.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\"><a:themeElements><a:clrScheme name=\"Office\"><a:dk1><a:sysClr val=\"windowText\" lastClr=\"000000\"/></a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"1F497D\"/></a:dk2><a:lt2><a:srgbClr val=\"EEECE1\"/></a:lt2><a:accent1><a:srgbClr val=\"4F81BD\"/></a:accent1><a:accent2><a:srgbClr val=\"C0504D\"/></a:accent2><a:accent3><a:srgbClr val=\"9BBB59\"/></a:accent3><a:accent4><a:srgbClr val=\"8064A2\"/></a:accent4><a:accent5><a:srgbClr val=\"4BACC6\"/></a:accent5><a:accent6><a:srgbClr val=\"F79646\"/></a:accent6><a:hlink><a:srgbClr val=\"0000FF\"/></a:hlink><a:folHlink><a:srgbClr val=\"800080\"/></a:folHlink></a:clrScheme><a:fontScheme name=\"Office\"><a:majorFont><a:latin typeface=\"Cambria\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/><a:font script=\"Jpan\" typeface=\"\uff2d\uff33 \uff30\u30b4\u30b7\u30c3\u30af\"/><a:font script=\"Hang\" typeface=\"\ub9d1\uc740 \uace0\ub515\"/><a:font script=\"Hans\" typeface=\"\u5b8b\u4f53\"/><a:font script=\"Hant\" typeface=\"\u65b0\u7d30\u660e\u9ad4\"/><a:font script=\"Arab\" typeface=\"Times New Roman\"/><a:font script=\"Hebr\" typeface=\"Times New Roman\"/><a:font script=\"Thai\" typeface=\"Tahoma\"/><a:font script=\"Ethi\" typeface=\"Nyala\"/><a:font script=\"Beng\" typeface=\"Vrinda\"/><a:font script=\"Gujr\" typeface=\"Shruti\"/><a:font script=\"Khmr\" typeface=\"MoolBoran\"/><a:font script=\"Knda\" typeface=\"Tunga\"/><a:font script=\"Guru\" typeface=\"Raavi\"/><a:font script=\"Cans\" typeface=\"Euphemia\"/><a:font script=\"Cher\" typeface=\"Plantagenet Cherokee\"/><a:font script=\"Yiii\" typeface=\"Microsoft Yi Baiti\"/><a:font script=\"Tibt\" typeface=\"Microsoft Himalaya\"/><a:font script=\"Thaa\" typeface=\"MV Boli\"/><a:font script=\"Deva\" typeface=\"Mangal\"/><a:font script=\"Telu\" typeface=\"Gautami\"/><a:font script=\"Taml\" typeface=\"Latha\"/><a:font script=\"Syrc\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Orya\" typeface=\"Kalinga\"/><a:font script=\"Mlym\" typeface=\"Kartika\"/><a:font script=\"Laoo\" typeface=\"DokChampa\"/><a:font script=\"Sinh\" typeface=\"Iskoola Pota\"/><a:font script=\"Mong\" typeface=\"Mongolian Baiti\"/><a:font script=\"Viet\" typeface=\"Times New Roman\"/><a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/></a:majorFont><a:minorFont><a:latin typeface=\"Calibri\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/><a:font script=\"Jpan\" typeface=\"\uff2d\uff33 \uff30\u30b4\u30b7\u30c3\u30af\"/><a:font script=\"Hang\" typeface=\"\ub9d1\uc740 \uace0\ub515\"/><a:font script=\"Hans\" typeface=\"\u5b8b\u4f53\"/><a:font script=\"Hant\" typeface=\"\u65b0\u7d30\u660e\u9ad4\"/><a:font script=\"Arab\" typeface=\"Arial\"/><a:font script=\"Hebr\" typeface=\"Arial\"/><a:font script=\"Thai\" typeface=\"Tahoma\"/><a:font script=\"Ethi\" typeface=\"Nyala\"/><a:font script=\"Beng\" typeface=\"Vrinda\"/><a:font script=\"Gujr\" typeface=\"Shruti\"/><a:font script=\"Khmr\" typeface=\"DaunPenh\"/><a:font script=\"Knda\" typeface=\"Tunga\"/><a:font script=\"Guru\" typeface=\"Raavi\"/><a:font script=\"Cans\" typeface=\"Euphemia\"/><a:font script=\"Cher\" typeface=\"Plantagenet Cherokee\"/><a:font script=\"Yiii\" typeface=\"Microsoft Yi Baiti\"/><a:font script=\"Tibt\" typeface=\"Microsoft Himalaya\"/><a:font script=\"Thaa\" typeface=\"MV Boli\"/><a:font script=\"Deva\" typeface=\"Mangal\"/><a:font script=\"Telu\" typeface=\"Gautami\"/><a:font script=\"Taml\" typeface=\"Latha\"/><a:font script=\"Syrc\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Orya\" typeface=\"Kalinga\"/><a:font script=\"Mlym\" typeface=\"Kartika\"/><a:font script=\"Laoo\" typeface=\"DokChampa\"/><a:font script=\"Sinh\" typeface=\"Iskoola Pota\"/><a:font script=\"Mong\" typeface=\"Mongolian Baiti\"/><a:font script=\"Viet\" typeface=\"Arial\"/><a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/></a:minorFont></a:fontScheme><a:fmtScheme name=\"Office\"><a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"50000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"35000\"><a:schemeClr val=\"phClr\"><a:tint val=\"37000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:tint val=\"15000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"1\"/></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:shade val=\"51000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"80000\"><a:schemeClr val=\"phClr\"><a:shade val=\"93000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"94000\"/><a:satMod val=\"135000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"0\"/></a:gradFill></a:fillStyleLst><a:lnStyleLst><a:ln w=\"9525\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"><a:shade val=\"95000\"/><a:satMod val=\"105000\"/></a:schemeClr></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"25400\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"38100\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst><a:scene3d><a:camera prst=\"orthographicFront\"><a:rot lat=\"0\" lon=\"0\" rev=\"0\"/></a:camera><a:lightRig rig=\"threePt\" dir=\"t\"><a:rot lat=\"0\" lon=\"0\" rev=\"1200000\"/></a:lightRig></a:scene3d><a:sp3d><a:bevelT w=\"63500\" h=\"25400\"/></a:sp3d></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"40000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"40000\"><a:schemeClr val=\"phClr\"><a:tint val=\"45000\"/><a:shade val=\"99000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"20000\"/><a:satMod val=\"255000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\"><a:fillToRect l=\"50000\" t=\"-80000\" r=\"50000\" b=\"180000\"/></a:path></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"80000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"30000\"/><a:satMod val=\"200000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\"><a:fillToRect l=\"50000\" t=\"50000\" r=\"50000\" b=\"50000\"/></a:path></a:gradFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults/><a:extraClrSchemeLst/></a:theme>","xl/worksheets/_rels/sheet1.xml.rels":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing\" Target=\"../drawings/vmlDrawing1.vml\"/></Relationships>","xl/vbaProject.bin":"0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAPgADAP7/CQAGAAAAAAAAAAAAAAABAAAAEgAAAAAAAAAAEAAAFgAAAAIAAAD+////AAAAABgAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8BNbIAQXR0cmlidXQAZSBWQl9OYW0AZSA9ICJUaGkAc1dvcmtib28QayINCgqMQmFzAQKMMHswMDAyMFA4MTktABAwAwhDBwAUAhIBJDAwNDZ9gQ18R2xvYmFsAdAQU3BhYwGSRmFsBHNlDGRDcmVhdAhhYmwVH1ByZWSQZWNsYQAGSWQAsQhUcnUNQkV4cG8Ec2UUHFRlbXBsAGF0ZURlcml2AwISkkJ1c3RvbWkGegREAzJPcHRpbwRuIAAvbGljaXQYCgpQACEAJSBTdQRiIAWaX1NoZWUAdENoYW5nZSgAQnlWYWwgU2gAIEFzIE9iamUQY3QsIIMJVGFyKGdldIELUoEUKQoCIAAARGltIHVsAHRpbWFSaWdhIQEOTG9uZwINSWYFACMugtI8PiAiUAxhcgDYgN8iIFRocmWBSWl0AUOCFQghPQAgOCArIENMbiBnKFNoLgI1KCIgSDMiKS4ATHVljjLDHQAXyAw8IDkQFVHACEFwcAA+YQFBLkBJbnRlcnMANCgNQzIsgSfEF0I5OkIIIiAmiDIpKSBJAHMgTm90aGluAmcQF0FnZ2lvciBuYVF1b4CjU2gwCkVuZIIzk1hPcAhlbiiHTGZvZ2xsaW+BSwFhc8FfwkFTWwBYxAY9AB0Hti7GCXMOKIhSQxRDDC5DYWx8Y3UBioISQD/EBcVQNwXGUCAAZDEgT3IggkxAJUNTdHIojAqCNodbKSA+IDACQD+CFQF9yz6DDgIHwUBJZgGGQgAAAAAAAAABFgMAAPAAAADSAgAA1AAAAAACAAD/////2QIAAC0DAAAAAAAAAQAAAJ9wZ2EAAP//IwEAAIgAAAC2AP//AQEAAAAA/////wAAAAD///////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAwAAAAUAAAAHAAAA//////////8BAQgAAAD/////eAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAE1FAAD///////8AAAAA//8AAAAA//8BAQAAAADfAP//AAAAABgA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8oAAAAAgBTTP////8AAAEAUxD/////AAABAFOU/////wAAAAACPP////8AAP//AQEAAAAAAQBOADAAewAwADAAMAAyADAAOAAyADAALQAwADAAMAAwAC0AMAAwADAAMAAtAEMAMAAwADAALQAwADAAMAAwADAAMAAwADAAMAAwADQANgB9AAAAAAAAAP////8BAUAAAAACgP7//////yAAAAD/////MAAAAAIB//8AAAAAAAAAAP//////////AAAAAAAAAAAdAAAAJQAAAP////9AAAAAAAD//wAAAQAAAAAAAAAAAP///////////////wAAAAD//////////////////////////wAAAAD//////////////////////////wAAAAAAAAAA//8AAP///////wAAAAD/////////////////////////////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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAgAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9AAAAMwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAUABSAE8ASgBFAEMAVAB3AG0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACGAAAAVgAAAAAAAABQAFIATwBKAEUAQwBUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAACAQEAAAALAAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIgAAADpAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAACAAAAAwAAAAQAAAAFAAAABgAAAAcAAAAIAAAA/v///woAAAALAAAADAAAAA0AAAAOAAAADwAAABAAAAARAAAAEgAAABMAAAAUAAAAFQAAABYAAAAXAAAAGAAAAP7///8aAAAAGwAAABwAAAAdAAAAHgAAAB8AAAAgAAAAIQAAACIAAAAjAAAAJAAAACUAAAAmAAAAJwAAACgAAAApAAAAKgAAACsAAAAsAAAALQAAAC4AAAAvAAAAMAAAADEAAAAyAAAAMwAAADQAAAA1AAAANgAAADcAAAA4AAAAOQAAADoAAAA7AAAAPAAAAD0AAAA+AAAAPwAAAEAAAABBAAAAQgAAAEMAAABEAAAARQAAAEYAAABHAAAASAAAAEkAAABKAAAASwAAAEwAAABNAAAATgAAAE8AAABQAAAAUQAAAFIAAABTAAAAVAAAAP7///9WAAAAVwAAAFgAAABZAAAAWgAAAFsAAABcAAAAXQAAAF4AAABfAAAAYAAAAGEAAABiAAAAYwAAAGQAAABlAAAAZgAAAGcAAABoAAAAaQAAAGoAAABrAAAAbAAAAG0AAABuAAAAbwAAAHAAAABxAAAAcgAAAHMAAAB0AAAAdQAAAHYAAAB3AAAAeAAAAHkAAAB6AAAAewAAAHwAAAD+////fgAAAH8AAACAAAAAgQAAAIIAAACDAAAAhAAAAIUAAAD+////hwAAAP7///+JAAAAigAAAIsAAACMAAAAjQAAAI4AAACPAAAA/v////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8BAAAAAgAAAAMAAAAEAAAABQAAAAYAAAAHAAAACAAAAAkAAAAKAAAACwAAAAwAAAANAAAADgAAAA8AAAAQAAAAEQAAAP7///8TAAAAFAAAABUAAAD+////FwAAAP7////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==","docProps/core.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:creator></dc:creator><cp:lastModifiedBy></cp:lastModifiedBy><dcterms:created xsi:type=\"dcterms:W3CDTF\">2026-11-26T14:08:09Z</dcterms:created><dcterms:modified xsi:type=\"dcterms:W3CDTF\">2026-11-26T14:08:09Z</dcterms:modified></cp:coreProperties>","docProps/app.xml":"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>Microsoft Excel</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size=\"2\" baseType=\"variant\"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size=\"1\" baseType=\"lpstr\"><vt:lpstr>Parametri</vt:lpstr></vt:vector></TitlesOfParts><Company></Company><LinksUpToDate>false</LinksUpToDate><SharedDoc>false</SharedDoc><HyperlinksChanged>false</HyperlinksChanged><AppVersion>12.0000</AppVersion></Properties>"};
+  const VBA_PROJECT = "0M8R4KGxGuEAAAAAAAAAAAAAAAAAAAAAPgADAP7/CQAGAAAAAAAAAAAAAAABAAAAJAAAAAAAAAAAEAAAKAAAAAEAAAD+////AAAAACkAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8BNbIAQXR0cmlidXQAZSBWQl9OYW0AZSA9ICJUaGkAc1dvcmtib28QayINCgqMQmFzAQKMMHswMDAyMFA4MTktABAwAwhDBwAUAhIBJDAwNDZ9gQ18R2xvYmFsAdAQU3BhYwGSRmFsBHNlDGRDcmVhdAhhYmwVH1ByZWSQZWNsYQAGSWQAsQhUcnUNQkV4cG8Ec2UUHFRlbXBsAGF0ZURlcml2AwISkkJ1c3RvbWkGegREAzJPcHRpbwRuIAAvbGljaXQYCgpQACEAJSBTdQRiIAWaX1NoZWUAdENoYW5nZSgAQnlWYWwgU2gAIEFzIE9iamUQY3QsIIMJVGFyKGdldIELUoEUKQoCIAAARGltIHVsAHRpbWFSaWdhIQEOTG9uZwINSWYFACMugtI8PiAiUAxhcgDYgN8iIFRocmWBSWl0AUOCFQghPQAgOCArIENMbiBnKFNoLgI1KCIgSDMiKS4ATHVljjLDHQAXyAw8IDkQFVHACEFwcAA+YQFBLkBJbnRlcnMANCgNQzIsgSfEF0I5OkIIIiAmiDIpKSBJAHMgTm90aGluAmcQF0FnZ2lvciBuYVF1b4CjU2gwCkVuZIIzk1hPcAhlbiiHTGZvZ2xsaW+BSwFhc8FfwkFTWwBYxAY9AB0Hti7GCXMOKIhSQxRDDC5DYWx8Y3UBioISQD/EBcVQNwXGUCAAZDEgT3IggkxAJUNTdHIojAqCNodbKSA+IDACQD+CFQF9yz6DDgIHwUBJZgGGQgAAAAAAAAABFgMAAPAAAADSAgAA1AAAAAACAAD/////2QIAAC0DAAAAAAAAAQAAAJ9wZ2EAAP//IwEAAIgAAAC2AP//AQEAAAAA/////wAAAAD///////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAwAAAAUAAAAHAAAA//////////8BAQgAAAD/////eAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAE1FAAD///////8AAAAA//8AAAAA//8BAQAAAADfAP//AAAAABgA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8oAAAAAgBTTP////8AAAEAUxD/////AAABAFOU/////wAAAAACPP////8AAP//AQEAAAAAAQBOADAAewAwADAAMAAyADAAOAAyADAALQAwADAAMAAwAC0AMAAwADAAMAAtAEMAMAAwADAALQAwADAAMAAwADAAMAAwADAAMAAwADQANgB9AAAAAAAAAP////8BAUAAAAACgP7//////yAAAAD/////MAAAAAIB//8AAAAAAAAAAP//////////AAAAAAAAAAAdAAAAJQAAAP////9AAAAAAAD//wAAAQAAAAAAAAAAAP///////////////wAAAAD//////////////////////////wAAAAD//////////////////////////wAAAAAAAAAA//8AAP///////wAAAAD///////////////////////////////8AAP///////wAAAAAAAN8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+ygEAAAD/////AQEIAAAA/////3gAAAD/////AAABqLAAQXR0cmlidXQAZSBWQl9OYW0AZSA9ICJTaGVAZXQxIg0KCuhCBGFzAnQwezAwMMAyMDgyMC0AIAQIDkMAFAIcASQwMDQ2An0NfEdsb2JhbCEBxFNwYWMBkkZhCGxzZQxkQ3JlYRB0YWJsFR9QcmUgZGVjbGEABklkEQCrVHJ1DUJFeHAIb3NlFBxUZW1wAGxhdGVEZXJpBnYCJJJCdXN0b20MaXoERAMyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzGG1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsAAAC2MQAAAAAAAF8AVgBCAEEAXwBQAFIATwBKAEUAQwBUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaAAIBAgAAAP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGQAAAPAJAAAAAAAAZABpAHIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBAAAAMwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAUABSAE8ASgBFAEMAVAB3AG0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAgD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABKAAAAVgAAAAAAAABQAFIATwBKAEUAQwBUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAACAQEAAAALAAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEwAAADpAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAEAAAACAAAAAwAAAAQAAAAFAAAABgAAAAcAAAAIAAAA/v///woAAAALAAAADAAAAA0AAAAOAAAADwAAABAAAAARAAAAEgAAABMAAAAUAAAAFQAAABYAAAAXAAAAGAAAAP7///8aAAAAGwAAABwAAAAdAAAAHgAAAB8AAAAgAAAAIQAAACIAAAAjAAAAJAAAACUAAAAmAAAAJwAAACgAAAApAAAAKgAAACsAAAAsAAAALQAAAC4AAAAvAAAAMAAAADEAAAAyAAAAMwAAADQAAAA1AAAANgAAADcAAAA4AAAAOQAAADoAAAA7AAAAPAAAAD0AAAA+AAAAPwAAAEAAAAD+////QgAAAEMAAABEAAAARQAAAEYAAABHAAAASAAAAEkAAAD+////SwAAAP7///9NAAAATgAAAE8AAABQAAAAUQAAAFIAAABTAAAA/v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AQAAAAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAP7///8MAAAADQAAAA4AAAAPAAAAEAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAeAAAAHwAAACAAAAAhAAAAIgAAACMAAAD+////JQAAACYAAAAnAAAA/v////7////9//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8=";
+  const VBA_DXF_TEMPLATE = "  0|SECTION|  2|HEADER|  9|$ACADVER|  1|AC1015|  9|$ACADMAINTVER| 70|6|  9|$DWGCODEPAGE|  3|ANSI_1252|  9|$INSBASE| 10|0.0| 20|0.0| 30|0.0|  9|$EXTMIN| 10|1e+20| 20|1e+20| 30|1e+20|  9|$EXTMAX| 10|-1e+20| 20|-1e+20| 30|-1e+20|  9|$LIMMIN| 10|0.0| 20|0.0|  9|$LIMMAX| 10|420.0| 20|297.0|  9|$ORTHOMODE| 70|0|  9|$REGENMODE| 70|1|  9|$FILLMODE| 70|1|  9|$QTEXTMODE| 70|0|  9|$MIRRTEXT| 70|1|  9|$LTSCALE| 40|1.0|  9|$ATTMODE| 70|1|  9|$TEXTSIZE| 40|2.5|  9|$TRACEWID| 40|1.0|  9|$TEXTSTYLE|  7|Standard|  9|$CLAYER|  8|0|  9|$CELTYPE|  6|ByLayer|  9|$CECOLOR| 62|256|  9|$CELTSCALE| 40|1.0|  9|$DISPSILH| 70|0|  9|$DIMSCALE| 40|1.0|  9|$DIMASZ| 40|2.5|  9|$DIMEXO| 40|0.625|  9|$DIMDLI| 40|3.75|  9|$DIMRND| 40|0.0|  9|$DIMDLE| 40|0.0|  9|$DIMEXE| 40|1.25|  9|$DIMTP| 40|0.0|  9|$DIMTM| 40|0.0|  9|$DIMTXT| 40|2.5|  9|$DIMCEN| 40|2.5|  9|$DIMTSZ| 40|0.0|  9|$DIMTOL| 70|0|  9|$DIMLIM| 70|0|  9|$DIMTIH| 70|0|  9|$DIMTOH| 70|0|  9|$DIMSE1| 70|0|  9|$DIMSE2| 70|0|  9|$DIMTAD| 70|1|  9|$DIMZIN| 70|8|  9|$DIMBLK|  1||  9|$DIMASO| 70|1|  9|$DIMSHO| 70|1|  9|$DIMPOST|  1||  9|$DIMAPOST|  1||  9|$DIMALT| 70|0|  9|$DIMALTD| 70|3|  9|$DIMALTF| 40|0.03937007874|  9|$DIMLFAC| 40|1.0|  9|$DIMTOFL| 70|1|  9|$DIMTVP| 40|0.0|  9|$DIMTIX| 70|0|  9|$DIMSOXD| 70|0|  9|$DIMSAH| 70|0|  9|$DIMBLK1|  1||  9|$DIMBLK2|  1||  9|$DIMSTYLE|  2|ISO-25|  9|$DIMCLRD| 70|0|  9|$DIMCLRE| 70|0|  9|$DIMCLRT| 70|0|  9|$DIMTFAC| 40|1.0|  9|$DIMGAP| 40|0.625|  9|$DIMJUST| 70|0|  9|$DIMSD1| 70|0|  9|$DIMSD2| 70|0|  9|$DIMTOLJ| 70|0|  9|$DIMTZIN| 70|8|  9|$DIMALTZ| 70|0|  9|$DIMALTTZ| 70|0|  9|$DIMUPT| 70|0|  9|$DIMDEC| 70|2|  9|$DIMTDEC| 70|2|  9|$DIMALTU| 70|2|  9|$DIMALTTD| 70|3|  9|$DIMTXSTY|  7|Standard|  9|$DIMAUNIT| 70|0|  9|$DIMADEC| 70|0|  9|$DIMALTRND| 40|0.0|  9|$DIMAZIN| 70|0|  9|$DIMDSEP| 70|44|  9|$DIMATFIT| 70|3|  9|$DIMFRAC| 70|0|  9|$DIMLDRBLK|  1||  9|$DIMLUNIT| 70|2|  9|$DIMLWD| 70|-2|  9|$DIMLWE| 70|-2|  9|$DIMTMOVE| 70|0|  9|$LUNITS| 70|2|  9|$LUPREC| 70|4|  9|$SKETCHINC| 40|1.0|  9|$FILLETRAD| 40|10.0|  9|$AUNITS| 70|0|  9|$AUPREC| 70|2|  9|$MENU|  1|.|  9|$ELEVATION| 40|0.0|  9|$PELEVATION| 40|0.0|  9|$THICKNESS| 40|0.0|  9|$LIMCHECK| 70|0|  9|$CHAMFERA| 40|0.0|  9|$CHAMFERB| 40|0.0|  9|$CHAMFERC| 40|0.0|  9|$CHAMFERD| 40|0.0|  9|$SKPOLY| 70|0|  9|$TDCREATE| 40|2461372.5258101854|  9|$TDUCREATE| 40|2458532.153996898|  9|$TDUPDATE| 40|2461372.5258101854|  9|$TDUUPDATE| 40|2458532.1544311|  9|$TDINDWG| 40|0.0|  9|$TDUSRTIMER| 40|0.0|  9|$USRTIMER| 70|1|  9|$ANGBASE| 50|0.0|  9|$ANGDIR| 70|0|  9|$PDMODE| 70|0|  9|$PDSIZE| 40|0.0|  9|$PLINEWID| 40|0.0|  9|$SPLFRAME| 70|0|  9|$SPLINETYPE| 70|6|  9|$SPLINESEGS| 70|8|  9|$HANDSEED|  5|FFFFF|  9|$SURFTAB1| 70|6|  9|$SURFTAB2| 70|6|  9|$SURFTYPE| 70|6|  9|$SURFU| 70|6|  9|$SURFV| 70|6|  9|$UCSBASE|  2||  9|$UCSNAME|  2||  9|$UCSORG| 10|0.0| 20|0.0| 30|0.0|  9|$UCSXDIR| 10|1.0| 20|0.0| 30|0.0|  9|$UCSYDIR| 10|0.0| 20|1.0| 30|0.0|  9|$UCSORTHOREF|  2||  9|$UCSORTHOVIEW| 70|0|  9|$UCSORGTOP| 10|0.0| 20|0.0| 30|0.0|  9|$UCSORGBOTTOM| 10|0.0| 20|0.0| 30|0.0|  9|$UCSORGLEFT| 10|0.0| 20|0.0| 30|0.0|  9|$UCSORGRIGHT| 10|0.0| 20|0.0| 30|0.0|  9|$UCSORGFRONT| 10|0.0| 20|0.0| 30|0.0|  9|$UCSORGBACK| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSBASE|  2||  9|$PUCSNAME|  2||  9|$PUCSORG| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSXDIR| 10|1.0| 20|0.0| 30|0.0|  9|$PUCSYDIR| 10|0.0| 20|1.0| 30|0.0|  9|$PUCSORTHOREF|  2||  9|$PUCSORTHOVIEW| 70|0|  9|$PUCSORGTOP| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSORGBOTTOM| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSORGLEFT| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSORGRIGHT| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSORGFRONT| 10|0.0| 20|0.0| 30|0.0|  9|$PUCSORGBACK| 10|0.0| 20|0.0| 30|0.0|  9|$USERI1| 70|0|  9|$USERI2| 70|0|  9|$USERI3| 70|0|  9|$USERI4| 70|0|  9|$USERI5| 70|0|  9|$USERR1| 40|0.0|  9|$USERR2| 40|0.0|  9|$USERR3| 40|0.0|  9|$USERR4| 40|0.0|  9|$USERR5| 40|0.0|  9|$WORLDVIEW| 70|1|  9|$SHADEDGE| 70|3|  9|$SHADEDIF| 70|70|  9|$TILEMODE| 70|1|  9|$MAXACTVP| 70|64|  9|$PINSBASE| 10|0.0| 20|0.0| 30|0.0|  9|$PLIMCHECK| 70|0|  9|$PEXTMIN| 10|1e+20| 20|1e+20| 30|1e+20|  9|$PEXTMAX| 10|-1e+20| 20|-1e+20| 30|-1e+20|  9|$PLIMMIN| 10|0.0| 20|0.0|  9|$PLIMMAX| 10|420.0| 20|297.0|  9|$UNITMODE| 70|0|  9|$VISRETAIN| 70|1|  9|$PLINEGEN| 70|0|  9|$PSLTSCALE| 70|1|  9|$TREEDEPTH| 70|3020|  9|$CMLSTYLE|  2|Standard|  9|$CMLJUST| 70|0|  9|$CMLSCALE| 40|20.0|  9|$PROXYGRAPHICS| 70|1|  9|$MEASUREMENT| 70|1|  9|$CELWEIGHT|370|-1|  9|$ENDCAPS|280|0|  9|$JOINSTYLE|280|0|  9|$LWDISPLAY|290|0|  9|$INSUNITS| 70|@UNITS@|  9|$HYPERLINKBASE|  1||  9|$STYLESHEET|  1||  9|$XEDIT|290|1|  9|$CEPSNTYPE|380|0|  9|$PSTYLEMODE|290|1|  9|$FINGERPRINTGUID|  2|{2954CD02-A164-4C46-8834-7FE92C11B6D1}|  9|$VERSIONGUID|  2|{370043ED-C8E2-4F36-A98F-A07180996F20}|  9|$EXTNAMES|290|1|  9|$PSVPSCALE| 40|0.0|  9|$OLESTARTUP|290|0|  0|ENDSEC|  0|SECTION|  2|CLASSES|  0|CLASS|  1|ACDBDICTIONARYWDFLT|  2|AcDbDictionaryWithDefault|  3|ObjectDBX Classes| 90|0|280|0|281|0|  0|CLASS|  1|SUN|  2|AcDbSun|  3|SCENEOE| 90|1153|280|0|281|0|  0|CLASS|  1|VISUALSTYLE|  2|AcDbVisualStyle|  3|ObjectDBX Classes| 90|4095|280|0|281|0|  0|CLASS|  1|MATERIAL|  2|AcDbMaterial|  3|ObjectDBX Classes| 90|1153|280|0|281|0|  0|CLASS|  1|SCALE|  2|AcDbScale|  3|ObjectDBX Classes| 90|1153|280|0|281|0|  0|CLASS|  1|TABLESTYLE|  2|AcDbTableStyle|  3|ObjectDBX Classes| 90|4095|280|0|281|0|  0|CLASS|  1|MLEADERSTYLE|  2|AcDbMLeaderStyle|  3|ACDB_MLEADERSTYLE_CLASS| 90|4095|280|0|281|0|  0|CLASS|  1|DICTIONARYVAR|  2|AcDbDictionaryVar|  3|ObjectDBX Classes| 90|0|280|0|281|0|  0|CLASS|  1|CELLSTYLEMAP|  2|AcDbCellStyleMap|  3|ObjectDBX Classes| 90|1152|280|0|281|0|  0|CLASS|  1|MENTALRAYRENDERSETTINGS|  2|AcDbMentalRayRenderSettings|  3|SCENEOE| 90|1024|280|0|281|0|  0|CLASS|  1|ACDBDETAILVIEWSTYLE|  2|AcDbDetailViewStyle|  3|ObjectDBX Classes| 90|1025|280|0|281|0|  0|CLASS|  1|ACDBSECTIONVIEWSTYLE|  2|AcDbSectionViewStyle|  3|ObjectDBX Classes| 90|1025|280|0|281|0|  0|CLASS|  1|RASTERVARIABLES|  2|AcDbRasterVariables|  3|ISM| 90|0|280|0|281|0|  0|CLASS|  1|ACDBPLACEHOLDER|  2|AcDbPlaceHolder|  3|ObjectDBX Classes| 90|0|280|0|281|0|  0|CLASS|  1|LAYOUT|  2|AcDbLayout|  3|ObjectDBX Classes| 90|0|280|0|281|0|  0|ENDSEC|  0|SECTION|  2|TABLES|  0|TABLE|  2|VPORT|  5|8|330|0|100|AcDbSymbolTable| 70|1|  0|VPORT|  5|23|330|8|100|AcDbSymbolTableRecord|100|AcDbViewportTableRecord|  2|*Active| 70|0| 10|0.0| 20|0.0| 11|1.0| 21|1.0| 12|0.0| 22|0.0| 13|0.0| 23|0.0| 14|0.5| 24|0.5| 15|0.5| 25|0.5| 16|0.0| 26|0.0| 36|1.0| 17|0.0| 27|0.0| 37|0.0| 40|1000.0| 41|1.34| 42|50.0| 43|0.0| 44|0.0| 50|0.0| 51|0.0| 71|0| 72|1000| 73|1| 74|3| 75|0| 76|0| 77|0| 78|0|281|0| 65|0|146|0.0|  0|ENDTAB|  0|TABLE|  2|LTYPE|  5|2|330|0|100|AcDbSymbolTable| 70|3|  0|LTYPE|  5|24|330|2|100|AcDbSymbolTableRecord|100|AcDbLinetypeTableRecord|  2|ByBlock| 70|0|  3|| 72|65| 73|0| 40|0.0|  0|LTYPE|  5|25|330|2|100|AcDbSymbolTableRecord|100|AcDbLinetypeTableRecord|  2|ByLayer| 70|0|  3|| 72|65| 73|0| 40|0.0|  0|LTYPE|  5|26|330|2|100|AcDbSymbolTableRecord|100|AcDbLinetypeTableRecord|  2|Continuous| 70|0|  3|| 72|65| 73|0| 40|0.0|  0|ENDTAB|  0|TABLE|  2|LAYER|  5|1|330|0|100|AcDbSymbolTable| 70|@COUNT_LAYER@2|  0|LAYER|  5|27|330|1|100|AcDbSymbolTableRecord|100|AcDbLayerTableRecord|  2|0| 70|0| 62|7|  6|Continuous|370|-3|390|13|  0|LAYER|  5|28|330|1|100|AcDbSymbolTableRecord|100|AcDbLayerTableRecord|  2|Defpoints| 70|0| 62|7|  6|Continuous|290|0|370|-3|390|13|@LAYER@|  0|ENDTAB|  0|TABLE|  2|STYLE|  5|5|330|0|100|AcDbSymbolTable| 70|1|  0|STYLE|  5|29|330|5|100|AcDbSymbolTableRecord|100|AcDbTextStyleTableRecord|  2|Standard| 70|0| 40|0.0| 41|1.0| 50|0.0| 71|0| 42|2.5|  3|txt|  4||  0|ENDTAB|  0|TABLE|  2|VIEW|  5|7|330|0|100|AcDbSymbolTable| 70|0|  0|ENDTAB|  0|TABLE|  2|UCS|  5|6|330|0|100|AcDbSymbolTable| 70|0|  0|ENDTAB|  0|TABLE|  2|APPID|  5|3|330|0|100|AcDbSymbolTable| 70|3|  0|APPID|  5|2A|330|3|100|AcDbSymbolTableRecord|100|AcDbRegAppTableRecord|  2|ACAD| 70|0|  0|APPID|  5|30|330|3|100|AcDbSymbolTableRecord|100|AcDbRegAppTableRecord|  2|HATCHBACKGROUNDCOLOR| 70|0|  0|APPID|  5|31|330|3|100|AcDbSymbolTableRecord|100|AcDbRegAppTableRecord|  2|EZDXF| 70|0|  0|ENDTAB|  0|TABLE|  2|DIMSTYLE|  5|4|330|0|100|AcDbSymbolTable| 70|2|100|AcDbDimStyleTable|  0|DIMSTYLE|105|2B|330|4|100|AcDbSymbolTableRecord|100|AcDbDimStyleTableRecord|  2|Standard| 70|0|  3||  4|| 40|1.0| 41|2.5| 42|0.625| 43|3.75| 44|1.25| 45|0.0| 46|0.0| 47|0.0| 48|0.0|140|2.5|141|2.5|142|0.0|143|0.03937007874|144|1.0|145|0.0|146|1.0|147|0.625|148|0.0| 71|0| 72|0| 73|0| 74|0| 75|0| 76|0| 77|1| 78|8| 79|3|170|0|171|3|172|1|173|0|174|0|175|0|176|0|177|0|178|0|179|2|271|2|272|2|273|2|274|3|275|0|276|0|277|2|278|44|279|0|280|0|281|0|282|0|283|0|284|8|285|0|286|0|288|0|289|3|371|-2|372|-2|  0|DIMSTYLE|105|2F|330|4|100|AcDbSymbolTableRecord|100|AcDbDimStyleTableRecord|  2|FORMA| 70|0|  3||  4|| 40|1.0| 41|1.5| 42|0.625| 43|3.75| 44|1.25| 45|0.0| 46|0.0| 47|0.0| 48|0.0|140|2.5|141|2.5|142|0.0|143|0.03937007874|144|1.0|145|0.0|146|1.0|147|0.625|148|0.0| 71|0| 72|0| 73|0| 74|0| 75|0| 76|0| 77|1| 78|8| 79|3|170|0|171|3|172|1|173|0|174|0|175|0|176|0|177|0|178|0|179|2|271|2|272|2|273|2|274|3|275|0|276|0|277|2|278|44|279|0|280|0|281|0|282|0|283|0|284|8|285|0|286|0|288|0|289|3|371|-2|372|-2|  0|ENDTAB|  0|TABLE|  2|BLOCK_RECORD|  5|9|330|0|100|AcDbSymbolTable| 70|@COUNT_BLOCK_RECORD@2|  0|BLOCK_RECORD|  5|17|330|9|100|AcDbSymbolTableRecord|100|AcDbBlockTableRecord|  2|*Model_Space|340|1A|  0|BLOCK_RECORD|  5|1B|330|9|100|AcDbSymbolTableRecord|100|AcDbBlockTableRecord|  2|*Paper_Space|340|1E|@BLOCK_RECORD@|  0|ENDTAB|  0|ENDSEC|  0|SECTION|  2|BLOCKS|  0|BLOCK|  5|18|330|17|100|AcDbEntity|  8|0|100|AcDbBlockBegin|  2|*Model_Space| 70|0| 10|0.0| 20|0.0| 30|0.0|  3|*Model_Space|  1||  0|ENDBLK|  5|19|330|17|100|AcDbEntity|  8|0|100|AcDbBlockEnd|  0|BLOCK|  5|1C|330|1B|100|AcDbEntity|  8|0|100|AcDbBlockBegin|  2|*Paper_Space| 70|0| 10|0.0| 20|0.0| 30|0.0|  3|*Paper_Space|  1||  0|ENDBLK|  5|1D|330|1B|100|AcDbEntity|  8|0|100|AcDbBlockEnd|@BLOCKS@|  0|ENDSEC|  0|SECTION|  2|ENTITIES|@ENTITIES@|  0|ENDSEC|  0|SECTION|  2|OBJECTS|  0|DICTIONARY|  5|A|330|0|100|AcDbDictionary|281|1|  3|ACAD_COLOR|350|B|  3|ACAD_GROUP|350|C|  3|ACAD_LAYOUT|350|D|  3|ACAD_MATERIAL|350|E|  3|ACAD_MLEADERSTYLE|350|F|  3|ACAD_MLINESTYLE|350|10|  3|ACAD_PLOTSETTINGS|350|11|  3|ACAD_PLOTSTYLENAME|350|12|  3|ACAD_SCALELIST|350|14|  3|ACAD_TABLESTYLE|350|15|  3|ACAD_VISUALSTYLE|350|16|  3|EZDXF_META|350|2D|  0|DICTIONARY|  5|B|330|A|100|AcDbDictionary|281|1|  0|DICTIONARY|  5|C|330|A|100|AcDbDictionary|281|1|  0|DICTIONARY|  5|D|330|A|100|AcDbDictionary|281|1|  3|Model|350|1A|  3|Layout1|350|1E|  0|DICTIONARY|  5|E|330|A|100|AcDbDictionary|281|1|  3|ByBlock|350|1F|  3|ByLayer|350|20|  3|Global|350|21|  0|DICTIONARY|  5|F|330|A|100|AcDbDictionary|281|1|  3|Standard|350|2C|  0|DICTIONARY|  5|10|330|A|100|AcDbDictionary|281|1|  3|Standard|350|22|  0|DICTIONARY|  5|11|330|A|100|AcDbDictionary|281|1|  0|ACDBDICTIONARYWDFLT|  5|12|330|A|100|AcDbDictionary|281|1|  3|Normal|350|13|100|AcDbDictionaryWithDefault|340|13|  0|ACDBPLACEHOLDER|  5|13|330|12|  0|DICTIONARY|  5|14|330|A|100|AcDbDictionary|281|1|  0|DICTIONARY|  5|15|330|A|100|AcDbDictionary|281|1|  0|DICTIONARY|  5|16|330|A|100|AcDbDictionary|281|1|  0|LAYOUT|  5|1A|330|D|100|AcDbPlotSettings|  1||  4|A3|  6|| 40|7.5| 41|20.0| 42|7.5| 43|20.0| 44|420.0| 45|297.0| 46|0.0| 47|0.0| 48|0.0| 49|0.0|140|0.0|141|0.0|142|1.0|143|1.0| 70|1024| 72|1| 73|0| 74|5|  7|| 75|16| 76|0| 77|2| 78|300|147|1.0|148|0.0|149|0.0|100|AcDbLayout|  1|Model| 70|1| 71|0| 10|0.0| 20|0.0| 11|420.0| 21|297.0| 12|0.0| 22|0.0| 32|0.0| 14|1e+20| 24|1e+20| 34|1e+20| 15|-1e+20| 25|-1e+20| 35|-1e+20|146|0.0| 13|0.0| 23|0.0| 33|0.0| 16|1.0| 26|0.0| 36|0.0| 17|0.0| 27|1.0| 37|0.0| 76|1|330|17|  0|LAYOUT|  5|1E|330|D|100|AcDbPlotSettings|  1||  4|A3|  6|| 40|7.5| 41|20.0| 42|7.5| 43|20.0| 44|420.0| 45|297.0| 46|0.0| 47|0.0| 48|0.0| 49|0.0|140|0.0|141|0.0|142|1.0|143|1.0| 70|0| 72|1| 73|0| 74|5|  7|| 75|16| 76|0| 77|2| 78|300|147|1.0|148|0.0|149|0.0|100|AcDbLayout|  1|Layout1| 70|1| 71|1| 10|0.0| 20|0.0| 11|420.0| 21|297.0| 12|0.0| 22|0.0| 32|0.0| 14|1e+20| 24|1e+20| 34|1e+20| 15|-1e+20| 25|-1e+20| 35|-1e+20|146|0.0| 13|0.0| 23|0.0| 33|0.0| 16|1.0| 26|0.0| 36|0.0| 17|0.0| 27|1.0| 37|0.0| 76|1|330|1B|  0|MATERIAL|  5|1F|102|{ACAD_REACTORS|330|E|102|}|330|E|100|AcDbMaterial|  1|ByBlock|  2|| 70|0| 40|1.0| 71|1| 41|1.0| 91|-1023410177| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 44|0.5| 73|0| 45|1.0| 46|1.0| 77|1|  4|| 78|1| 79|1|170|1| 48|1.0|171|1|  6||172|1|173|1|174|1|140|1.0|141|1.0|175|1|  7||176|1|177|1|178|1|143|1.0|179|1|  8||270|1|271|1|272|1|145|1.0|146|1.0|273|1|  9||274|1|275|1|276|1| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 94|63|  0|MATERIAL|  5|20|102|{ACAD_REACTORS|330|E|102|}|330|E|100|AcDbMaterial|  1|ByLayer|  2|| 70|0| 40|1.0| 71|1| 41|1.0| 91|-1023410177| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 44|0.5| 73|0| 45|1.0| 46|1.0| 77|1|  4|| 78|1| 79|1|170|1| 48|1.0|171|1|  6||172|1|173|1|174|1|140|1.0|141|1.0|175|1|  7||176|1|177|1|178|1|143|1.0|179|1|  8||270|1|271|1|272|1|145|1.0|146|1.0|273|1|  9||274|1|275|1|276|1| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 94|63|  0|MATERIAL|  5|21|102|{ACAD_REACTORS|330|E|102|}|330|E|100|AcDbMaterial|  1|Global|  2|| 70|0| 40|1.0| 71|1| 41|1.0| 91|-1023410177| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 44|0.5| 73|0| 45|1.0| 46|1.0| 77|1|  4|| 78|1| 79|1|170|1| 48|1.0|171|1|  6||172|1|173|1|174|1|140|1.0|141|1.0|175|1|  7||176|1|177|1|178|1|143|1.0|179|1|  8||270|1|271|1|272|1|145|1.0|146|1.0|273|1|  9||274|1|275|1|276|1| 42|1.0| 72|1|  3|| 73|1| 74|1| 75|1| 94|63|  0|MLINESTYLE|  5|22|102|{ACAD_REACTORS|330|10|102|}|330|10|100|AcDbMlineStyle|  2|Standard| 70|0|  3|| 62|256| 51|90.0| 52|90.0| 71|2| 49|0.5| 62|256|  6|BYLAYER| 49|-0.5| 62|256|  6|BYLAYER|  0|MLEADERSTYLE|  5|2C|102|{ACAD_REACTORS|330|F|102|}|330|F|100|AcDbMLeaderStyle|179|2|170|2|171|1|172|0| 90|2| 40|0.0| 41|0.0|173|1| 91|-1056964608| 92|-2|290|1| 42|2.0|291|1| 43|8.0|  3|Standard| 44|4.0|300||342|29|174|1|175|1|176|0|178|1| 93|-1056964608| 45|4.0|292|0|297|0| 46|4.0| 94|-1056964608| 47|1.0| 49|1.0|140|1.0|294|1|141|0.0|177|0|142|1.0|295|0|296|0|143|3.75|271|0|272|9|273|9|  0|DICTIONARY|  5|2D|330|A|100|AcDbDictionary|280|1|281|1|  3|CREATED_BY_EZDXF|350|2E|  3|WRITTEN_BY_EZDXF|350|32|  0|DICTIONARYVAR|  5|2E|330|2D|100|DictionaryVariables|280|0|  1|1.4.5 @ 2026-11-27T11:37:10.429534+00:00|  0|DICTIONARYVAR|  5|32|330|2D|100|DictionaryVariables|280|0|  1|1.4.5 @ 2026-11-27T11:37:10.430113+00:00|  0|ENDSEC|  0|EOF";
   const xml = value => String(value).replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\ufffe\uffff]/g, '').replace(/[&<>"']/g, c => (
     {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;'}[c]
   ));
@@ -5929,7 +5931,7 @@ window.FormaExcelExport = (() => {
     return result;
   };
 
-  function workbookSheet(doc, result, inputs, calculated, runtimeParts) {
+  function workbookSheet(doc, result, inputs, calculated, runtimeParts, vba) {
     const params = new Map(doc.params.map(p => [p.id, p]));
     const choices = new Map((doc.choiceParams || []).map(p => [p.id, p]));
     const positive = new Set(doc.dimensions.filter(d => d.driving && d.kind !== 'computed').map(d => d.param));
@@ -5958,7 +5960,9 @@ window.FormaExcelExport = (() => {
     cell(1,1,doc.name,1);
     cell(1,2,'Parametri del disegno DXF',2);
     cell(1,4,'Modifica le celle azzurre',6);
-    cell(1,6,'Crea DXF salva il disegno sul PC. Per salvare e ricalcolare servono le macro e Node.js LTS.',2);
+    cell(1,6,vba
+      ? 'Crea DXF salva il disegno sul PC. Le quote si aggiornano in Excel per Windows con le macro abilitate.'
+      : 'Crea DXF salva il disegno sul PC. Per questo progetto servono le macro e Node.js LTS.',2);
     ['Parametro / Quota','Valore','Unità','Descrizione'].forEach((label,i) => cell(i+1,8,label,5));
     runtimeParts.forEach((part,i) => cell(6,i+1,part));
     cell(8,1,X.filename(doc.name)+'.dxf');
@@ -6048,6 +6052,7 @@ window.FormaExcelExport = (() => {
       const expression = E.parameterExpression(p);
       const formulaText = '= '+expression;
       visibleRow(row,p,result.params[id],4,unit(p));
+      if (vba) cell(9,row,vba.order.indexOf(id));
       cell(4,row,formulaText,7);
       heights.set(row,Math.max(21,15*Math.ceil(formulaText.length/38)));
     }
@@ -6120,6 +6125,157 @@ window.FormaExcelExport = (() => {
     }
   }
 
+  // Compile the same equations and drawing instructions used by AutoLISP.
+  // The workbook stores numeric instructions. Its VBA code is identical for every project.
+  function compileVbaProgram(program) {
+    const prefix = program.prefix + ':';
+    const name = token => typeof token === 'string' && token.startsWith(prefix) ? token.slice(prefix.length) : token;
+    const unsupported = feature => { throw new Error('Funzione non ancora disponibile in VBA: '+feature+'.'); };
+    const numeric = token => /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?$/i.test(token);
+    const quote = token => JSON.parse(token);
+    const starts = '(defun '+prefix;
+    function body(fn) {
+      const start=program.source.indexOf(starts+fn+' ');
+      if(start<0) unsupported(fn);
+      const tokens=program.source.slice(start).match(/"(?:\\.|[^"\\])*"|[()']|[^\s()']+/g);
+      let cursor=0;
+      function read() {
+        const token=tokens[cursor++];
+        if(token==="'") return ['quote',read()];
+        if(token!== '(') return token;
+        const result=[];
+        while(tokens[cursor]!==')') result.push(read());
+        cursor++;
+        return result;
+      }
+      return read().slice(3);
+    }
+    const nodes=[], intern=new Map();
+    function instruction(...fields) {
+      const key=fields.join('\t');
+      if(!intern.has(key)) { nodes.push(key); intern.set(key,nodes.length); }
+      return intern.get(key);
+    }
+    const operators={'+':5,'-':6,'*':7,'/':8,'expt':9,'abs':10,'sqrt':11,'min':12,'max':13,
+      '<':14,'=':15,'if':16,'fix':17,'nonnegative':18,'sin':19,'cos':20,'floor':21,'ceil':22,
+      '>':23,'<=':24,'>=':25,'and':26,'or':27,'not':28,'/=':29,'atan':30,'asin':31,'acos':32,'round':33};
+    function expr(e) {
+      if(typeof e==='string') {
+        if(numeric(e)) return instruction(1,Number(e));
+        if(/^v\d+$/.test(e)) return instruction(4,Number(e.slice(1)));
+        if(e==='pi') return instruction(1,Math.PI);
+        if(e==='T' || e==='nil') return instruction(1,e==='T'?1:0);
+        unsupported(e);
+      }
+      const [raw,...args]=e, op=name(raw);
+      if(op==='bounded') return expr(args[0]);
+      if(op==='nth'){
+        const table=args[1], index=args[0];
+        if(['x','inputs','v'].includes(table)&&numeric(index)) return instruction({x:2,inputs:3,v:4}[table],Number(index));
+        if(Array.isArray(table)&&table[0]==='quote'){
+          const i=expr(index), values=table[1], last=expr(values.at(-1));
+          return values.slice(0,-1).reduceRight((after,v,k)=>instruction(16,instruction(15,i,expr(String(k))),expr(v),after),last);
+        }
+        unsupported('riferimento numerico');
+      }
+      if(!Object.hasOwn(operators,op)) unsupported(op);
+      const roots=args.map(expr);
+      if(op==='if') return instruction(16,...roots);
+      if(roots.length===1 && ['min','max','and','or'].includes(op)) return roots[0];
+      if(roots.length===1) return instruction(operators[op],roots[0],0);
+      if(op==='atan') return instruction(30,...roots);
+      return roots.slice(1).reduce((left,right)=>instruction(operators[op],left,right),roots[0]);
+    }
+    const rootsV=body('values').slice(0,-1).map(row=>expr(row[2]));
+    const rootsR=body('res').at(-1).slice(1).map(expr);
+    const drawing=body('draw');
+    let layer='0';
+    const draw=[];
+    const point=e=>{
+      if(Array.isArray(e)&&e[0]==='list'&&e.length===3) return [expr(e[1]),expr(e[2])];
+      unsupported('punto di riferimento composto');
+    };
+    const justifyLayer=token=>quote(token).replace(/[\r\n\t|]/g,' ');
+    const shiftMap=new Map();
+    let inPattern=false;
+    function position(e) {
+      if(!inPattern) return point(e);
+      if(e[0]==='cadr'&&e[1][0]==='assoc'&&shiftMap.has(e[1][1])) return shiftMap.get(e[1][1]);
+      unsupported('copia associativa');
+    }
+    function readDraw(rows,condition='T') {
+      for(const row of rows) {
+        if(!Array.isArray(row)) continue;
+        const [raw,...args]=row, op=name(raw);
+        if(op==='if'&&Array.isArray(args[1])&&args[1][0]==='progn'&&args.length===2) {
+          readDraw(args[1].slice(1),condition==='T'?args[0]:['and',condition,args[0]]);
+        } else if(op==='if'&&args[1]?.[0]===prefix+'pattern-error') {
+          continue;
+        } else if(op==='setq') {
+          if(args[0]==='dimLayer') layer=justifyLayer(args[1]);
+          else if(args[0]==='patPoints') {
+            shiftMap.clear();
+            for(const p of args[1].slice(1)){
+              if(name(p[2][0])!=='pattern-shift'||args[1][0]!=='list') unsupported('ripetizione dinamica o circolare');
+              shiftMap.set(p[1],point(p[2][1]));
+            }
+          } else if(args[0]==='patPlan') {
+            const [plan,da,db,sign,anchor,ta,tb,step,count,offset,offsign,byref,bycount,kind,data]=args[1];
+            if(name(plan)!=='pattern-plan'||kind!=='nil'||data!=='nil') unsupported('ripetizione dinamica o circolare');
+            const directionEnd=name(db[0])==='pattern-reference'?db[2]:db;
+            draw.push(['P',expr(condition),...point(da),...point(directionEnd),expr(sign),...point(anchor),
+              ...(ta==='nil'?[0,0]:point(ta)),...(tb==='nil'?[0,0]:point(tb)),
+              expr(step),expr(count),expr(offset),expr(offsign),expr(byref),expr(bycount)].join('\t'));
+          } else if(!['th','normal','dimStyle','patEntities','patIndex'].includes(args[0])) unsupported(args[0]);
+        } else if(op==='while') {
+          if(inPattern) unsupported('ripetizione nidificata');
+          inPattern=true;
+          readDraw(args.slice(1),condition);
+          inPattern=false;
+          draw.push('E');
+        } else if(op==='line') {
+          draw.push(['L',expr(condition),justifyLayer(args[3]),...position(args[0]),...position(args[1])].join('\t'));
+        } else if(op==='dim') {
+          if(typeof args[4]!=='string'||!args[4].startsWith('"')) unsupported('etichetta di quota personalizzata');
+          const mode=quote(args[2]);
+          if(!['horizontal','vertical','aligned'].includes(mode)) unsupported(mode);
+          draw.push(['D',expr(condition),layer,...position(args[0]),...position(args[1]),mode,expr(args[3]),quote(args[4]).replace(/[\t\r\n]/g,' ')].join('\t'));
+        } else if(op==='native-curve'&&!inPattern) {
+          const circular=args[2]==='nil'&&args[3]==='nil';
+          draw.push([circular?'C':'A',expr(condition),justifyLayer(args[4]),...point(args[0]),expr(args[1]),
+            ...(circular?[]:[...point(args[2]),...point(args[3])])].join('\t'));
+        } else if(op==='angdim'&&!inPattern) {
+          if(typeof args[4]!=='string'||!args[4].startsWith('"')) unsupported('etichetta di quota angolare personalizzata');
+          draw.push(['G',expr(condition),layer,...position(args[0]),...position(args[1]),...position(args[2]),expr(args[3]),quote(args[4]).replace(/[\t\r\n]/g,' ')].join('\t'));
+        } else if(!['tables','princ'].includes(op)) unsupported(op);
+      }
+    }
+    readDraw(drawing);
+    if(!draw.length) unsupported('disegno vuoto');
+    const table=drawing.find(x=>Array.isArray(x)&&name(x[0])==='tables');
+    const layers=(table?.[1]?.[1]||[]).map(([key,color])=>[justifyLayer(key),Number(color)].join('\t'));
+    const size=drawing.find(x=>Array.isArray(x)&&x[0]==='setq'&&x[1]==='th');
+    const textRoot=size?expr(size[2]):expr('2.5');
+    if(nodes.length>30000||program.initial.length>160||rootsR.length>220) unsupported('dimensione del modello');
+    return {nodes,rootsV,rootsR,initial:program.initial,draw,layers,textRoot};
+  }
+
+  function nativeWorkbook(doc,inputs,calculated) {
+    const program = window.FormaLispExport.generate(doc,doc.view.dimensions!==false,{
+      command:'FORMA_DXF',inputMode:'commandLine',parameters:inputs.map(id=>({id,enabled:true}))
+    });
+    if(program.inputs.length!==inputs.length || program.inputs.some((id,i)=>id!==inputs[i])) {
+      throw new Error('Ordine dei parametri incompatibile con il motore VBA.');
+    }
+    if(calculated.some(id=>!program.order.includes(id))) throw new Error('Quota calcolata non disponibile nel modello VBA.');
+    const model = compileVbaProgram(program);
+    const rows = [[model.initial.length,model.nodes.length,doc.units==='cm'?5:4],
+      model.initial, model.rootsV, model.rootsR, ...model.nodes,
+      [model.layers.length], ...model.layers, [model.draw.length+1], ['T',model.textRoot],
+      ...model.draw, VBA_DXF_TEMPLATE];
+    return {data:rows.map(row=>Array.isArray(row)?row.join('\t'):row).join('\n'),order:program.order};
+  }
+
   async function build(document) {
     const doc = E.clone(document);
     const result = E.evaluate(doc);
@@ -6127,20 +6283,25 @@ window.FormaExcelExport = (() => {
     const configuredOrder = Array.isArray(doc.autolispExport?.parameters) ? doc.autolispExport.parameters.map(p=>p.id) : [];
     const inputs = [...new Set([...configuredOrder.filter(id=>ids.has(id)), ...ids])];
     const calculated = calculatedIds(doc);
-    const runtime = workbookRuntime(doc,inputs,calculated);
+    let vba = null;
+    try { vba = nativeWorkbook(doc,inputs,calculated); }
+    catch (error) { console.info('Forma: Excel con Node.js per questo progetto.',error.message); }
+    const runtime = vba ? vba.data : workbookRuntime(doc,inputs,calculated);
     // Never cut a UTF-16 surrogate pair between two Excel cells.
     const parts = runtime.match(/(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[^]){1,12000}/gu);
     const book = new JSZip();
     for (const [name,content] of Object.entries(template)) {
-      if (name === 'xl/worksheets/sheet1.xml') book.file(name,workbookSheet(doc,result,inputs,calculated,parts));
+      if (name === 'xl/worksheets/sheet1.xml') book.file(name,workbookSheet(doc,result,inputs,calculated,parts,vba));
+      else if (vba && name === 'xl/vbaProject.bin') book.file(name,VBA_PROJECT,{base64:true});
       else book.file(name,content,{base64:name.endsWith('.bin')});
     }
-    return {filename:X.filename(doc.name)+'_DXF.xlsm',bytes:await book.generateAsync({type:'uint8array',compression:'DEFLATE'})};
+    return {vba:!!vba,filename:X.filename(doc.name)+'_DXF.xlsm',bytes:await book.generateAsync({type:'uint8array',compression:'DEFLATE'})};
   }
 
   async function download(doc) {
     const bundle = await build(doc);
     X.download(bundle.filename,bundle.bytes,'application/vnd.ms-excel.sheet.macroEnabled.12');
+    return bundle.vba;
   }
   return {build,download};
 })();
@@ -6369,6 +6530,845 @@ Private Sub Workbook_Open()
         AggiornaQuote foglio
     End If
 End Sub
+*/
+
+/* VBA source for the native DXF export (Module1).
+Option Explicit
+
+Private Type Instruction
+    operation As Long
+    a As Long
+    b As Long
+    c As Long
+    number As Double
+End Type
+
+Private Type Shape
+    kind As String
+    layer As String
+    label As String
+    mode As String
+    x1 As Double
+    y1 As Double
+    x2 As Double
+    y2 As Double
+    x3 As Double
+    y3 As Double
+    offset As Double
+End Type
+
+Private nodes() As Instruction, memo() As Double, seen() As Long, stamp As Long
+Private initial() As Double, vRoots() As String, rRoots() As String, inputs() As Double
+Private pointCount As Long, residualCount As Long, vCount As Long
+Private draw() As Variant, layers() As Variant, cadTemplate As String
+Private shapes() As Shape, shapeCount As Long, textHeight As Double, unitsCode As String
+Private nextHandle As Long
+
+Private Function Part(ByRef fields As Variant, ByVal idx As Long) As Long
+    If idx <= UBound(fields) Then Part = CLng(fields(idx))
+End Function
+
+Private Sub LoadModel(ByVal sheet As Worksheet)
+    Dim pieces As Variant, contents As String, rows As Variant, header As Variant, fields As Variant
+    Dim i As Long, pos As Long, count As Long
+    pieces = sheet.Range("F1:F" & CLng(sheet.Range("H4").Value2)).Value2
+    For i = 1 To UBound(pieces, 1)
+        contents = contents & CStr(pieces(i, 1))
+    Next i
+    rows = Split(contents, vbLf)
+    header = Split(rows(0), vbTab)
+    pointCount = CLng(header(0))
+    count = CLng(header(1))
+    unitsCode = CStr(header(2))
+    ReDim initial(0 To pointCount)
+    If pointCount > 0 Then
+        fields = Split(rows(1), vbTab)
+        For i = 0 To pointCount - 1
+            initial(i) = Val(UCase$(fields(i)))
+        Next i
+    End If
+    vRoots = Split(rows(2), vbTab)
+    vCount = UBound(vRoots) + 1
+    rRoots = Split(rows(3), vbTab)
+    residualCount = 0
+    If Len(rows(3)) > 0 Then residualCount = UBound(rRoots) + 1
+    ReDim nodes(1 To count), memo(1 To count), seen(1 To count)
+    stamp = 0
+    For i = 1 To count
+        fields = Split(rows(i + 3), vbTab)
+        nodes(i).operation = CLng(fields(0))
+        If nodes(i).operation = 1 Then
+            nodes(i).number = Val(UCase$(fields(1)))
+        Else
+            nodes(i).a = Part(fields, 1)
+            nodes(i).b = Part(fields, 2)
+            nodes(i).c = Part(fields, 3)
+        End If
+    Next i
+    pos = count + 4
+    count = CLng(rows(pos))
+    ReDim layers(0 To count - 1)
+    For i = 0 To count - 1
+        layers(i) = Split(rows(pos + i + 1), vbTab)
+    Next i
+    pos = pos + count + 1
+    count = CLng(rows(pos))
+    ReDim draw(0 To count - 1)
+    For i = 0 To count - 1
+        draw(i) = Split(rows(pos + i + 1), vbTab)
+    Next i
+    textHeight = 0
+    cadTemplate = rows(pos + count + 1)
+End Sub
+
+Private Function Eval(ByVal idx As Long, ByRef X() As Double, ByRef V() As Double) As Double
+    Dim a As Double, b As Double, answer As Double, op As Long
+    If idx = 0 Then Exit Function
+    If seen(idx) = stamp Then
+        Eval = memo(idx)
+        Exit Function
+    End If
+    op = nodes(idx).operation
+    Select Case op
+        Case 1: answer = nodes(idx).number
+        Case 2: answer = X(nodes(idx).a)
+        Case 3: answer = inputs(nodes(idx).a)
+        Case 4: answer = V(nodes(idx).a)
+        Case Else
+            a = Eval(nodes(idx).a, X, V)
+            Select Case op
+                Case 16
+                    If a <> 0 Then answer = Eval(nodes(idx).b, X, V) Else answer = Eval(nodes(idx).c, X, V)
+                Case 26
+                    If a <> 0 Then answer = Boole(Eval(nodes(idx).b, X, V) <> 0)
+                Case 27
+                    If a <> 0 Then answer = 1 Else answer = Boole(Eval(nodes(idx).b, X, V) <> 0)
+                Case Else
+                    b = Eval(nodes(idx).b, X, V)
+                    Select Case op
+                        Case 5: answer = a + b
+                        Case 6
+                            If nodes(idx).b = 0 Then answer = -a Else answer = a - b
+                        Case 7: answer = a * b
+                        Case 8: answer = a / b
+                        Case 9: answer = a ^ b
+                        Case 10: answer = Abs(a)
+                        Case 11: answer = Sqr(a)
+                        Case 12
+                            If a < b Then answer = a Else answer = b
+                        Case 13: answer = Maximum(a, b)
+                        Case 14: answer = Boole(a < b)
+                        Case 15: answer = Boole(a = b)
+                        Case 17: answer = Fix(a)
+                        Case 18
+                            If a < 0 Then Err.Raise 5, , "Quota negativa."
+                            answer = a
+                        Case 19: answer = Sin(a)
+                        Case 20: answer = Cos(a)
+                        Case 21: answer = Int(a)
+                        Case 22: answer = -Int(-a)
+                        Case 23: answer = Boole(a > b)
+                        Case 24: answer = Boole(a <= b)
+                        Case 25: answer = Boole(a >= b)
+                        Case 28: answer = Boole(a = 0)
+                        Case 29: answer = Boole(a <> b)
+                        Case 30
+                            If nodes(idx).b = 0 Then answer = Atn(a) Else answer = Atan2(a, b)
+                        Case 31: answer = Atan2(a, Sqr(Maximum(0, 1 - a * a)))
+                        Case 32: answer = Atan2(Sqr(Maximum(0, 1 - a * a)), a)
+                        Case 33: answer = Int(a + 0.5)
+                        Case Else: Err.Raise 5, , "Operazione di calcolo sconosciuta."
+                    End Select
+            End Select
+    End Select
+    seen(idx) = stamp
+    memo(idx) = answer
+    Eval = answer
+End Function
+
+Private Function Boole(ByVal x As Boolean) As Double
+    If x Then Boole = 1
+End Function
+
+Private Function Atan2(ByVal y As Double, ByVal x As Double) As Double
+    Const PI As Double = 3.141592653589793
+    If x = 0 Then
+        Atan2 = Sgn(y) * PI / 2
+    ElseIf x > 0 Then
+        Atan2 = Atn(y / x)
+    ElseIf y < 0 Then
+        Atan2 = Atn(y / x) - PI
+    Else
+        Atan2 = Atn(y / x) + PI
+    End If
+End Function
+
+Private Sub Values(ByRef X() As Double, ByRef V() As Double)
+    Dim i As Long
+    stamp = stamp + 1
+    For i = 0 To vCount - 1
+        V(i) = Eval(CLng(vRoots(i)), X, V)
+        If Abs(V(i)) > 10000000000# Then Err.Raise 5, , "Valore fuori dai limiti."
+    Next i
+End Sub
+
+Private Sub Residual(ByRef X() As Double, ByRef R() As Double)
+    Dim V() As Double, i As Long
+    ReDim V(0 To vCount - 1)
+    Values X, V
+    For i = 0 To residualCount - 1
+        R(i) = Eval(CLng(rRoots(i)), X, V)
+    Next i
+End Sub
+Private Function Maximum(ByVal a As Double, ByVal b As Double, Optional ByVal c As Double = -1E+99) As Double
+    Maximum = a
+    If b > Maximum Then Maximum = b
+    If c > Maximum Then Maximum = c
+End Function
+
+Private Function MaxResidual(ByRef residuals() As Double) As Double
+    Dim i As Long
+    For i = 0 To residualCount - 1
+        If Abs(residuals(i)) > MaxResidual Then MaxResidual = Abs(residuals(i))
+    Next i
+End Function
+
+Private Function Cost(ByRef residuals() As Double) As Double
+    Dim i As Long
+    For i = 0 To residualCount - 1
+        Cost = Cost + residuals(i) * residuals(i)
+    Next i
+End Function
+
+Private Function LinearStep(ByRef matrix() As Double, ByRef stepVector() As Double) As Boolean
+    Dim col As Long, row As Long, pivot As Long, j As Long
+    Dim factor As Double, tmp As Double
+    For col = 0 To pointCount - 1
+        pivot = col
+        For row = col + 1 To pointCount - 1
+            If Abs(matrix(row, col)) > Abs(matrix(pivot, col)) Then pivot = row
+        Next row
+        If Abs(matrix(pivot, col)) < 0.000000000000001 Then Exit Function
+        If pivot <> col Then
+            For j = col To pointCount
+                tmp = matrix(pivot, j)
+                matrix(pivot, j) = matrix(col, j)
+                matrix(col, j) = tmp
+            Next j
+        End If
+        For row = col + 1 To pointCount - 1
+            factor = matrix(row, col) / matrix(col, col)
+            For j = col + 1 To pointCount
+                matrix(row, j) = matrix(row, j) - factor * matrix(col, j)
+            Next j
+        Next row
+    Next col
+    For row = pointCount - 1 To 0 Step -1
+        tmp = matrix(row, pointCount)
+        For j = row + 1 To pointCount - 1
+            tmp = tmp - matrix(row, j) * stepVector(j)
+        Next j
+        stepVector(row) = tmp / matrix(row, row)
+    Next row
+    LinearStep = True
+End Function
+
+Private Sub Solve(ByRef x() As Double, ByRef V() As Double)
+    Dim trial() As Double, stepVector() As Double
+    Dim r() As Double, candidate() As Double, jacobian() As Double, matrix() As Double
+    Dim iteration As Long, i As Long, j As Long, k As Long
+    Dim h As Double, sum As Double, original As Double, damping As Double
+    Dim before As Double, after As Double, validTrial As Boolean
+    Const stay As Double = 0.000000001
+
+    ReDim x(0 To pointCount)
+    ReDim V(0 To vCount - 1)
+    ReDim trial(0 To pointCount), stepVector(0 To pointCount)
+    ReDim r(0 To residualCount), candidate(0 To residualCount)
+    ReDim jacobian(0 To residualCount, 0 To pointCount)
+    ReDim matrix(0 To pointCount, 0 To pointCount)
+    For i = 0 To pointCount - 1
+        x(i) = initial(i)
+    Next i
+    Residual x, r
+    before = Cost(r)
+    damping = 0.000001
+    For iteration = 1 To 70
+        If MaxResidual(r) <= 0.0000001 Or damping >= 1000000000# Then Exit For
+        For i = 0 To pointCount - 1
+            original = x(i)
+            h = Maximum(0.00001, Abs(original) * 0.0000001)
+            x(i) = original + h
+            Residual x, candidate
+            x(i) = original
+            For k = 0 To residualCount - 1
+                jacobian(k, i) = (candidate(k) - r(k)) / h
+            Next k
+        Next i
+        For i = 0 To pointCount - 1
+            For j = i To pointCount - 1
+                sum = 0
+                For k = 0 To residualCount - 1
+                    sum = sum + jacobian(k, i) * jacobian(k, j)
+                Next k
+                If i = j Then sum = sum + damping + stay
+                matrix(i, j) = sum
+                matrix(j, i) = sum
+            Next j
+            sum = 0
+            For k = 0 To residualCount - 1
+                sum = sum + jacobian(k, i) * r(k)
+            Next k
+            matrix(i, pointCount) = -sum - stay * (x(i) - initial(i))
+        Next i
+        If Not LinearStep(matrix, stepVector) Then Exit For
+        For i = 0 To pointCount - 1
+            trial(i) = x(i) + stepVector(i)
+        Next i
+        validTrial = TryResidual(trial, candidate)
+        If validTrial Then after = Cost(candidate)
+        If validTrial And after < before Then
+            For i = 0 To pointCount - 1
+                x(i) = trial(i)
+            Next i
+            For i = 0 To residualCount - 1
+                r(i) = candidate(i)
+            Next i
+            before = after
+            damping = Maximum(0.000000000001, damping * 0.2)
+        Else
+            damping = damping * 10
+        End If
+    Next iteration
+    If MaxResidual(r) > 0.00002 Then Err.Raise 5, , "Questa combinazione non risolve i vincoli del progetto."
+    Values x, V
+End Sub
+
+Private Function TryResidual(ByRef candidate() As Double, ByRef output() As Double) As Boolean
+    On Error GoTo NonValido
+    Residual candidate, output
+    TryResidual = True
+NonValido:
+End Function
+Private Function FieldValue(ByRef fields As Variant, ByVal i As Long, ByRef X() As Double, ByRef V() As Double) As Double
+    FieldValue = Eval(CLng(fields(i)), X, V)
+End Function
+
+Private Sub MakeShapes(ByRef X() As Double, ByRef V() As Double)
+    Dim row As Long, first As Long, i As Long, count As Long, fields As Variant
+    Dim ux As Double, uy As Double, ax As Double, ay As Double, length As Double
+    Dim nx As Double, ny As Double, limit As Double, den As Double, offset As Double
+    Dim stepSize As Double, direction As Double
+    ReDim shapes(1 To 5000)
+    shapeCount = 0
+    stamp = stamp + 1
+    row = 1
+    Do While row <= UBound(draw)
+        fields = draw(row)
+        If fields(0) = "P" Then
+            first = row + 1
+            row = first
+            Do While draw(row)(0) <> "E"
+                row = row + 1
+            Loop
+            If FieldValue(fields, 1, X, V) <> 0 Then
+                ux = FieldValue(fields, 4, X, V) - FieldValue(fields, 2, X, V)
+                uy = FieldValue(fields, 5, X, V) - FieldValue(fields, 3, X, V)
+                length = Sqr(ux * ux + uy * uy)
+                If length < 0.00000001 Then Err.Raise 5, , "Direzione della ripetizione non valida."
+                direction = FieldValue(fields, 6, X, V)
+                ux = ux * direction / length
+                uy = uy * direction / length
+                stepSize = FieldValue(fields, 13, X, V)
+                count = CLng(FieldValue(fields, 14, X, V))
+                If FieldValue(fields, 17, X, V) <> 0 Then
+                    ax = FieldValue(fields, 9, X, V) - FieldValue(fields, 7, X, V)
+                    ay = FieldValue(fields, 10, X, V) - FieldValue(fields, 8, X, V)
+                    nx = ux
+                    ny = uy
+                    If CLng(fields(11)) <> 0 Then
+                        nx = FieldValue(fields, 12, X, V) - FieldValue(fields, 10, X, V)
+                        ny = FieldValue(fields, 9, X, V) - FieldValue(fields, 11, X, V)
+                    End If
+                    den = nx * ux + ny * uy
+                    If Abs(den) < 0.00000001 Then Err.Raise 5, , "Riferimento della ripetizione parallelo."
+                    offset = FieldValue(fields, 15, X, V)
+                    limit = (ax * nx + ay * ny) / den + FieldValue(fields, 16, X, V) * offset
+                    If limit < 0.00000001 Or offset < 0 Then Err.Raise 5, , "Spazio insufficiente per la ripetizione."
+                    If FieldValue(fields, 18, X, V) <> 0 Then
+                        If count < 2 Then Err.Raise 5, , "La ripetizione richiede almeno due istanze."
+                        stepSize = limit / (count - 1)
+                    Else
+                        If stepSize <= 0 Then Err.Raise 5, , "La spaziatura deve essere positiva."
+                        count = 1 + Int((limit + 0.00000001) / stepSize)
+                    End If
+                End If
+                If count < 1 Or count > 500 Or stepSize <= 0 Then Err.Raise 5, , "Numero di ripetizioni o spaziatura non validi."
+                Dim instance As Long
+                For instance = 1 To count - 1
+                    For i = first To row - 1
+                        AppendShape draw(i), X, V, instance * stepSize * ux, instance * stepSize * uy
+                    Next i
+                Next instance
+            End If
+        Else
+            AppendShape fields, X, V, 0, 0
+        End If
+        row = row + 1
+    Loop
+    If shapeCount = 0 Then Err.Raise 5, , "Nessun elemento attivo da disegnare."
+End Sub
+
+Private Sub AppendShape(ByRef fields As Variant, ByRef X() As Double, ByRef V() As Double, ByVal dx As Double, ByVal dy As Double)
+    If FieldValue(fields, 1, X, V) = 0 Then Exit Sub
+    If shapeCount >= 5000 Then Err.Raise 5, , "Il DXF ha più di 5000 elementi."
+    shapeCount = shapeCount + 1
+    With shapes(shapeCount)
+        .kind = CStr(fields(0))
+        .layer = CStr(fields(2))
+        .x1 = dx + FieldValue(fields, 3, X, V)
+        .y1 = dy + FieldValue(fields, 4, X, V)
+        Select Case .kind
+            Case "C", "A"
+                .offset = FieldValue(fields, 5, X, V)
+                If .kind = "A" Then
+                    .x2 = FieldValue(fields, 6, X, V)
+                    .y2 = FieldValue(fields, 7, X, V)
+                    .x3 = FieldValue(fields, 8, X, V)
+                    .y3 = FieldValue(fields, 9, X, V)
+                End If
+                If .offset < 0.00002 Then shapeCount = shapeCount - 1
+            Case "D", "G", "L"
+                .x2 = dx + FieldValue(fields, 5, X, V)
+                .y2 = dy + FieldValue(fields, 6, X, V)
+                If .kind = "D" Then
+                    .mode = CStr(fields(7))
+                    .offset = FieldValue(fields, 8, X, V)
+                    .label = CStr(fields(9))
+                ElseIf .kind = "G" Then
+                    .x3 = dx + FieldValue(fields, 7, X, V)
+                    .y3 = dy + FieldValue(fields, 8, X, V)
+                    .offset = FieldValue(fields, 9, X, V)
+                    .label = CStr(fields(10))
+                ElseIf (.x2 - .x1) ^ 2 + (.y2 - .y1) ^ 2 < 0.0000000004 Then
+                    shapeCount = shapeCount - 1
+                End If
+        End Select
+    End With
+End Sub
+Private Sub SaveDrawing(ByVal f As Integer, ByRef X() As Double, ByRef V() As Double)
+    Dim record As Variant, i As Long, item As Variant, addedLayers As Long, addedBlocks As Long
+    textHeight = Eval(CLng(draw(0)(1)), X, V)
+    If textHeight < 0.00002 Then textHeight = 2.5
+    nextHandle = 8191
+    For Each item In layers
+        If NewLayer(CStr(item(0))) Then addedLayers = addedLayers + 1
+    Next item
+    For i = 1 To shapeCount
+        If IsDimension(shapes(i)) Then addedBlocks = addedBlocks + 1
+    Next i
+    For Each record In Split(cadTemplate, "|")
+        Select Case CStr(record)
+            Case "@UNITS@": Print #f, unitsCode
+            Case "@LAYER@":
+                For Each item In layers
+                    If NewLayer(CStr(item(0))) Then LayerRecord f, CStr(item(0)), CStr(item(1))
+                Next item
+            Case "@BLOCK_RECORD@":
+                For i = 1 To shapeCount
+                    If IsDimension(shapes(i)) Then BlockRecord f, i
+                Next i
+            Case "@BLOCKS@":
+                For i = 1 To shapeCount
+                    If IsDimension(shapes(i)) Then WriteBlock f, i, shapes(i)
+                Next i
+            Case "@ENTITIES@":
+                For i = 1 To shapeCount
+                    WriteShape f, i, shapes(i)
+                Next i
+            Case Else
+                If Left$(record, 13) = "@COUNT_LAYER@" Then
+                    Print #f, CStr(addedLayers + Val(Mid$(record, 14)))
+                ElseIf Left$(record, 20) = "@COUNT_BLOCK_RECORD@" Then
+                    Print #f, CStr(addedBlocks + Val(Mid$(record, 21)))
+                Else
+                    Print #f, CStr(record)
+                End If
+        End Select
+    Next record
+End Sub
+
+Private Function NewLayer(ByVal layer As String) As Boolean
+    layer = UCase$(layer)
+    NewLayer = (layer <> "0" And layer <> "DEFPOINTS")
+End Function
+
+Private Function IsDimension(ByRef s As Shape) As Boolean
+    IsDimension = (s.kind = "D" Or s.kind = "G")
+End Function
+
+Private Function BlockName(ByVal i As Long) As String
+    BlockName = "*D" & CStr(i)
+End Function
+
+Private Function BlockId(ByVal i As Long) As String
+    BlockId = Hex$(256 + i)
+End Function
+
+Private Sub LayerRecord(ByVal f As Integer, ByVal layer As String, ByVal color As String)
+    nextHandle = nextHandle + 1
+    Tag f, 0, "LAYER"
+    Tag f, 5, Hex$(nextHandle)
+    Tag f, 330, "1"
+    Tag f, 100, "AcDbSymbolTableRecord"
+    Tag f, 100, "AcDbLayerTableRecord"
+    Tag f, 2, layer
+    Tag f, 70, "0"
+    Tag f, 62, color
+    Tag f, 6, "Continuous"
+End Sub
+
+Private Sub BlockRecord(ByVal f As Integer, ByVal i As Long)
+    Tag f, 0, "BLOCK_RECORD"
+    Tag f, 5, BlockId(i)
+    Tag f, 330, "9"
+    Tag f, 100, "AcDbSymbolTableRecord"
+    Tag f, 100, "AcDbBlockTableRecord"
+    Tag f, 2, BlockName(i)
+End Sub
+
+Private Sub WriteBlock(ByVal f As Integer, ByVal i As Long, ByRef s As Shape)
+    Dim owner As String
+    owner = BlockId(i)
+    Entity f, owner, s.layer, "BLOCK"
+    Tag f, 100, "AcDbBlockBegin"
+    Tag f, 2, BlockName(i)
+    Tag f, 70, "1"
+    Pt f, 10, 0, 0
+    Tag f, 3, BlockName(i)
+    Tag f, 1, ""
+    If s.kind = "D" Then PaintLinear f, owner, s Else PaintAngle f, owner, s
+    Entity f, owner, s.layer, "ENDBLK"
+    Tag f, 100, "AcDbBlockEnd"
+End Sub
+
+Private Sub WriteShape(ByVal f As Integer, ByVal i As Long, ByRef s As Shape)
+    Dim ax As Double, ay As Double, bx As Double, by As Double, rotation As Double, span As Double
+    Dim first As Double, sweep As Double, radius As Double
+    Select Case s.kind
+        Case "L": Segment f, "17", s.layer, s.x1, s.y1, s.x2, s.y2
+        Case "C": Curve f, "17", s.layer, s.x1, s.y1, s.offset, 0, 360, False
+        Case "A"
+            first = Degrees(Atan2(s.y2 - s.y1, s.x2 - s.x1))
+            sweep = Degrees(Atan2(s.y3 - s.y1, s.x3 - s.x1))
+            Curve f, "17", s.layer, s.x1, s.y1, s.offset, first, sweep, True
+        Case "D"
+            PlaceLinear s, ax, ay, bx, by, rotation, span
+            If span < 0.00002 Then Exit Sub
+            DimensionHeader f, i, s, bx, by, (ax + bx) / 2, (ay + by) / 2, IIf(s.mode = "aligned", "33", "32")
+            Tag f, 100, "AcDbAlignedDimension"
+            Pt f, 13, s.x1, s.y1
+            Pt f, 14, s.x2, s.y2
+            If s.mode <> "aligned" Then
+                Tag f, 50, N(rotation)
+                Tag f, 100, "AcDbRotatedDimension"
+            End If
+        Case "G"
+            PlaceAngle s, first, sweep, radius, ax, ay
+            If sweep < 0.000001 Then Exit Sub
+            DimensionHeader f, i, s, ax, ay, ax, ay, "37"
+            Tag f, 100, "AcDb3PointAngularDimension"
+            Pt f, 13, s.x2, s.y2
+            Pt f, 14, s.x3, s.y3
+            Pt f, 15, s.x1, s.y1
+            Pt f, 16, ax, ay
+    End Select
+End Sub
+
+Private Sub DimensionHeader(ByVal f As Integer, ByVal i As Long, ByRef s As Shape, _
+                            ByVal x As Double, ByVal y As Double, ByVal tx As Double, ByVal ty As Double, ByVal kind As String)
+    Entity f, "17", s.layer, "DIMENSION"
+    Tag f, 100, "AcDbDimension"
+    Tag f, 2, BlockName(i)
+    Tag f, 3, "FORMA"
+    Pt f, 10, x, y
+    Pt f, 11, tx, ty
+    Tag f, 70, kind
+    Tag f, 71, "5"
+    Tag f, 1, s.label
+End Sub
+
+Private Sub PlaceLinear(ByRef s As Shape, ByRef ax As Double, ByRef ay As Double, _
+                        ByRef bx As Double, ByRef by As Double, ByRef rotation As Double, ByRef span As Double)
+    Dim dx As Double, dy As Double
+    dx = s.x2 - s.x1
+    dy = s.y2 - s.y1
+    Select Case s.mode
+        Case "vertical"
+            ax = Maximum(s.x1, s.x2) + s.offset
+            bx = ax
+            ay = s.y1
+            by = s.y2
+            rotation = 90
+            span = Abs(dy)
+        Case "horizontal"
+            ay = -Maximum(-s.y1, -s.y2) + s.offset
+            by = ay
+            ax = s.x1
+            bx = s.x2
+            rotation = 0
+            span = Abs(dx)
+        Case "aligned"
+            span = Sqr(dx * dx + dy * dy)
+            If span < 0.00002 Then Exit Sub
+            rotation = Degrees(Atan2(dy, dx))
+            If rotation > 90 And rotation < 270 Then rotation = rotation - 180
+            ax = s.x1 - dy / span * s.offset
+            ay = s.y1 + dx / span * s.offset
+            bx = s.x2 - dy / span * s.offset
+            by = s.y2 + dx / span * s.offset
+    End Select
+End Sub
+
+Private Sub PaintLinear(ByVal f As Integer, ByVal owner As String, ByRef s As Shape)
+    Dim ax As Double, ay As Double, bx As Double, by As Double, direction As Double, span As Double
+    Dim nx As Double, ny As Double
+    PlaceLinear s, ax, ay, bx, by, direction, span
+    If span < 0.00002 Then Exit Sub
+    Segment f, owner, s.layer, s.x1, s.y1, ax, ay
+    Segment f, owner, s.layer, s.x2, s.y2, bx, by
+    Segment f, owner, s.layer, ax, ay, bx, by
+    nx = (bx - ax) / span
+    ny = (by - ay) / span
+    Arrow f, owner, s.layer, ax, ay, nx, ny, textHeight * 0.6
+    Arrow f, owner, s.layer, bx, by, -nx, -ny, textHeight * 0.6
+    PaintText f, owner, s.layer, (ax + bx) / 2 - ny * textHeight * 0.6, _
+        (ay + by) / 2 + nx * textHeight * 0.6, direction, Replace(s.label, "<>", N(Int(span * 100 + 0.5) / 100))
+End Sub
+
+Private Sub PlaceAngle(ByRef s As Shape, ByRef start As Double, ByRef sweep As Double, _
+                       ByRef radius As Double, ByRef tx As Double, ByRef ty As Double)
+    Const PI As Double = 3.141592653589793
+    Dim finish As Double, a As Double, b As Double, mid As Double
+    a = Sqr((s.x2 - s.x1) ^ 2 + (s.y2 - s.y1) ^ 2)
+    b = Sqr((s.x3 - s.x1) ^ 2 + (s.y3 - s.y1) ^ 2)
+    If a < 0.00002 Or b < 0.00002 Then Exit Sub
+    start = Atan2(s.y2 - s.y1, s.x2 - s.x1)
+    finish = Atan2(s.y3 - s.y1, s.x3 - s.x1)
+    sweep = finish - start
+    If sweep < 0 Then sweep = sweep + 2 * PI
+    If sweep > PI Then
+        start = finish
+        sweep = 2 * PI - sweep
+    End If
+    radius = Maximum(1, Abs(s.offset))
+    mid = start + sweep / 2
+    tx = s.x1 + radius * Cos(mid)
+    ty = s.y1 + radius * Sin(mid)
+End Sub
+
+Private Sub PaintAngle(ByVal f As Integer, ByVal owner As String, ByRef s As Shape)
+    Dim start As Double, sweep As Double, radius As Double, tx As Double, ty As Double
+    PlaceAngle s, start, sweep, radius, tx, ty
+    If sweep < 0.000001 Then Exit Sub
+    Curve f, owner, s.layer, s.x1, s.y1, radius, Degrees(start), Degrees(start + sweep), True
+    PaintText f, owner, s.layer, tx, ty + textHeight * 0.6, 0, Replace(s.label, "<>", N(Int(Degrees(sweep) * 100 + 0.5) / 100) & "%%d")
+End Sub
+
+Private Sub Curve(ByVal f As Integer, ByVal owner As String, ByVal layer As String, _
+                  ByVal x As Double, ByVal y As Double, ByVal radius As Double, ByVal first As Double, _
+                  ByVal last As Double, ByVal isArc As Boolean)
+    Entity f, owner, layer, IIf(isArc, "ARC", "CIRCLE")
+    Tag f, 100, "AcDbCircle"
+    Pt f, 10, x, y
+    Tag f, 40, N(radius)
+    If isArc Then
+        Tag f, 100, "AcDbArc"
+        Tag f, 50, N(first)
+        Tag f, 51, N(last)
+    End If
+End Sub
+
+Private Sub PaintText(ByVal f As Integer, ByVal owner As String, ByVal layer As String, _
+                      ByVal x As Double, ByVal y As Double, ByVal rotation As Double, ByVal value As String)
+    Entity f, owner, layer, "TEXT"
+    Tag f, 100, "AcDbText"
+    Pt f, 10, x, y
+    Tag f, 40, N(textHeight)
+    Tag f, 1, value
+    Tag f, 50, N(rotation)
+    Tag f, 72, "1"
+    Pt f, 11, x, y
+    Tag f, 100, "AcDbText"
+    Tag f, 73, "2"
+End Sub
+
+Private Function Degrees(ByVal angle As Double) As Double
+    Degrees = angle * 57.29577951308232
+    If Degrees < 0 Then Degrees = Degrees + 360
+End Function
+Private Function N(ByVal numero As Double) As String
+    If Abs(numero) < 0.000000000001 Then numero = 0
+    N = Trim$(Str$(numero))
+    If Left$(N, 1) = "." Then N = "0" & N
+    If Left$(N, 2) = "-." Then N = "-0" & Mid$(N, 2)
+End Function
+
+Private Sub Tag(ByVal f As Integer, ByVal codice As Long, ByVal dato As String)
+    Print #f, CStr(codice)
+    Print #f, dato
+End Sub
+
+Private Sub Pt(ByVal f As Integer, ByVal code As Long, ByVal x As Double, ByVal y As Double)
+    Tag f, code, N(x)
+    Tag f, code + 10, N(y)
+    Tag f, code + 20, "0"
+End Sub
+
+Private Sub Entity(ByVal f As Integer, ByVal owner As String, ByVal layer As String, ByVal kind As String)
+    nextHandle = nextHandle + 1
+    Tag f, 0, kind
+    Tag f, 5, Hex$(nextHandle)
+    Tag f, 330, owner
+    Tag f, 100, "AcDbEntity"
+    Tag f, 8, layer
+End Sub
+
+Private Sub Segment(ByVal f As Integer, ByVal owner As String, ByVal layer As String, _
+                    ByVal x As Double, ByVal y As Double, ByVal xx As Double, ByVal yy As Double)
+    If (x - xx) ^ 2 + (y - yy) ^ 2 < 0.0000000004 Then Exit Sub
+    Entity f, owner, layer, "LINE"
+    Tag f, 100, "AcDbLine"
+    Pt f, 10, x, y
+    Pt f, 11, xx, yy
+End Sub
+
+Private Sub Arrow(ByVal f As Integer, ByVal owner As String, ByVal layer As String, ByVal x As Double, ByVal y As Double, _
+                  ByVal ux As Double, ByVal uy As Double, ByVal size As Double)
+    Dim bx As Double, by As Double
+    bx = x + ux * size
+    by = y + uy * size
+    Entity f, owner, layer, "SOLID"
+    Tag f, 100, "AcDbTrace"
+    Pt f, 10, x, y
+    Pt f, 11, bx - uy * size * 0.25, by + ux * size * 0.25
+    Pt f, 12, bx + uy * size * 0.25, by - ux * size * 0.25
+    Pt f, 13, bx + uy * size * 0.25, by - ux * size * 0.25
+End Sub
+Public Sub CreaDXF()
+    Dim destinazione As Variant
+    Dim foglio As Worksheet
+
+    Set foglio = ThisWorkbook.Worksheets("Parametri")
+    destinazione = Application.GetSaveAsFilename( _
+        InitialFileName:=CStr(foglio.Range("H1").Value2), _
+        FileFilter:="Disegno DXF (*.dxf), *.dxf", Title:="Salva disegno DXF")
+    If VarType(destinazione) = vbBoolean Then Exit Sub
+    If LCase$(Right$(CStr(destinazione), 4)) <> ".dxf" Then destinazione = destinazione & ".dxf"
+    If Len(Dir$(CStr(destinazione))) > 0 Then
+        If MsgBox("Sostituire il DXF esistente?", vbQuestion Or vbYesNo, "Forma") <> vbYes Then Exit Sub
+    End If
+    AggiornaDisegno foglio, CStr(destinazione)
+End Sub
+
+Public Sub AggiornaQuote(ByVal foglio As Worksheet)
+    If CLng(foglio.Range("H5").Value2) > 0 Then AggiornaDisegno foglio, ""
+End Sub
+
+Private Sub AggiornaDisegno(ByVal foglio As Worksheet, ByVal destinazione As String)
+    Dim n As Long, q As Long, noteRow As Long, i As Long, f As Integer
+    Dim X() As Double, V() As Double, ingressi() As Variant, risultati() As Variant
+    Dim fs As Object, temporaneo As String, aperto As Boolean
+    Dim eventi As Boolean, errore As String
+
+    eventi = Application.EnableEvents
+    On Error GoTo ErroreGenerico
+    n = CLng(foglio.Range("H3").Value2)
+    q = CLng(foglio.Range("H5").Value2)
+    noteRow = CLng(foglio.Range("H2").Value2)
+    foglio.Calculate
+    LoadModel foglio
+    ReDim inputs(0 To n)
+    If n > 0 Then
+        ReDim ingressi(1 To n, 1 To 1)
+        For i = 1 To n
+            inputs(i - 1) = LeggiParametro(foglio, i + 8)
+            ingressi(i, 1) = inputs(i - 1)
+        Next i
+    End If
+
+    Solve X, V
+    MakeShapes X, V
+    If q > 0 Then
+        ReDim risultati(1 To q, 1 To 1)
+        For i = 1 To q
+            risultati(i, 1) = V(CLng(foglio.Cells(noteRow + i, 9).Value2))
+        Next i
+    End If
+    Application.EnableEvents = False
+    foglio.Unprotect
+    foglio.Range("H6").ClearContents
+    If q > 0 Then foglio.Cells(noteRow + 1, 2).Resize(q, 1).Value2 = risultati
+    If n > 0 Then foglio.Cells(9, 10).Resize(n, 1).Value2 = ingressi
+    foglio.Protect
+    foglio.Calculate
+    Application.EnableEvents = eventi
+    If Len(destinazione) = 0 Then Exit Sub
+
+    On Error GoTo ErroreSalvataggio
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    temporaneo = fs.BuildPath(fs.GetSpecialFolder(2).Path, fs.GetTempName)
+    f = FreeFile
+    Open temporaneo For Output As #f
+    aperto = True
+    SaveDrawing f, X, V
+    Close #f
+    aperto = False
+    fs.CopyFile temporaneo, destinazione, True
+    MsgBox "DXF salvato." & vbCrLf & destinazione, vbInformation, "Forma"
+    GoTo Pulizia
+
+ErroreGenerico:
+    errore = Err.Description
+    On Error Resume Next
+    Application.EnableEvents = False
+    foglio.Unprotect
+    foglio.Range("H6").Value2 = "Modello non ricalcolato. " & errore
+    If q > 0 Then foglio.Cells(noteRow + 1, 2).Resize(q, 1).ClearContents
+    foglio.Protect
+    foglio.Calculate
+    Application.EnableEvents = eventi
+    If Len(destinazione) > 0 Then MsgBox "DXF non creato. " & errore, vbExclamation, "Forma"
+    GoTo Pulizia
+
+ErroreSalvataggio:
+    MsgBox "Il DXF non e stato salvato. " & Err.Description, vbExclamation, "Forma"
+Pulizia:
+    On Error Resume Next
+    If aperto Then Close #f
+    If Len(temporaneo) > 0 Then fs.DeleteFile temporaneo, True
+End Sub
+
+Private Function LeggiParametro(ByVal foglio As Worksheet, ByVal riga As Long) As Double
+    Dim v As Variant, codice As String
+    codice = CStr(foglio.Cells(riga, 8).Value2)
+    If codice = "E" Then
+        v = foglio.Cells(riga, 9).Value2
+        If IsError(v) Or IsEmpty(v) Then GoTo NonValido
+        If VarType(v) <> vbDouble Then GoTo NonValido
+        If v < 1 Or v <> Fix(v) Then GoTo NonValido
+        LeggiParametro = CDbl(v) - 1
+    Else
+        v = foglio.Cells(riga, 2).Value2
+        If VarType(v) <> vbDouble Then GoTo NonValido
+        If Abs(CDbl(v)) > 10000000000# Then GoTo NonValido
+        If codice = "P" And CDbl(v) < 0 Then GoTo NonValido
+        LeggiParametro = CDbl(v)
+    End If
+    Exit Function
+NonValido:
+    Err.Raise vbObjectError + 205, , "Controlla " & foglio.Cells(riga, 1).Value2 & " nella cella B" & riga & "."
+End Function
 */
 </script>
 
