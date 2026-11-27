@@ -598,7 +598,7 @@ dialog::backdrop{background:#080d1499}
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.0</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.1</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -2564,9 +2564,9 @@ window.FormaNativeDrawing=(()=>{
   const p=screen(points[a.a]),q=screen(points[a.b]),radius=a.radius*scale;
   return `M ${p.x} ${p.y} A ${radius} ${radius} 0 ${sweep(a)>Math.PI?1:0} 0 ${q.x} ${q.y}`;
  }
- function svg(d,r,selected,{screen,scale,pickCurve}){
+ function svg(d,r,selected,{screen,scale,pickCurve,usesOperationColor}){
   const opt=E.getOptions(d),render=d.view.mode==='render',items=selected?.items||(selected?[selected]:[]),picked=(type,id,item)=>items.some(i=>i.type===type&&i.id===id||item?.patternId&&i.type==='pattern'&&i.id===item.patternId),out=[];
-  const definition=E.definitionView(d,r),inactive=x=>x.ruleActive===false?' data-rule-inactive="true"':'',col=x=>render?E.layerColor(d,x):x.patternId?opt.colors.repetition:x.start!==undefined?opt.colors[N.featureDefinition(d,r,x.id,definition)]:opt.colors.defined;
+  const definition=E.definitionView(d,r),inactive=x=>x.ruleActive===false?' data-rule-inactive="true"':'',col=x=>render?E.layerColor(d,x):usesOperationColor(x)?opt.colors.repetition:x.start!==undefined?opt.colors[N.featureDefinition(d,r,x.id,definition)]:opt.colors.defined;
   function outline(item,type,tag,coordinates,color){
    const weight=item.construction?opt.editor.constructionWidth:opt.editor.lineWidth;
    const dash=item.preview?' stroke-dasharray="6 4"':item.construction?' stroke-dasharray="5 6"':'';
@@ -2582,7 +2582,7 @@ window.FormaNativeDrawing=(()=>{
   }
   for(const c of r.circles||[]){
    if(!N.visible(d,c)||c.radius<N.EPS)continue;
-   const p=screen(c.p),status=c.patternId?'repetition':E.entityDefinition(d,r,'point',d.points.find(p=>p.id===c.center),definition);
+   const p=screen(c.p),status=usesOperationColor(c)?'repetition':E.entityDefinition(d,r,'point',d.points.find(p=>p.id===c.center),definition);
    outline(c,'circle','circle',`cx="${p.x}" cy="${p.y}" r="${c.radius*scale}"`,render?col(c):opt.colors[status]||col(c));
   }
   for(const a of r.arcs||[]){
@@ -2816,6 +2816,9 @@ window.FormaCanvas = (()=>{
     const preview=renderMode(doc),definition=E.definitionView(doc,result),options=E.getOptions(doc),style=options.editor;definitionColors=options.colors;
     host.style.background=preview?'#202830':options.colors.background;host.style.setProperty?.('--under-color',options.colors.under);host.style.setProperty?.('--over-color',options.colors.over);
     const picks=preview?[]:last.selectionBox?.items||(selected?.items|| (selected?[selected]:[])),isSelected=(type,id)=>picks.some(s=>s.type===type&&s.id===id);
+    const operationIds=new Set(preview?[]:(doc.operations||[])
+      .filter(op=>op.target||op.type==='offset'||op.type==='mirror').map(op=>op.id));
+    const usesOperationColor=item=>item.patternId||operationIds.has(item.modifyOperation)||operationIds.has(item.operationId);
     const selectedRelation=!preview&&!last.selectionBox&&selected?.type==='constraint'?doc.constraints.find(k=>k.id===selected.id):null;
     width=host.clientWidth;height=host.clientHeight;
     svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
@@ -2859,7 +2862,7 @@ window.FormaCanvas = (()=>{
         content.push(line(s.p,s.q,selection.color,selection.width,selection.attributes));
       }
       const status=E.entityDefinition(doc,result,'segment',s,definition);
-      const color=preview?E.layerColor(doc,s):status==='over'?definitionColors.over:s.patternId?definitionColors.repetition:definitionColors[status];
+      const color=preview?E.layerColor(doc,s):status==='over'?definitionColors.over:usesOperationColor(s)?definitionColors.repetition:definitionColors[status];
       const weight=s.construction?style.constructionWidth:style.lineWidth;
       const dash=s.preview?' stroke-dasharray="6 4"':s.construction?' stroke-dasharray="5 6"':'';
       content.push(line(s.p,s.q,color,weight,dash+' data-rule-inactive="'+(s.ruleActive===false)+'" data-definition="'+status+'" data-display-segment="'+esc(s.id)+'"'));
@@ -2872,7 +2875,7 @@ window.FormaCanvas = (()=>{
       ['trim','extend','offset','mirror'].includes(tool)?window.FormaModifyUI?.canPickCurve:
       tool==='dimension'?window.FormaNativeUI?.canPickCurve:
       tool==='rules'?window.FormaRulesUI?.canPickCurve:null;
-    content.push(window.FormaNativeDrawing?.svg(doc,result,curvePicks.length===1?curvePicks[0]:{items:curvePicks},{screen,scale:camera.scale,pickCurve})||'');
+    content.push(window.FormaNativeDrawing?.svg(doc,result,curvePicks.length===1?curvePicks[0]:{items:curvePicks},{screen,scale:camera.scale,pickCurve,usesOperationColor})||'');
     for(const p of doc.points){
       if(!visiblePoint(p,doc))continue;
       const pt=result.points[p.id],s=screen(pt),sel=isSelected('point',p.id),status=E.entityDefinition(doc,result,'point',p,definition);
@@ -3064,7 +3067,7 @@ window.FormaCanvas = (()=>{
       occupied.push({x,y});
       const label='Modifica '+labels[type]+(name&&name!==labels[type]?' · '+name:'');
       const icon=FormaUI.icon(type).replace('viewBox=', 'x="-8" y="-8" width="16" height="16" viewBox=');
-      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" transform="translate(${x} ${y})"><title>${esc(label)}</title><path d="M0 0 L${at.x-x} ${at.y-y}" stroke="#b49343" fill="none" pointer-events="none"/><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
+      return `<g class="operation-badge" data-operation-kind="${type}" data-edit-operation="${esc(id)}" role="button" tabindex="0" aria-label="${esc(label)}" transform="translate(${x} ${y})"><title>${esc(label)}</title><rect x="-14" y="-11" width="28" height="22" rx="3"/>${icon}</g>`;
     }
     const edits=operations.map(op=>badge(op.type,op.id,op.name,
       anchor([...(op.target?[op.target]:[]),...op.outputs])||anchor(op.target?[op.target]:op.sources)));
@@ -3635,7 +3638,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.0 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.26.1 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4696,7 +4699,7 @@ window.FormaPatternInstances=(()=>{
 window.FormaOptionsUI=(()=>{
   const E=window.FormaEngine,U=window.FormaUI,$=id=>document.getElementById(id);
   function open(doc,onSave){
-    const base=E.getOptions(doc),defaults=E.defaultOptions(doc.units),labels={background:'Sfondo editor',defined:'Linee definite',under:'Sottodefinito',over:'Ultradefinito',dimension:'Quote modificabili / calcolate',fixedDimension:'Quote fisse',driven:'Quote pilotate',repetition:'Oggetti delle ripetizioni'};
+    const base=E.getOptions(doc),defaults=E.defaultOptions(doc.units),labels={background:'Sfondo editor',defined:'Linee definite',under:'Sottodefinito',over:'Ultradefinito',dimension:'Quote modificabili / calcolate',fixedDimension:'Quote fisse',driven:'Quote pilotate',repetition:'Geometria delle operazioni e delle ripetizioni'};
     const contentChoices=[['both','Nome e valore'],['value','Solo valore'],['name','Solo nome parametro']],typedChoices=[['inherit','Usa contenuto generale'],...contentChoices];
     const number=(label,name,value,min,max,step='any')=>U.field(label,name,value,'number','min="'+min+'" max="'+max+'" step="'+step+'" required');
     U.modal('Opzioni',
