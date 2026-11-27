@@ -602,11 +602,97 @@ dialog::backdrop{background:#080d1499}
 #options-cursor-sample,#options-grip-sample{display:block;width:102px;height:102px;border:1px solid var(--line);border-radius:4px}
 @media(max-width:510px){.cursor-options .form-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
+<style>
+#pattern-editor .pattern-title{padding:10px 12px}
+#pattern-editor .pattern-heading-main{display:flex;gap:9px;align-items:center;min-width:0}
+.pattern-heading-main h2{margin:0}
+.pattern-heading-main>.pattern-glyph{width:28px;height:28px;padding:3px;border-radius:3px;background:#25435f}
+#pattern-editor .pattern-scroll{flex:1;padding:10px 12px 12px}
+#pattern-editor .pattern-glyph{flex:none}
+#pattern-editor .pattern-card{margin-top:11px;padding-top:10px}
+#pattern-editor .pattern-card h3{margin-bottom:7px;gap:7px;color:var(--ink)}
+.pattern-card h3>.pattern-glyph,#pattern-editor summary>.pattern-glyph{width:17px;height:17px}
+.pattern-choice{display:flex;gap:5px;align-items:stretch;min-width:0}
+.pattern-choice>.btn{flex:1;min-width:0;justify-content:center;gap:5px;min-height:34px;padding:4px 5px;font-size:11.5px;white-space:normal;text-align:center;line-height:1.2}
+.pattern-choice>.btn[aria-pressed=true],.pattern-invert[aria-pressed=true]{background:#284866;border-color:#79addc;color:#edf7ff}
+.pattern-choice>.btn .pattern-glyph{width:17px;height:17px}
+.pattern-with-action{display:flex;gap:5px;align-items:stretch}
+.pattern-with-action>.pattern-choice,.pattern-with-action>.pattern-reference{flex:1;min-width:0}
+#pattern-editor .pattern-with-action>.icon-btn{flex:0 0 34px;height:auto;min-height:34px;padding:4px;border:1px solid var(--control-border)}
+.pattern-reference{display:flex;align-items:center;gap:8px;width:100%;min-width:0;min-height:42px;padding:5px 7px;text-align:left;border:1px solid var(--control-border);border-radius:3px;background:var(--input);color:var(--ink);cursor:pointer}
+.pattern-reference>span{flex:1;min-width:0}
+.pattern-reference b,.pattern-reference small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pattern-reference b{font-size:12px}
+.pattern-reference small{margin-top:2px;color:var(--muted);font-size:11px}
+.pattern-reference>.pattern-glyph{width:18px;height:18px}
+.pattern-reference>.icon{width:15px;height:15px;color:#afc9e4;flex:none}
+.pattern-reference:hover,.pattern-reference:focus-visible,.pattern-reference[aria-pressed=true]{background:#244664;border-color:#8fcaff;box-shadow:inset 2px 0 #8fcaff}
+.pattern-reference:hover small,.pattern-reference[aria-pressed=true] small{color:#c7e4ff}
+#pattern-editor :is(button,summary):focus-visible{outline:2px solid #9acfff;outline-offset:1px}
+.pattern-reference-mode,[data-center-kind]{margin-top:6px}
+.pattern-reference-mode>.pattern-choice,.pattern-reference+.pattern-reference{margin-top:5px}
+.pattern-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.pattern-fields .field{min-width:0;margin:5px 0}
+.pattern-full-row{grid-column:1/-1}
+.pattern-values{margin-top:4px}
+.pattern-measure-field,.pattern-variation-row{position:relative}
+#pattern-editor .pattern-measure .field input,#pattern-editor .pattern-variation-row .field input{width:100%;padding-right:32px}
+#pattern-editor .pattern-measure-field:has(.pattern-unit) .field input{padding-right:53px}
+.pattern-unit{position:absolute;right:32px;bottom:9px;pointer-events:none;color:var(--muted);font-size:10px}
+.pattern-formula-tools{position:absolute;bottom:2px;right:1px;z-index:2}
+.pattern-formula-tools[open]{z-index:4}
+.pattern-formula-tools>summary{display:grid;place-items:center;width:28px;height:28px;border-radius:3px;cursor:pointer;list-style:none}
+.pattern-formula-tools>summary:hover,.pattern-formula-tools[open]>summary{background:#2a4d6d}
+.pattern-formula-tools>summary::-webkit-details-marker,#pattern-editor summary::-webkit-details-marker{display:none}
+.pattern-formula-tools .formula-reference-picker{position:absolute;right:0;top:100%;z-index:3;margin:0;padding:4px;background:#273a4b;border:1px solid #698ba8;border-radius:3px;width:min(235px,65vw)}
+.pattern-formula-tools .formula-reference-picker>span{display:none}
+.pattern-more,.pattern-anchor-options{margin-top:9px;border-top:1px solid var(--line);padding-top:3px}
+#pattern-editor :is(.pattern-more,.pattern-anchor-options,.pattern-pro-row) summary{display:flex;align-items:center;gap:7px;list-style:none;min-height:33px;cursor:pointer;font-size:12px;font-weight:650}
+#pattern-editor :is(.pattern-more,.pattern-anchor-options,.pattern-pro-row) summary>.icon{margin-left:auto;width:13px;height:13px;flex:none;transition:transform .15s}
+#pattern-editor details[open]>summary>.icon{transform:rotate(180deg)}
+.pattern-anchor-options>[data-pattern-anchor],.pattern-offset-side{margin-top:5px}
+.pattern-offset-side{align-items:center;justify-content:space-between;color:var(--muted);font-size:11px}
+.pattern-pro-row{position:relative;border:1px solid var(--control-border);border-radius:3px;background:#27333f;margin:5px 0}
+#pattern-editor .pattern-pro-row summary{padding:4px 7px;min-height:36px}
+.pattern-pro-row summary b{flex:1}
+.pattern-pro-row summary small{color:#afc7df;font-size:10px;font-weight:600;white-space:nowrap}
+#pattern-editor .pattern-pro-row:has(.pattern-pro-toggle) summary{padding-right:41px}
+.pattern-pro-toggle{position:absolute;right:7px;top:5px;display:grid;align-items:center;width:29px;min-height:26px}
+#pattern-editor .pattern-pro-toggle input.switch{width:28px;height:15px;margin:0}
+#pattern-editor .pattern-pro-toggle input.switch::after{width:11px;height:11px;top:2px;left:2px}
+#pattern-editor .pattern-pro-toggle input.switch:checked::after{left:15px}
+.pattern-pro-content{padding:2px 7px 7px;border-top:1px solid var(--line)}
+.pattern-pro-content>button{margin:6px 0}
+.pattern-pro-content .pattern-fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pattern-pro-content .pattern-variation-row{padding:6px 0;margin:0;border-top:1px solid var(--line);background:none}
+.pattern-variation-sample{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.pattern-variation-sample:empty{display:none}
+.pattern-variation-sample>div{border:1px solid #4d6379;border-radius:3px;padding:4px;background:#263b4b}
+.pattern-variation-sample :is(small,b){display:block;overflow-wrap:anywhere}
+.pattern-variation-sample small{font-size:10px;color:var(--muted)}
+.pattern-variation-sample b{font:600 11px Consolas,monospace;margin-top:2px}
+#pattern-dynamic-fields>.pattern-with-action{margin-top:5px}
+.pattern-skip-footer{display:flex;align-items:center;gap:6px;justify-content:space-between;margin-top:3px;color:var(--muted)}
+.pattern-skips{max-height:103px;overflow:auto}
+.pattern-footer-top{display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
+#pattern-editor .pattern-footer-top #pattern-summary{margin:0;color:#ffe697;font-size:12px}
+#pattern-editor .pattern-footer-top .check-line{margin:0;white-space:nowrap;font-size:11px}
+#pattern-editor .pattern-footer #pattern-pick-hint{margin:0 0 5px;color:var(--accent)}
+#pattern-editor .pattern-footer .pattern-actions{display:grid;grid-template-columns:1fr 1.5fr;gap:6px;margin-top:7px}
+#pattern-editor .pattern-footer .pattern-actions .btn{width:100%;min-height:33px}
+@media(pointer:coarse){#pattern-editor .pattern-reference,#pattern-editor .pattern-choice>.btn,#pattern-editor .pattern-footer .btn{min-height:44px}}
+@media(max-width:620px){
+  #app.pattern-open .workspace{grid-template-rows:minmax(0,1fr) minmax(0,48%);gap:5px}
+  #app.pattern-open .workspace>.right-panel{grid-column:1;grid-row:2;position:relative;inset:auto;width:auto;max-width:none;min-height:0;margin:0 6px 5px}
+  #app.pattern-open .mobile-panels{display:none}
+}
+@media(prefers-reduced-motion:reduce){#pattern-editor summary>.icon{transition:none}}
+</style>
 </head>
 <body>
 <div id="app">
  <header class="topbar">
-  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.26.6</small></div>
+  <div class="brand"><svg viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M3 13 19 4l10 5v21l-16 5-10-6V13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m3 13 10 6 16-10M13 19v16M19 4v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><strong>Forma</strong><small>Schizzo 2D · 3.27.0</small></div>
   <button id="document-name" class="document-name" title="Rinomina progetto">Struttura inclinata</button>
   <div class="top-actions">
    <button class="btn editor-only" id="open-project" title="Apri progetto" aria-label="Apri progetto"><i data-icon="folder"></i><span>Apri</span></button>
@@ -3195,10 +3281,19 @@ window.FormaCanvas = (()=>{
       else if(item.type==='circle'){const c=r.circles.find(c=>c.id===item.id),p=c&&screen(c.p);if(c)out.push(`<circle cx="${p.x}" cy="${p.y}" r="${c.radius*camera.scale}" fill="none" stroke="${color}" stroke-width="4" opacity=".8"/>`)}
       else if(item.type==='point'||item.type==='position'){const p=screen(points[0]);out.push(`<circle cx="${p.x}" cy="${p.y}" r="8" fill="${color}" fill-opacity=".18" stroke="${color}" stroke-width="2"/>`)}
       else{const xs=points.map(p=>p.x),ys=points.map(p=>p.y),a=screen({x:Math.min(...xs),y:Math.max(...ys)}),b=screen({x:Math.max(...xs),y:Math.min(...ys)});out.push(`<rect x="${a.x-6}" y="${a.y-6}" width="${Math.max(12,b.x-a.x+12)}" height="${Math.max(12,b.y-a.y+12)}" fill="none" stroke="${color}" stroke-width="2" stroke-dasharray="5 4"/>`)}
-      const anchor=screen(arc?FormaNativeDrawing.arcMiddle(arc):points.reduce((a,p)=>({x:a.x+p.x/points.length,y:a.y+p.y/points.length}),{x:0,y:0}));out.push(`<g transform="translate(${anchor.x+12} ${anchor.y-18})"><circle r="9" fill="#243443" stroke="${color}"/><text text-anchor="middle" dy="4" fill="${color}" font-size="11">${esc(item.index||index+1)}</text></g>`);
+      const anchor=screen(arc?FormaNativeDrawing.arcMiddle(arc):points.reduce((a,p)=>({x:a.x+p.x/points.length,y:a.y+p.y/points.length}),{x:0,y:0}));
+      if(item.label){
+        const label=item.label.slice(0,40),w=Math.max(31,label.length*6.3+12);
+        const x=Math.max(4,Math.min(width-w-4,anchor.x+12)),y=Math.max(4,Math.min(height-24,anchor.y-26));
+        out.push(`<g data-highlight-reference="${esc(item.id)}" transform="translate(${x} ${y})"><rect width="${w}" height="20" rx="3" fill="#243b51" stroke="${color}"/><text x="6" y="13.5" fill="${color}" font-size="11">${esc(label)}</text></g>`);
+      }else out.push(`<g transform="translate(${anchor.x+12} ${anchor.y-18})"><circle r="9" fill="#243443" stroke="${color}"/><text text-anchor="middle" dy="4" fill="${color}" font-size="11">${esc(item.index||index+1)}</text></g>`);
     }return `<g class="reference-highlight" pointer-events="none">${out.join('')}</g>`;
   }
-  function setReferenceHighlight(items=[]){last.referenceHighlights=items;render()}
+  function setReferenceHighlight(items=[]){
+    last.referenceHighlights=items;
+    const overlay=svg?.querySelector('.reference-highlight');
+    if(overlay)overlay.outerHTML=referenceSVG(items);
+  }
   function focusItems(items){const pts=referencePoints(items);if(!pts.length)return;const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);camera.x=(Math.min(...xs)+Math.max(...xs))/2;camera.y=(Math.min(...ys)+Math.max(...ys))/2;const span=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys));if(span>1e-6)camera.scale=Math.max(.0001,Math.min(20,Math.min(width,height)*.55/span));render()}
   function hit(ev){const el=ev.target.closest('[data-point],[data-segment],[data-dimension],[data-relation],[data-shared-point],[data-circle],[data-feature],[data-arc],[data-text]');if(!el)return null;const item=el.dataset.arc?{type:'arc',id:el.dataset.arc}:el.dataset.circle?{type:'circle',id:el.dataset.circle}:el.dataset.feature?{type:'feature',id:el.dataset.feature}:el.dataset.text?{type:'text',id:el.dataset.text}:el.dataset.relation?{type:'constraint',id:el.dataset.relation}:el.dataset.point||el.dataset.sharedPoint?{type:'point',id:el.dataset.point||el.dataset.sharedPoint}:el.dataset.segment?{type:'segment',id:el.dataset.segment}:{type:'dimension',id:el.dataset.dimension};const s=(item.type==='segment'?last.result.segments:item.type==='dimension'?last.result.dimensions:item.type==='circle'?last.result.circles:item.type==='arc'||item.type==='feature'?last.result.arcs:item.type==='text'?last.result.texts:[]).find(s=>s.id===item.id);return s?.patternId?{type:'pattern',id:s.patternId}:s?.featureId?{type:'feature',id:s.featureId}:item;}
   function setDraft(draft,hover=null){last.draft=draft;last.dimensionDraft=null;last.hover=hover;render();}
@@ -3736,7 +3831,7 @@ window.FormaLispExport=(()=>{
     const patterns=window.FormaPatternLisp?window.FormaPatternLisp.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)},withDimensions):{runtime:'',draw:[],check:'(defun '+P+':check-patterns (v) T)'};
     const natives=window.FormaNativeLisp?.build(P,doc,result,{pt,ref,num,str,expr:source=>expression(source,ref,P)})||{runtime:'',draw:[],xs:[],ys:[],check:'(defun '+P+':check-native (v) T)'};
     const lines=[
-      '; Forma 3.26.6 - programma AutoLISP autonomo - '+doc.units,
+      '; Forma 3.27.0 - programma AutoLISP autonomo - '+doc.units,
       '; Progetto: '+str(doc.name),
       '; Caricare con APPLOAD; eseguire '+command+'. '+(config.inputMode==='dialog'?'Parametri in finestra DCL incorporata.':'Invio mantiene il valore proposto.'),
       '; Quote AutoCAD DIMENSION; vincoli risolti dal programma a ogni esecuzione.',
@@ -4464,17 +4559,23 @@ window.FormaUI = (()=>{
 })();
 
 /* Reference insertion is local to each field; no geometry solve while typing. */
-window.FormaFormulaUI={bind(input,doc,result,{exclude=[],onInsert}={}){
+window.FormaFormulaUI={bind(input,doc,result,{exclude=[],onInsert,compactIcon}={}){
   if(!input||input.dataset.formulaBound)return;input.dataset.formulaBound='true';
   const U=window.FormaUI,wrap=document.createElement('div');wrap.className='formula-reference-picker';
   wrap.innerHTML='<span>ƒx</span><select aria-label="Inserisci riferimento nella formula"><option value="">Inserisci quota / parametro…</option>'+doc.params.filter(p=>!exclude.includes(p.id)).map(p=>'<option value="'+U.esc(p.id)+'">'+U.esc(p.id)+(p.kind==='input'&&p.label?' · '+U.esc(p.label):'')+' = '+Number(result.params[p.id].toFixed(4))+'</option>').join('')+'</select>';
-  const parent=input.closest('.field')||input.parentElement;parent.append(wrap);
+  const parent=input.closest('.field')||input.parentElement;
+  let menu;
+  if(compactIcon){
+    menu=document.createElement('details');menu.className='pattern-formula-tools';
+    const trigger=document.createElement('summary');trigger.setAttribute('aria-label','Inserisci riferimento nella formula');trigger.title='Inserisci quota o parametro';
+    trigger.innerHTML=compactIcon;menu.append(trigger,wrap);parent.after(menu);
+  }else parent.append(wrap);
   let start=input.value.length,end=start;
   for(const event of ['keyup','click','select','blur'])input.addEventListener(event,()=>{start=input.selectionStart??input.value.length;end=input.selectionEnd??start;});
   wrap.querySelector('select').addEventListener('change',ev=>{
     const id=ev.target.value;if(!id)return;
     input.value=input.value.slice(0,start)+id+input.value.slice(end);start+=id.length;end=start;
-    input.focus();input.setSelectionRange?.(start,start);input.dispatchEvent(new Event('input',{bubbles:true}));onInsert?.(id);ev.target.value='';
+    input.focus();input.setSelectionRange?.(start,start);input.dispatchEvent(new Event('input',{bubbles:true}));onInsert?.(id);ev.target.value='';if(menu)menu.open=false;
   });
 }};
 
@@ -4557,131 +4658,334 @@ window.FormaChoiceUI=(()=>{
   return {open};
 })();
 
+const patternGlyphs={
+  "alzata": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 6h16M4 12h16M4 18h16\" stroke=\"#8fcaff\" /><path d=\"M8 4v4m7 2v4m-5 2v4\" stroke-width=\"3\" stroke=\"#ffda4d\" /></svg>",
+  "centro": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"7\" stroke-dasharray=\"2.2 2\" stroke=\"#8fcaff\" /><rect x=\"10\" y=\"10\" width=\"4\" height=\"4\" stroke=\"#ffda4d\" /><path d=\"M12 2v5m0 10v5M2 12h5m10 0h5\" stroke=\"#8fcaff\" /></svg>",
+  "circolare": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 3.8a9 9 0 0 1 14 7.1m-3-2.6 3.1 2.7L22 7.3\" stroke=\"#8fcaff\" /><circle cx=\"12\" cy=\"12\" r=\"1.15\" fill=\"#8fcaff\" stroke=\"none\" /><rect x=\"2.5\" y=\"13.5\" width=\"3.5\" height=\"3.5\" fill=\"#ffda4d\" stroke=\"none\" /><rect x=\"10.25\" y=\"18\" width=\"3.5\" height=\"3.5\" fill=\"#ffda4d\" stroke=\"none\" /><rect x=\"18\" y=\"13.5\" width=\"3.5\" height=\"3.5\" fill=\"#ffda4d\" stroke=\"none\" /></svg>",
+  "direzione": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 8h17m-4-4 4 4-4 4\" stroke=\"#ffda4d\" /><path d=\"M4 17h16\" stroke=\"#8fcaff\" /><rect x=\"2.5\" y=\"15.5\" width=\"3\" height=\"3\" fill=\"#8fcaff\" stroke=\"none\" /><rect x=\"18.5\" y=\"15.5\" width=\"3\" height=\"3\" fill=\"#8fcaff\" stroke=\"none\" /></svg>",
+  "equidistanti": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 13v7m8-7v7m8-7v7\" stroke-width=\"2.4\" stroke=\"#ffda4d\" /><path d=\"M4 5v4m16-4v4M4 7h16m-10-3h4\" stroke=\"#8fcaff\" /></svg>",
+  "esclusioni": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"2\" y=\"6.5\" width=\"4.5\" height=\"11\" stroke=\"#8fcaff\" /><rect x=\"17.5\" y=\"6.5\" width=\"4.5\" height=\"11\" stroke=\"#8fcaff\" /><path d=\"m9.7 9.7 4.6 4.6m0-4.6-4.6 4.6\" stroke-width=\"2.3\" stroke=\"#ffda4d\" /></svg>",
+  "fino-al-limite": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M20 3v18\" stroke=\"#8fcaff\" /><path d=\"M3 12h13m-4-4 4 4-4 4\" stroke=\"#ffda4d\" /><path d=\"M16 3h4m-4 18h4\" opacity=\".78\" stroke=\"#8fcaff\" /></svg>",
+  "formula": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 19c2 0 2.5-1.5 3-4l1.5-7c.5-2.5 2-3.5 4-3.5M5 10h7\" stroke=\"#8fcaff\" /><path d=\"M14 12l5 6m0-6-5 6\" stroke=\"#ffda4d\" /></svg>",
+  "guide-dinamiche": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 4h18M3 14l18 6\" stroke=\"#8fcaff\" /><path d=\"M8 4v11.7M16 4v14.3\" stroke-width=\"2.4\" stroke=\"#ffda4d\" /></svg>",
+  "intersezione": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 19 21 5M3 5l18 14\" opacity=\".78\" stroke=\"#8fcaff\" /><rect x=\"9.5\" y=\"9.5\" width=\"5\" height=\"5\" stroke=\"#ffda4d\" /><path d=\"m2 17 2 3m16-16 2 3M2 7l2-3m16 16 2-3\" stroke=\"#8fcaff\" /></svg>",
+  "inverti-verso": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 8h17m-4-4 4 4-4 4\" stroke=\"#8fcaff\" /><path d=\"M21 16H4m4-4-4 4 4 4\" stroke=\"#ffda4d\" /></svg>",
+  "lineare": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 5h17m-3-3 3 3-3 3\" stroke=\"#8fcaff\" /><rect x=\"3\" y=\"11\" width=\"4\" height=\"8\" stroke=\"#8fcaff\" /><rect x=\"10\" y=\"11\" width=\"4\" height=\"8\" stroke=\"#ffda4d\" /><rect x=\"17\" y=\"11\" width=\"4\" height=\"8\" stroke=\"#ffda4d\" /></svg>",
+  "nomi-parametri": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 7v10l8 4 10-10-8-8-10 4Z\" stroke=\"#8fcaff\" /><circle cx=\"8\" cy=\"9\" r=\"1.5\" stroke=\"#ffda4d\" /><path d=\"m11 14 4-4m-2 6 4-4\" stroke=\"#ffda4d\" /></svg>",
+  "oggetti": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"1\" stroke-dasharray=\"2.2 2\" stroke=\"#ffda4d\" /><path d=\"M7 15V8h6m-2 9h6v-7\" stroke=\"#8fcaff\" /><path d=\"M7 15h1m3 2h1\" stroke=\"#8fcaff\" /></svg>",
+  "passo-copie": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 4v7m14-7v7M6 6h12m-9-2-3 2 3 2m6-4 3 2-3 2\" stroke=\"#8fcaff\" /><path d=\"M3 14h4v6H3zm14 0h4v6h-4z\" stroke=\"#ffda4d\" /></svg>",
+  "riferimento-iniziale": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"#8fcaff\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"pattern-glyph\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3 6v12\" stroke=\"#ffda4d\" /><path d=\"M3 12h17m-4-4 4 4-4 4\" stroke=\"#8fcaff\" /><rect x=\"2\" y=\"11\" width=\"2\" height=\"2\" fill=\"#ffda4d\" stroke=\"none\" /></svg>"
+};
+const patternIcon=key=>patternGlyphs[key];
 window.FormaPatternUI=(()=>{
   'use strict';
   const E=window.FormaEngine,P=window.FormaPatterns,U=window.FormaUI,C=window.FormaCanvas,esc=U.esc;
   function init(ctx){
-    const host=document.getElementById('pattern-editor'),app=document.getElementById('app');
-    let editing=null,pick=null,box=null,previewOn=true,timer=null,lastGood=null,variationsMounted=false;
+    const host=document.getElementById('pattern-editor'),app=document.getElementById('app'),canvas=document.getElementById('canvas');
+    let editing=null,pick=null,box=null,previewOn=true,timer=null,lastGood=null,lastCount=0,hoverRef=null,focusRef=null,keyboardRef=null;
     const $=name=>host.querySelector('[name="'+name+'"]');
     const state=()=>ctx.state;
     const supported=o=>!!o&&['segment','dimension','circle','arc','feature','text'].includes(o.type);
     const normalize=items=>{const out=items.filter(supported).map(o=>({type:o.type,id:o.id}));for(const o of [...out])if(o.type==='dimension'){const q=state().doc.dimensions.find(q=>q.id===o.id);if(q?.radial){const id=q.circleId||q.nativeFeature,type=state().doc.circles.some(c=>c.id===id)?'circle':state().doc.arcs.some(c=>c.id===id)?'arc':'feature';if(id)out.push({type,id});}}return out.filter((o,i,a)=>a.findIndex(x=>x.type===o.type&&x.id===o.id)===i);};
     const number=(expr,fallback)=>{try{return E.expression(expr,id=>state().result.params[id]);}catch{return fallback;}};
     const expressionValue=(p,key)=>{const param=p.parameterIds?.[key]&&state().doc.params.find(q=>q.id===p.parameterIds[key]);return param?(param.expr??String(param.value)):p[key];};
-    function options(type,value){
-      const doc=state().doc;
-      const sources=editing?.objects||[],ids=new Set(sources.flatMap(o=>{const s=P.source(doc,o,state().result);return s?P.pointIds(s):[];}));
-      const points=doc.points.filter(p=>type!=='anchor'||ids.has(p.id));
-      const segments=doc.segments.filter(s=>type!=='anchor'||sources.some(o=>o.type==='segment'&&o.id===s.id));
-      return '<option value="">Seleziona sul disegno…</option>'+[...(type==='direction'?[]:points.map(p=>['point:'+p.id,p.id+' · punto'])),...segments.map(s=>[type==='direction'?s.id:'segment:'+s.id,s.id+' · '+(s.name||'segmento')+(type==='anchor'?' (punto medio)':'')]),...(type==='anchor'?sources.filter(o=>['circle','arc','feature','text'].includes(o.type)).map(o=>[o.type+':'+o.id,o.id+' · '+(o.type==='text'?'inserimento':'centro / punto medio')]):[])].map(([v,label])=>'<option value="'+esc(v)+'" '+(v===value?'selected':'')+'>'+esc(label)+'</option>').join('');
+    const hidden=(name,value='')=>'<input type="hidden" name="'+name+'" value="'+esc(value)+'">';
+    const ref=value=>{const split=value.indexOf(':');return split<0?null:{type:value.slice(0,split),id:value.slice(split+1)};};
+    const refValue=item=>item?.id?item.type+':'+item.id:'';
+    const collections={segment:'segments',point:'points',circle:'circles',arc:'arcs',feature:'features',text:'texts',dimension:'dimensions'};
+    const itemFor=item=>item&&state().doc[collections[item.type]]?.find(record=>record.id===item.id);
+    const sameRef=(a,b)=>a?.type===b?.type&&a?.id===b?.id;
+    const titleFor=item=>{
+      const record=itemFor(item);
+      if(!record)return '';
+      return record.name||record.label||(item.type==='dimension'&&record.param?(state().doc.params.find(p=>p.id===record.param)?.label||record.param):'')||
+        ({segment:'Segmento',point:'Punto',circle:'Cerchio',arc:'Arco',feature:'Spigolo',text:'Testo',dimension:'Quota'})[item.type]+' '+item.id;
+    };
+    const titleByField={direction:'Direzione',target:'Limite',anchorRef:'Riferimento iniziale',centerPoint:'Centro',centerA:'Primo segmento',centerB:'Secondo segmento'};
+    const iconByField={direction:'direzione',target:'fino-al-limite',anchorRef:'riferimento-iniziale',centerPoint:'centro',centerA:'intersezione',centerB:'intersezione'};
+    function refButton(field,mode,label,icon,value=''){
+      return '<button type="button" class="pattern-reference" data-pattern-pick="'+esc(mode)+'" data-pattern-ref="'+esc(field)+'" data-ref-label="'+esc(label)+'">'+
+        patternIcon(icon)+'<span><b></b><small></small></span>'+U.icon('cursor')+'</button>'+hidden(field,value);
     }
-    const ref=s=>s?{type:s.split(':')[0],id:s.split(':')[1]}:null;
-    const refValue=r=>r?.id?r.type+':'+r.id:'';
-    function readVariations(){const toggle=$('variationEnabled');if(!toggle)return editing.variation;return {enabled:toggle.checked,items:[...host.querySelectorAll('[data-variation-row]')].map(row=>({param:row.querySelector('select').value,expr:row.querySelector('input').value.trim()}))};}
-    function variationFields(){const container=host.querySelector('#pattern-variations');if(!container)return;const choices=window.FormaPatternVariation?.candidates(state().doc,editing)||[];container.innerHTML=(editing.variation?.items||[]).map((row,i)=>'<div class="pattern-variation-row" data-variation-row="'+i+'">'+U.select('Quota da variare','variationParam'+i,[['','Scegli una quota…'],...choices.map(q=>[q.param,q.param+' · '+(q.radial==='diameter'?'Diametro':q.radial?'Raggio':q.mode==='angle'?'Angolo':'Lunghezza')])],row.param)+U.field('Formula per ogni istanza','variationExpr'+i,row.expr,'text','data-variation-formula required spellcheck="false" placeholder="Es. L + i * X"')+'<button type="button" class="subtle-action" data-variation-remove="'+i+'">Rimuovi variazione</button></div>').join('');for(const el of container.querySelectorAll('[data-variation-formula]'))window.FormaFormulaUI?.bind(el,state().doc,state().result);}
+    function choices(name,label,items,selected){
+      return '<div class="pattern-choice" role="group" aria-label="'+esc(label)+'">'+items.map(([value,caption,icon])=>
+        '<button type="button" class="btn" data-pattern-setting="'+name+'" data-value="'+value+'">'+(icon?patternIcon(icon):'')+caption+'</button>').join('')+'</div>'+hidden(name,selected);
+    }
+    function panelState(key,title,icon,content,attrs='',toggle=null){
+      return '<div class="pattern-pro-row" '+attrs+'><details name="pattern-pro" data-pattern-pro="'+key+'">'+
+        '<summary>'+patternIcon(icon)+'<b>'+title+'</b><small data-pattern-status="'+key+'"></small>'+U.icon('chevron')+'</summary>'+
+        '<div class="pattern-pro-content">'+content+'</div></details>'+
+        (toggle?'<label class="pattern-pro-toggle"><input type="checkbox" class="switch" name="'+toggle[0]+'" aria-label="'+title+'" '+(toggle[1]?'checked':'')+'></label>':'')+'</div>';
+    }
+    function measures(label,name,value,unit=''){
+      return '<div class="pattern-measure"><div class="pattern-measure-field">'+U.field(label,name,value,'text','required spellcheck="false"')+
+        (unit?'<span class="pattern-unit">'+esc(unit)+'</span>':'')+'</div></div>';
+    }
+    function bindFormula(el,exclude=[]){
+      window.FormaFormulaUI?.bind(el,state().doc,state().result,{exclude,
+        compactIcon:patternIcon('formula')});
+    }
+    function readVariations(){
+      return {enabled:$('variationEnabled').checked,items:[...host.querySelectorAll('[data-variation-row]')].map(row=>({
+        param:row.querySelector('input[type=hidden]').value,expr:row.querySelector('[data-variation-formula]').value.trim()}))};
+    }
+    const variationCandidates=()=>FormaPatternVariation.candidates(state().doc,editing);
+    function variationFields(){
+      const container=host.querySelector('#pattern-variations');
+      const doc=state().doc,exclude=Object.values(editing.parameterIds||{});
+      container.innerHTML=(editing.variation?.items||[]).map((row,i)=>{
+        const q=doc.dimensions.find(d=>d.param===row.param),label=q?titleFor({type:'dimension',id:q.id}):row.param;
+        return '<div class="pattern-variation-row" data-variation-row="'+i+'"><div class="pattern-with-action">'+
+          refButton('variationParam'+i,'variation:'+i,label||'Quota da variare','formula',row.param)+
+          '<button type="button" class="btn icon-btn" data-variation-remove="'+i+'" aria-label="Rimuovi formula '+esc(row.param)+'">'+U.icon('close')+'</button></div>'+
+          '<div class="pattern-measure-field">'+U.field('Formula per istanza','variationExpr'+i,row.expr,'text','data-variation-formula spellcheck="false"')+'</div>'+
+          '<div class="pattern-variation-sample" aria-label="Valori delle prime istanze"></div></div>';
+      }).join('');
+      for(const el of container.querySelectorAll('[data-variation-formula]'))bindFormula(el,exclude);
+    }
     function read(){
-      if($('type').value==='circular')return {...editing,variation:readVariations(),type:'circular',name:$('name').value.trim()||editing.id,circularMode:$('circularMode').value,angle:$('angle').value,count:$('count').value,reverse:$('reverse').checked,center:$('centerMode').value==='free'?{type:'free',x:$('centerX').value,y:$('centerY').value}:$('centerMode').value==='intersection'?{type:'intersection',segments:[$('centerA').value,$('centerB').value]}:{type:'point',id:$('centerPoint').value},dynamic:undefined};
+      const named={...editing,variation:readVariations(),name:$('name').value.trim()||editing.id,reverse:$('reverse').checked};
+      if($('type').value==='circular'){
+        const mode=$('centerMode').value;
+        return {...named,type:'circular',circularMode:$('circularMode').value,angle:$('angle').value,count:$('count').value,
+          center:mode==='free'?{type:'free',x:$('centerX').value,y:$('centerY').value}:
+            mode==='intersection'?{type:'intersection',segments:[$('centerA').value,$('centerB').value]}:{type:'point',id:$('centerPoint').value},dynamic:undefined};
+      }
       const mode=$('mode').value,distribution=$('distribution').value;
-      return {...editing,variation:readVariations(),type:'linear',name:$('name').value.trim()||editing.id,mode,distribution,direction:$('direction').value,reverse:$('reverse').checked,
+      return {...named,type:'linear',mode,distribution,direction:$('direction').value,
         step:mode==='reference'&&distribution==='count'?'1':$('step').value,
         count:mode==='reference'&&distribution==='step'?'2':$('count').value,
         offset:mode==='spacing'?'0':$('offset').value,offsetReverse:$('offsetReverse').checked,
-        anchor:mode==='spacing'||$('anchorMode').value==='centroid'?{type:'centroid'}:ref($('anchorRef').value),target:ref($('target').value),dynamic:{enabled:$('dynamic').checked,bindings:P.vertices(state().doc,editing).map(point=>({point,guide:$('dynamic_'+point)?.value||null}))}};
+        anchor:mode==='spacing'||$('anchorMode').value==='centroid'?{type:'centroid'}:ref($('anchorRef').value),
+        target:ref($('target').value),dynamic:{enabled:$('dynamic').checked,bindings:[...host.querySelectorAll('[data-guide-point]')].map(row=>({
+          point:row.dataset.guidePoint,guide:$('dynamic_'+row.dataset.guidePoint).value||null}))}};
     }
     const previewPattern=p=>{const param=state().doc.params.find(q=>q.id===p.parameterIds?.count);return (p.type==='circular'||p.mode==='spacing')&&param&&E.isIntegerParameter(param)?{...p,count:E.parameterExpression({...param,expr:p.count})}:p;};
     function dynamicFields(force=false){
-      const doc=state().doc,ids=P.vertices(doc,editing),selected=new Set(editing.objects.filter(o=>o.type==='segment').map(o=>o.id)),old=new Map(ids.filter(id=>$('dynamic_'+id)).map(id=>[id,$('dynamic_'+id).value])),saved=new Map((editing.dynamic?.bindings||[]).map(b=>[b.point,b.guide||'']));
-      let inferred=[];try{inferred=P.dynamicBindings(doc,state().result,{...editing,direction:$('direction').value,reverse:$('reverse').checked,dynamic:{enabled:true}});}catch{}
-      const detected=new Map(inferred.map(b=>[b.point,b.guide]));
-      host.querySelector('#pattern-dynamic-fields').innerHTML=ids.map(id=>{
-        const value=force?(detected.get(id)||''):old.has(id)?old.get(id):saved.has(id)?saved.get(id):detected.get(id)||'';
-        const ends=editing.objects.filter(o=>o.type==='segment').map(o=>doc.segments.find(s=>s.id===o.id)).filter(s=>s.a===id||s.b===id).map(s=>s.id+(s.a===id?' inizio':' fine')).join(', ');
-        return '<div class="pattern-ref">'+U.select(id+(ends?' · '+ends:''),'dynamic_'+id,[['','Nessuna guida · trasla'],...doc.segments.filter(s=>!selected.has(s.id)).map(s=>[s.id,s.id+' · '+(s.name||'guida')])],value)+'<button type="button" class="icon-btn" data-pattern-pick="guide:'+id+'" aria-label="Scegli guida per '+id+'">'+U.icon('cursor')+'</button></div>';
-      }).join('');
+      const {doc,result}=state();
+      const ids=P.vertices(doc,editing,result),saved=new Map((editing.dynamic?.bindings||[]).map(b=>[b.point,b.guide||'']));
+      const missing=ids.some(id=>!$('dynamic_'+id)&&!saved.has(id));
+      let inferred=new Map();
+      if(force||missing&&$('dynamic').checked){
+        try{
+          const bindings=P.dynamicBindings(doc,result,{...editing,direction:$('direction').value,reverse:$('reverse').checked,dynamic:{enabled:true}});
+          inferred=new Map(bindings.map(b=>[b.point,b.guide]));
+        }catch(err){if(force)throw err;}
+      }
+      const rows=ids.map(id=>{
+        const field='dynamic_'+id;
+        const value=force?inferred.get(id)||'':$(field)?.value??saved.get(id)??inferred.get(id)??'';
+        return '<div class="pattern-with-action" data-guide-point="'+esc(id)+'">'+
+          refButton(field,'guide:'+id,'Estremo '+id,'guide-dinamiche',value)+
+          '<button type="button" class="btn icon-btn" data-pattern-clear-guide="'+esc(id)+'" aria-label="Rimuovi guida per '+esc(id)+'">'+U.icon('close')+'</button></div>';
+      });
+      host.querySelector('#pattern-dynamic-fields').innerHTML=rows.join('');
     }
     function sourceList(){
-      host.querySelector('#pattern-sources').innerHTML=editing.objects.map(o=>'<button type="button" class="pattern-source" aria-label="Rimuovi '+esc(o.id)+' dalla selezione" data-pattern-source="'+esc(o.type+':'+o.id)+'">'+esc(o.id)+' ×</button>').join('')||'<span class="panel-note">Nessun oggetto selezionato.</span>';
-      const sel=$('anchorRef'),old=sel.value;sel.innerHTML=options('anchor',old);
-      host.querySelector('#pattern-source-count').textContent=editing.objects.length+' oggetti';dynamicFields();if(host.querySelector('#pattern-variations')){if(variationsMounted)editing.variation=readVariations();variationFields();variationsMounted=true;}
+      const count=editing.objects.length;
+      const select=host.querySelector('[data-pattern-pick=objects]');
+      select.querySelector('b').textContent=count===1?'1 oggetto':count?count+' oggetti':'Seleziona sul disegno';
+      select.querySelector('small').textContent=count?editing.objects.map(o=>o.id).join(' · '):'Clic o selezione a riquadro';
+      host.querySelector('[data-pattern-clear]').hidden=!count;
+      dynamicFields();
+    }
+    function referencesFor(button){
+      if(!button)return [];
+      if(button.dataset.patternPick==='objects')return editing.objects;
+      const field=button.dataset.patternRef,value=$(field)?.value;
+      if(!value)return [];
+      if(field.startsWith('variationParam')){
+        const q=state().doc.dimensions.find(d=>d.param===value);
+        return q?[{type:'dimension',id:q.id}]:[];
+      }
+      const item=['target','anchorRef'].includes(field)?ref(value):{type:field==='centerPoint'?'point':'segment',id:value};
+      return itemFor(item)?[item]:[];
+    }
+    function syncReferenceRows(){
+      for(const button of host.querySelectorAll('[data-pattern-ref]')){
+        const {patternRef:field,refLabel:label}=button.dataset;
+        const item=referencesFor(button)[0],title=titleFor(item),isGuide=field.startsWith('dynamic_');
+        const detail=titleByField[field]||label;
+        button.querySelector('b').textContent=isGuide?detail:title||detail;
+        button.querySelector('small').textContent=isGuide?(title?item.id+' · '+title:'Seleziona guida sul disegno') :
+          title?(title===item.id?'Seleziona sul disegno':item.id===title||title.endsWith(' '+item.id)?detail:item.id+' · '+detail):'Seleziona sul disegno';
+        button.setAttribute('aria-label',(item?'Cambia ':'Scegli ')+detail.toLowerCase()+' sul disegno'+(title?' · '+title:''));
+        const clear=button.closest('[data-guide-point]')?.querySelector('[data-pattern-clear-guide]');
+        if(clear)clear.hidden=!item;
+      }
+    }
+    function highlight(){
+      if(!hoverRef?.isConnected)hoverRef=null;
+      if(!focusRef?.isConnected)focusRef=null;
+      const refs=keyboardRef?[keyboardRef]:referencesFor(hoverRef||focusRef);
+      const p=read();
+      const base=p.type==='circular'?(p.center.type==='point'&&p.center.id?[{type:'point',id:p.center.id}]:
+        p.center.type==='intersection'?p.center.segments.filter(Boolean).map(id=>({type:'segment',id})):[]):[];
+      C.setReferenceHighlight(refs.length?refs.map(item=>({...item,color:'#8fcaff',label:itemFor(item)?.name?item.id+' · '+titleFor(item):item.id})):base);
+    }
+    function syncVariationPreview(p,count){
+      const doc=state().doc,r=state().result,v=FormaPatternVariation;
+      host.querySelectorAll('.pattern-variation-sample').forEach((node,i)=>{
+        const row=p.variation.items[i],q=doc.dimensions.find(d=>d.param===row.param);
+        if(!p.variation.enabled||!row.expr||!q){node.innerHTML='';return;}
+        const units=q.mode==='angle'?'°':doc.units;
+        node.innerHTML=Array.from({length:Math.min(3,count)},(_,idx)=>{
+          let n;
+          try{n=v.value(r,row.expr,idx);}catch{n=NaN;}
+          return '<div><small>'+(idx?idx+1+' · copia':'1 · originale')+'</small><b>'+(Number.isFinite(n)?Number(n.toFixed(3))+' '+units:'—')+'</b></div>';
+        }).join('');
+      });
+    }
+    const plural=(n,one,many)=>n+' '+(n===1?one:many);
+    function syncControls(p){
+      const circle=p.type==='circular',byReference=!circle&&p.mode==='reference';
+      for(const [attribute,on] of [['linear',!circle],['circular',circle],['dynamic',!circle&&!!p.dynamic?.enabled],
+        ['reference',byReference],['names',!byReference],['anchor',byReference&&$('anchorMode').value==='selected'],
+        ['step',!circle&&(!byReference||p.distribution!=='count')],['count',!byReference||p.distribution!=='step']])
+        host.querySelectorAll('[data-pattern-'+attribute+']').forEach(el=>el.hidden=!on);
+      host.querySelectorAll('[data-center-kind]').forEach(el=>el.hidden=el.dataset.centerKind!==$('centerMode').value);
+      $('step').disabled=circle||byReference&&p.distribution==='count';
+      $('count').disabled=byReference&&p.distribution==='step';
+      $('offset').disabled=!byReference;
+      $('stepParam').disabled=circle||byReference;$('angleParam').disabled=!circle;$('countParam').disabled=byReference;
+      $('angle').disabled=!circle;
+      $('centerX').disabled=$('centerY').disabled=!circle||$('centerMode').value!=='free';
+      $('dynamic').disabled=circle;
+      host.querySelectorAll('[data-variation-formula]').forEach(el=>el.disabled=!p.variation.enabled);
+      $('angle').previousElementSibling.textContent=p.circularMode==='step'?'Passo angolare':'Angolo totale';
+      host.querySelectorAll('[data-pattern-setting]').forEach(b=>b.setAttribute('aria-pressed',String($(b.dataset.patternSetting).value===b.dataset.value)));
+      host.querySelectorAll('[data-pattern-flip]').forEach(b=>b.setAttribute('aria-pressed',String($(b.dataset.patternFlip).checked)));
+      host.querySelectorAll('[data-pattern-pick]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.patternPick===pick)));
+      const hints={center:'Clicca un punto o una posizione sul disegno.',centerA:'Clicca il primo segmento.',centerB:'Clicca il secondo segmento non parallelo.',
+        objects:p.objects.length?'Aggiungi altri oggetti o premi Invio per continuare.':'Clicca gli oggetti o usa un riquadro. Ctrl o Shift aggiunge.',direction:'Clicca il segmento di direzione.',target:'Clicca il punto o il segmento limite.',anchor:'Clicca un riferimento sugli oggetti originali.'};
+      host.querySelector('#pattern-pick-hint').textContent=pick?.startsWith('guide:')?'Clicca la guida per '+pick.slice(6)+'.':
+        pick?.startsWith('variation')?'Clicca una quota indipendente degli oggetti selezionati.':hints[pick]||'';
+      const status=(name,value)=>host.querySelector('[data-pattern-status="'+name+'"]').textContent=value;
+      const nameIds=[p.type==='circular'?'angle':'step','count'];
+      status('names',byReference?'Nome':nameIds.every(key=>$(key+'Param').value===editing.id+({step:'_PASSO',angle:'_ANGOLO',count:'_ISTANZE'})[key])?'Automatici':'Personalizzati');
+      status('variation',p.variation.enabled?plural(p.variation.items.length,'quota','quote'):'Disattive');
+      status('guides',p.dynamic?.enabled?plural(p.dynamic.bindings.filter(b=>b.guide).length,'guida','guide'):'Disattivo');
+      syncReferenceRows();
     }
     function update(){
-      if(!editing)return;clearTimeout(timer);
-      const p=read(),circle=p.type==='circular',byReference=!circle&&p.mode==='reference';
-      host.querySelectorAll('[data-variation-row] input,[data-variation-row] select').forEach(el=>el.disabled=!p.variation?.enabled);
-      host.querySelectorAll('[data-pattern-linear]').forEach(el=>el.hidden=circle);
-      host.querySelectorAll('[data-pattern-circular]').forEach(el=>el.hidden=!circle);
-      host.querySelectorAll('[data-center-kind]').forEach(el=>el.hidden=el.dataset.centerKind!==$('centerMode').value);
-      host.querySelector('[data-pattern-dynamic]').hidden=circle||!p.dynamic?.enabled;
-      host.querySelectorAll('[data-pattern-reference]').forEach(el=>el.hidden=!byReference);
-      host.querySelector('[data-pattern-names]').hidden=byReference;
-      host.querySelector('[data-pattern-anchor]').hidden=!byReference||$('anchorMode').value!=='selected';
-      host.querySelector('[data-pattern-step]').hidden=circle||byReference&&p.distribution==='count';
-      host.querySelector('[data-pattern-count]').hidden=byReference&&p.distribution==='step';
-      $('step').disabled=circle||byReference&&p.distribution==='count';$('count').disabled=byReference&&p.distribution==='step';
-      $('offset').disabled=!byReference;$('target').disabled=!byReference;
-      $('stepParam').disabled=circle||byReference;$('angleParam').disabled=!circle;$('countParam').disabled=byReference;
-      $('angle').disabled=!circle;$('centerX').disabled=$('centerY').disabled=!circle||$('centerMode').value!=='free';
-      $('centerPoint').disabled=!circle||$('centerMode').value!=='point';$('centerA').disabled=$('centerB').disabled=!circle||$('centerMode').value!=='intersection';
-      host.querySelector('[data-angle-label]').textContent=p.circularMode==='step'?'Passo angolare · °':'Angolo totale · °';
-      host.querySelectorAll('[data-pattern-flip]').forEach(b=>b.setAttribute('aria-pressed',String($(b.dataset.patternFlip).checked)));
-      host.querySelector('#pattern-mode-help').textContent=byReference?(p.distribution==='count'?'Il numero resta fisso; il passo si adatta al riferimento finale.':'Il passo resta fisso; le istanze oltre il limite non vengono create.'):'Imposta il passo e il numero totale di istanze.';
-      host.querySelector('#pattern-kind').textContent=(p.dynamic?.enabled?'Dinamica · ':'')+(circle?'Circolare · angolo e istanze nei Parametri':byReference?'Fissa · segue i riferimenti del disegno':'Modificabile · passo e istanze nei Parametri');
-      host.querySelector('#pattern-pick-hint').textContent=pick==='center'?'Clicca un punto esistente oppure una posizione libera.':pick==='centerA'?'Seleziona il primo segmento per il centro.':pick==='centerB'?'Seleziona il secondo segmento non parallelo.':pick==='objects'?'Clic su linee, curve, testi e quote. Riquadro → contiene, ← tocca. Ctrl/Shift aggiunge.':pick==='direction'?'Clicca il segmento di direzione.':pick==='target'?'Clicca il punto o segmento finale.':pick?.startsWith('guide:')?'Clicca il segmento guida per '+pick.slice(6)+'.':pick==='anchor'?'Clicca un punto degli oggetti originali o un segmento (punto medio).':'';
-      host.querySelectorAll('[data-pattern-pick]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.patternPick===pick)));
-      host.querySelector('#pattern-error').textContent='';
+      if(!editing)return;
+      clearTimeout(timer);
+      const p=read(),original=state().result,data=state().doc;
+      const drawing=pick?.startsWith('variation')&&data.view.dimensions===false?{...data,view:{...data.view,dimensions:true}}:data;
+      syncControls(p);
+      const error=host.querySelector('#pattern-error'),summary=host.querySelector('#pattern-summary');
+      error.textContent='';
       try{
         if(!p.objects.length)throw new Error('Seleziona gli oggetti da ripetere.');
-        const result=P.expand(state().doc,state().result,[...(state().doc.patterns||[]).filter(q=>q.id!==p.id),previewPattern(p)]),info=result.patterns.find(q=>q.id===p.id);
-        result.segments.forEach(s=>{if(s.patternId===p.id)s.preview=true;});
-        for(const group of ['dimensions','circles','arcs','texts'])result[group].forEach(d=>{if(d.patternId===p.id)d.preview=true;});
-        const selected={...p.objects[p.objects.length-1],items:p.objects};
-        lastGood=result;C.render(state().doc,previewOn?result:state().result,selected,null,'pattern');
+        const result=P.expand(data,original,[...(data.patterns||[]).filter(q=>q.id!==p.id),previewPattern(p)]),info=result.patterns.find(q=>q.id===p.id);
+        for(const group of ['segments','dimensions','circles','arcs','texts'])result[group].forEach(item=>{if(item.patternId===p.id)item.preview=true;});
+        const selected={...p.objects.at(-1),items:p.objects};
+        lastGood=result;
+        C.render(drawing,previewOn?result:original,selected,null,'pattern');
         C.setPatternPreview(previewOn?{pattern:p,plan:info}:null);
-        host.querySelector('#pattern-summary').textContent=(info.inactive?'Inattiva · ':'')+info.count+' istanze totali · '+info.activeCount+' attive · '+(info.skipped||0)+' escluse · passo '+Number(info.step.toFixed(3))+' '+(circle?'°':state().doc.units)+(circle?' · '+(p.reverse?'orario':'antiorario'):'');
-        skipFields(info);host.querySelector('#pattern-apply').disabled=false;
+        summary.textContent=info.inactive?'Ripetizione inattiva':'1 originale + '+plural(Math.max(0,info.activeCount-1),'copia','copie');
+        lastCount=info.count;skipFields(info);
+        syncVariationPreview(p,info.count);
+        host.querySelector('#pattern-apply').disabled=false;
       }catch(err){
-        C.setPatternPreview();C.render(state().doc,previewOn&&lastGood?lastGood:state().result,null,null,'pattern');
-        host.querySelector('#pattern-error').textContent=err.message;host.querySelector('#pattern-summary').textContent='Completa la definizione';host.querySelector('#pattern-apply').disabled=true;
+        C.setPatternPreview();
+        C.render(drawing,previewOn&&lastGood?lastGood:original,p.objects.length?{...p.objects.at(-1),items:p.objects}:null,null,'pattern');
+        if(p.objects.length&&pick!=='direction'&&pick!=='center'&&pick!=='target'&&pick!=='centerA'&&pick!=='centerB')error.textContent=err.message;
+        summary.textContent='Completa la definizione';
+        skipFields();
+        syncVariationPreview(p,3);
+        host.querySelector('#pattern-apply').disabled=true;
       }
-      const refs=circle?(p.center.type==='point'&&p.center.id?[{type:'point',id:p.center.id}]:p.center.type==='intersection'?p.center.segments.filter(Boolean).map(id=>({type:'segment',id})):[]):[];
-      C.setReferenceHighlight(refs);
+      highlight();
     }
-    function toggleSkip(index){if(!Number.isInteger(index)||index<2)return;const set=new Set(editing.skip||[]);if(set.has(index))set.delete(index);else set.add(index);editing.skip=[...set].sort((a,b)=>a-b);update();}
-    function skipFields(info){const root=host.querySelector('#pattern-skips');if(!root)return;root.innerHTML=Array.from({length:Math.min(500,Math.max(1,info.count))},(_,i)=>'<button type="button" class="instance-chip '+((editing.skip||[]).includes(i+1)?'excluded':'')+'" data-pattern-skip="'+(i+1)+'" aria-pressed="'+(editing.skip||[]).includes(i+1)+'" '+(i?'':'disabled')+' aria-label="'+(i?'Escludi / ripristina istanza '+(i+1):'Originale 1 · sempre incluso')+'">'+(i+1)+'</button>').join('')+((editing.skip||[]).some(n=>n>info.count)?'<small>Esclusioni oltre il numero attuale conservate.</small>':'');}
-    function close(redraw=true){clearTimeout(timer);editing=null;lastGood=null;pick=null;box=null;C.setReferenceHighlight();host.hidden=true;app.classList.remove('pattern-open');state().tool='select';C.setSelectionBox();C.setPatternPreview();C.setInteraction();if(redraw)ctx.redraw();}
+    function toggleSkip(index){
+      if(!Number.isInteger(index)||index<2)return;
+      const set=new Set(editing.skip||[]);
+      if(set.has(index))set.delete(index);else set.add(index);
+      editing.skip=[...set].sort((a,b)=>a-b);
+      update();
+    }
+    function skipFields(info){
+      const root=host.querySelector('#pattern-skips'),count=info?.count||0,excluded=editing.skip||[];
+      const key=count+':'+excluded.join(',');
+      if(root.dataset.signature!==key){
+        const focused=document.activeElement?.dataset.patternSkip;
+        root.innerHTML=Array.from({length:count},(_,i)=>{
+          const id=i+1,skipped=excluded.includes(id);
+          return '<button type="button" class="instance-chip '+(skipped?'excluded':'')+'" data-pattern-skip="'+id+'" aria-pressed="'+skipped+'" '+
+            (i?'':'disabled')+' aria-label="'+(i?(skipped?'Ripristina':'Escludi')+' istanza '+id:'Originale 1 · sempre incluso')+'">'+id+'</button>';
+        }).join('');
+        root.dataset.signature=key;
+        if(focused)root.querySelector('[data-pattern-skip="'+focused+'"]')?.focus({preventScroll:true});
+      }
+      host.querySelector('[data-pattern-status=skips]').textContent=excluded.length?plural(excluded.length,'esclusa','escluse'):'Nessuna';
+      host.querySelector('[data-pattern-reset-skips]').disabled=!excluded.length;
+      host.querySelector('#pattern-skips-note').textContent=excluded.some(id=>id>count)?'Le esclusioni oltre il numero attuale sono memorizzate.':'';
+    }
+    function close(redraw=true){
+      clearTimeout(timer);editing=null;lastGood=null;pick=null;box=null;hoverRef=null;focusRef=null;keyboardRef=null;
+      C.setReferenceHighlight();host.hidden=true;app.classList.remove('pattern-open');state().tool='select';
+      C.setSelectionBox();C.setPatternPreview();C.setInteraction();if(redraw)ctx.redraw();
+    }
     function open(id=null){
-      if(state().runner)return;variationsMounted=false;
+      if(state().runner||state().doc.view.mode==='render')return;
       if(!['segments','circles','arcs','features','texts'].some(k=>state().doc[k]?.length)){U.toast('Disegna prima un oggetto.',true);return;}
       ctx.setTool('select');
-      const doc=state().doc,old=(doc.patterns||[]).find(p=>p.id===id),items=normalize(state().selected?.items|| (state().selected?[state().selected]:[]));
+      const doc=state().doc,old=(doc.patterns||[]).find(p=>p.id===id),items=normalize(state().selected?.items||(state().selected?[state().selected]:[]));
       const freshId=E.nextId(doc.patterns||[],'RP');
-      editing=old?E.clone(old):{id:freshId,name:'Ripetizione '+freshId,mode:'spacing',distribution:'step',objects:items,direction:items.find(o=>o.type==='segment')?.id||doc.segments[0]?.id||'',reverse:false,step:'100',count:'5',offset:'0',offsetReverse:false,anchor:{type:'centroid'},target:null};
-      editing={type:'linear',mode:'spacing',distribution:'step',direction:doc.segments[0]?.id||'',step:'100',count:'5',offset:'0',anchor:{type:'centroid'},center:{type:'point',id:''},circularMode:'total',angle:'360',...editing};lastGood=null;
-      pick=editing.objects.length?null:'objects';previewOn=true;state().tool='pattern';
+      editing=old?E.clone(old):{id:freshId,name:'Ripetizione '+freshId,objects:items,direction:items.find(o=>o.type==='segment')?.id||''};
+      editing={type:'linear',mode:'spacing',distribution:'step',direction:'',step:'100',count:'5',offset:'0',anchor:{type:'centroid'},
+        center:{type:'point',id:''},circularMode:'total',angle:'360',...editing};
+      previewOn=true;lastGood=null;lastCount=0;hoverRef=null;focusRef=null;keyboardRef=null;state().tool='pattern';
       host.hidden=false;app.classList.add('pattern-open');window.FormaWorkspaceUI?.reveal('right');
-      const card=(n,title,body,attrs='')=>'<div class="pattern-card" '+attrs+'><h3><span>'+n+'</span>'+title+'</h3>'+body+'</div>';
-      host.innerHTML='<div class="section-head pattern-title"><div><small>STRUMENTI SCHIZZO</small><h2>'+(old?'Modifica ripetizione':'Ripetizione')+'</h2></div><button type="button" class="icon-btn" data-pattern-close aria-label="Annulla ripetizione">'+U.icon('close')+'</button></div><form id="pattern-form"><div class="pattern-scroll">'+
-        U.select('Tipo di ripetizione','type',[['linear','Lineare'],['circular','Circolare']],editing.type)+U.field('Nome ripetizione','name',editing.name,'text','maxlength="100" required')+
-        card(1,'Oggetti da ripetere','<div class="pattern-selection-bar"><small id="pattern-source-count"></small><button type="button" class="pattern-clear" data-pattern-clear>Svuota</button></div><div id="pattern-sources" class="pattern-sources"></div><button type="button" class="btn small wide" data-pattern-pick="objects">'+U.icon('cursor')+'Seleziona sul disegno</button>')+
-        card(2,'Direzione','<div class="pattern-ref">'+U.select('Segmento di direzione','direction',[],editing.direction)+'<button type="button" class="icon-btn" data-pattern-pick="direction" aria-label="Scegli segmento di direzione">'+U.icon('cursor')+'</button></div><input type="checkbox" name="reverse" hidden '+(editing.reverse?'checked':'')+'><button type="button" class="btn small wide" data-pattern-flip="reverse" aria-pressed="'+!!editing.reverse+'">'+U.icon('undo')+'Inverti verso</button>','data-pattern-linear')+
-        card(2,'Centro di rotazione',U.select('Definisci il centro','centerMode',[['point','Punto o posizione sul disegno'],['free','Coordinate X / Y'],['intersection','Intersezione di due segmenti']],editing.center.type)+
-          '<div data-center-kind="point"><div class="pattern-ref">'+U.select('Punto esistente','centerPoint',[['','Seleziona un punto…'],...doc.points.map(p=>[p.id,p.id])],editing.center.type==='point'?editing.center.id:'')+'<button type="button" class="icon-btn" data-pattern-pick="center" aria-label="Scegli il centro sul disegno">'+U.icon('cursor')+'</button></div><p class="pattern-help">Clicca un punto per collegarlo al centro, oppure una posizione libera.</p></div>'+
-          '<div data-center-kind="free">'+U.field('Centro X · '+doc.units,'centerX',editing.center.x||'0','text','required spellcheck="false"')+U.field('Centro Y · '+doc.units,'centerY',editing.center.y||'0','text','required spellcheck="false"')+'<button type="button" class="btn small wide" data-pattern-pick="center">'+U.icon('cursor')+'Posiziona sul disegno</button></div>'+
-          '<div data-center-kind="intersection">'+['A','B'].map((key,i)=>'<div class="pattern-ref">'+U.select('Segmento '+(i+1),'center'+key,[['','Seleziona un segmento…'],...doc.segments.map(s=>[s.id,s.id+' · '+(s.name||'segmento')])],editing.center.segments?.[i]||'')+'<button type="button" class="icon-btn" data-pattern-pick="center'+key+'" aria-label="Scegli segmento '+(i+1)+'">'+U.icon('cursor')+'</button></div>').join('')+'<p class="pattern-help">Usa l’intersezione delle rette, anche oltre gli estremi. Il centro segue i segmenti.</p></div>','data-pattern-circular')+
-        card(3,'Distribuzione','<div data-pattern-linear>'+U.select('Modalità','mode',[['spacing','Spaziatura e istanze'],['reference','Fino al riferimento']],editing.mode)+
-        '<p id="pattern-mode-help" class="pattern-help"></p><div data-pattern-reference><div class="pattern-ref">'+U.select('Riferimento finale','target',[],'')+'<button type="button" class="icon-btn" data-pattern-pick="target" aria-label="Scegli riferimento finale">'+U.icon('cursor')+'</button></div>'+U.select('Definisci la ripetizione tramite','distribution',[['step','Spaziatura costante'],['count','Numero di istanze · equidistanti']],editing.distribution)+'</div>'+
-        '<div data-pattern-step>'+U.field('Spaziatura · '+doc.units,'step',expressionValue(editing,'step'),'text','required spellcheck="false" placeholder="Es. L-4+RT"')+'</div></div><div data-pattern-circular>'+U.select('Distribuzione circolare','circularMode',[['total','Angolo totale e istanze'],['step','Passo angolare e istanze']],editing.circularMode)+'<label class="field"><span data-angle-label>Angolo totale · °</span><input name="angle" value="'+esc(expressionValue(editing,'angle'))+'" required spellcheck="false" placeholder="Es. 360 oppure ALFA/2"></label><button type="button" class="btn small wide" data-pattern-flip="reverse">'+U.icon('undo')+'Inverti verso di rotazione</button><p class="pattern-help">A 360° il giro è chiuso senza duplicare l’originale. Su un arco l’ultima istanza arriva all’angolo totale.</p></div><div data-pattern-count>'+U.field('Istanze totali','count',expressionValue(editing,'count'),'text','required spellcheck="false" placeholder="Es. INT(L/RT)+1"')+'<p class="pattern-help">Originale incluso. Per un intero per difetto: <code>INT(L/RT)</code>.</p></div>'+
-        '<div data-pattern-reference class="pattern-end-settings"><h4>Posizione dell’ultima istanza</h4>'+U.select('Punto dell’istanza da riferire','anchorMode',[['centroid','Centroide degli oggetti'],['selected','Punto o segmento selezionato']],editing.anchor.type==='centroid'?'centroid':'selected')+
-        '<div data-pattern-anchor class="pattern-ref">'+U.select('Punto o segmento originale','anchorRef',[],'')+'<button type="button" class="icon-btn" data-pattern-pick="anchor" aria-label="Scegli punto di riferimento iniziale">'+U.icon('cursor')+'</button></div>'+
-        U.field('Distanza dal riferimento finale · '+doc.units,'offset',editing.offset,'text','required spellcheck="false" placeholder="Es. RT + 4"')+'<input type="checkbox" name="offsetReverse" hidden '+(editing.offsetReverse?'checked':'')+'><button type="button" class="btn small wide" data-pattern-flip="offsetReverse" aria-pressed="'+!!editing.offsetReverse+'">'+U.icon('undo')+'Inverti lato della distanza</button><p class="pattern-help">Con distanza 0, il punto scelto dell’ultima istanza arriva al riferimento finale.</p></div>'+
-        '<div data-pattern-names><details class="pattern-advanced"><summary>Nomi dei parametri</summary><div data-pattern-linear>'+U.field('Parametro spaziatura','stepParam',editing.parameterIds?.step||editing.id+'_PASSO','text','pattern="[A-Za-z_][A-Za-z_0-9]{0,29}" maxlength="30"')+'</div><div data-pattern-circular>'+U.field('Parametro angolo','angleParam',editing.parameterIds?.angle||editing.id+'_ANGOLO','text','pattern="[A-Za-z_][A-Za-z_0-9]{0,29}" maxlength="30"')+'</div>'+U.field('Parametro istanze','countParam',editing.parameterIds?.count||editing.id+'_ISTANZE','text','pattern="[A-Za-z_][A-Za-z_0-9]{0,29}" maxlength="30"')+'</details></div>')+
-        '<details class="pattern-advanced" '+(editing.variation?.enabled?'open':'')+'><summary>Formule per istanza <small>Avanzate</small></summary><label class="check-line"><input type="checkbox" name="variationEnabled" '+(editing.variation?.enabled?'checked':'')+'>Varia le quote delle copie</label><p class="pattern-help"><code>i = 0</code> originale, <code>i = 1</code> seconda istanza. Esempio: <code>L + i * X</code>. I parametri nella formula sono quelli dell’originale; con i = 0 il valore deve coincidere. Le istanze escluse conservano il loro indice.</p><div id="pattern-variations"></div><button type="button" class="btn small wide" data-variation-add>Aggiungi quota da variare</button><p class="pattern-help">Serve una quota indipendente sugli oggetti selezionati. La copia mantiene il punto di posizionamento (centroide o riferimento scelto). Usa una ripetizione rigida. Invio aggiorna l’anteprima della formula.</p></details>'+
-        '<details class="pattern-advanced"><summary>Istanze da escludere <small>Facoltativo</small></summary><p class="pattern-help">Clicca un numero nell’anteprima o qui sotto. La posizione resta libera, il passo non cambia. L’originale 1 resta incluso.</p><div id="pattern-skips" class="pattern-skips"></div><button type="button" class="btn small wide" data-pattern-reset-skips>Ripristina tutte le istanze</button></details>'+
-        '<details data-pattern-linear class="pattern-advanced pattern-guides" '+(editing.dynamic?.enabled?'open':'')+'><summary>Adattamento alle guide <small>Facoltativo</small></summary><label class="check-line"><input name="dynamic" type="checkbox" '+(editing.dynamic?.enabled?'checked':'')+'>Ripetizione dinamica</label><div data-pattern-dynamic><p class="pattern-help">Associa gli estremi alle guide: ogni copia si adatta conservando gli arretramenti dell’originale.</p><button type="button" class="btn small wide" data-pattern-auto-guides>Rileva guide dai vincoli</button><div id="pattern-dynamic-fields"></div></div></details></div>'+
-        '<div class="pattern-footer"><p id="pattern-pick-hint" class="pattern-help"></p><label class="check-line"><input name="preview" type="checkbox" checked>Mostra anteprima</label><div id="pattern-kind" class="pattern-kind"></div><div id="pattern-summary" role="status" aria-live="polite"></div><div id="pattern-error" class="dialog-error" role="alert"></div><div class="pattern-actions"><button type="button" class="btn" data-pattern-close>Annulla</button><button type="submit" class="btn primary" id="pattern-apply">'+(old?'Salva ripetizione':'Crea ripetizione')+'</button></div></div></form>';
-      for(const key of ['step','count','offset','angle','centerX','centerY'])window.FormaFormulaUI?.bind($(key),doc,state().result,{exclude:Object.values(editing.parameterIds||{})});
-      $('direction').innerHTML=options('direction',editing.direction);$('target').innerHTML=options('target',refValue(editing.target));$('anchorRef').innerHTML=options('anchor',refValue(editing.anchor));sourceList();variationFields();ctx.redraw();update();
+      const nameField=(key,label,suffix)=>U.field(label,key+'Param',editing.parameterIds?.[key]||editing.id+suffix,
+        'text','pattern="[A-Za-z_][A-Za-z_0-9]{0,29}" maxlength="30"');
+      const prop=(title,icon,body,attrs='')=>'<section class="pattern-card" '+attrs+'><h3>'+patternIcon(icon)+title+'</h3>'+body+'</section>';
+      const invert=(name,label)=>'<button type="button" class="btn icon-btn pattern-invert" data-pattern-flip="'+name+'" aria-label="'+label+'" title="'+label+'">'+patternIcon('inverti-verso')+'</button>';
+      host.innerHTML='<div class="section-head pattern-title"><div class="pattern-heading-main">'+patternIcon(editing.type==='circular'?'circolare':'lineare')+
+        '<h2>'+(old?'Modifica ripetizione':'Ripetizione')+'</h2></div><button type="button" class="icon-btn" data-pattern-close aria-label="Chiudi ripetizione">'+U.icon('close')+'</button></div>'+
+        '<form id="pattern-form"><div class="pattern-scroll">'+
+        choices('type','Tipo di ripetizione',[['linear','Lineare','lineare'],['circular','Circolare','circolare']],editing.type)+
+        prop('Oggetti da ripetere','oggetti','<div class="pattern-with-action"><button type="button" class="pattern-reference" data-pattern-pick="objects"><span><b></b><small></small></span>'+U.icon('cursor')+
+          '</button><button type="button" class="btn icon-btn" data-pattern-clear aria-label="Svuota gli oggetti selezionati">'+U.icon('close')+'</button></div>')+
+        prop('Direzione','direzione','<div class="pattern-with-action">'+refButton('direction','direction','Direzione','direzione',editing.direction)+invert('reverse','Inverti verso')+'</div>','data-pattern-linear')+
+        prop('Centro di rotazione','centro',choices('centerMode','Tipo di centro',[['point','Punto','centro'],['intersection','Intersezione','intersezione'],['free','Coordinate']],editing.center.type)+
+          '<div data-center-kind="point">'+refButton('centerPoint','center','Centro di rotazione','centro',editing.center.id||'')+'</div>'+
+          '<div data-center-kind="free" class="pattern-fields">'+measures('Centro X','centerX',editing.center.x||'0',doc.units)+measures('Centro Y','centerY',editing.center.y||'0',doc.units)+
+          '<button type="button" class="btn pattern-full-row" data-pattern-pick="center">'+U.icon('cursor')+'Posiziona sul disegno</button></div>'+
+          '<div data-center-kind="intersection">'+refButton('centerA','centerA','Primo segmento','intersezione',editing.center.segments?.[0]||'')+
+          refButton('centerB','centerB','Secondo segmento','intersezione',editing.center.segments?.[1]||'')+'</div>','data-pattern-circular')+
+        prop('Distribuzione','passo-copie','<div data-pattern-linear>'+
+          choices('mode','Distribuzione lineare',[['spacing','Passo e istanze','passo-copie'],['reference','Fino al limite','fino-al-limite']],editing.mode)+
+          '<div class="pattern-reference-mode" data-pattern-reference>'+refButton('target','target','Limite','fino-al-limite',refValue(editing.target))+
+          choices('distribution','Distribuzione fino al limite',[['step','Passo fisso'],['count','Equidistanti','equidistanti']],editing.distribution)+'</div></div>'+
+          '<div data-pattern-circular class="pattern-with-action">'+choices('circularMode','Distribuzione circolare',[['total','Angolo totale'],['step','Passo angolare']],editing.circularMode)+invert('reverse','Inverti verso di rotazione')+'</div>'+
+          '<div class="pattern-fields pattern-values"><div data-pattern-step>'+measures('Passo','step',expressionValue(editing,'step'),doc.units)+'</div>'+
+          '<div data-pattern-circular>'+measures('Angolo totale','angle',expressionValue(editing,'angle'),'°')+'</div>'+
+          '<div data-pattern-count>'+measures('Istanze totali','count',expressionValue(editing,'count'))+'</div>'+
+          '<div data-pattern-reference>'+measures('Distanza dal limite','offset',editing.offset,doc.units)+'</div></div>'+
+          '<details class="pattern-anchor-options" data-pattern-reference><summary>'+patternIcon('riferimento-iniziale')+'Posizione ultima istanza '+U.icon('chevron')+'</summary>'+
+          choices('anchorMode','Riferimento iniziale',[['centroid','Centroide'],['selected','Dal disegno','riferimento-iniziale']],editing.anchor.type==='centroid'?'centroid':'selected')+
+          '<div data-pattern-anchor>'+refButton('anchorRef','anchor','Riferimento iniziale','riferimento-iniziale',refValue(editing.anchor))+'</div>'+
+          '<div class="pattern-with-action pattern-offset-side"><span>Lato della distanza</span>'+invert('offsetReverse','Inverti lato della distanza')+'</div></details>')+
+        '<input type="checkbox" hidden name="reverse" '+(editing.reverse?'checked':'')+'><input type="checkbox" hidden name="offsetReverse" '+(editing.offsetReverse?'checked':'')+'>'+
+        '<details class="pattern-more"><summary>'+patternIcon('alzata')+'Altre opzioni '+U.icon('chevron')+'</summary>'+
+          panelState('names','Nomi dei parametri','nomi-parametri',U.field('Nome ripetizione','name',editing.name,'text','maxlength="100"')+
+            '<div data-pattern-names class="pattern-fields"><div data-pattern-linear>'+nameField('step','Passo','_PASSO')+'</div><div data-pattern-circular>'+nameField('angle','Angolo','_ANGOLO')+'</div>'+
+            nameField('count','Istanze totali','_ISTANZE')+'</div>')+
+          panelState('variation','Formule per istanza','formula','<button type="button" class="btn wide" data-pattern-pick="variation">'+U.icon('cursor')+'Aggiungi quota dal disegno</button>'+
+            '<div id="pattern-variations"></div><p class="pattern-help"><code>i = 0</code> corrisponde all’originale. Disponibile in ripetizione rigida.</p>','',['variationEnabled',editing.variation?.enabled])+
+          panelState('skips','Istanze da escludere','esclusioni','<div id="pattern-skips" class="pattern-skips" aria-label="Istanze totali"></div>'+
+            '<div class="pattern-skip-footer"><small id="pattern-skips-note"> </small><button type="button" class="btn small" data-pattern-reset-skips>Ripristina tutte</button></div>')+
+          panelState('guides','Adattamento alle guide','guide-dinamiche','<button type="button" class="btn wide" data-pattern-auto-guides>'+patternIcon('guide-dinamiche')+'Rileva guide dai vincoli</button>'+
+            '<div id="pattern-dynamic-fields" data-pattern-dynamic></div>','data-pattern-linear',['dynamic',editing.dynamic?.enabled])+
+        '</details></div><div class="pattern-footer"><p id="pattern-pick-hint" class="pattern-help" role="status"></p>'+
+        '<div class="pattern-footer-top"><strong id="pattern-summary" role="status" aria-live="polite"></strong><label class="check-line"><input name="preview" type="checkbox" checked>Anteprima</label></div>'+
+        '<div id="pattern-error" class="dialog-error" role="alert"></div><div class="pattern-actions"><button type="button" class="btn" data-pattern-close>Annulla</button>'+
+        '<button type="submit" class="btn primary" id="pattern-apply">'+(old?'Salva ripetizione':'Crea ripetizione')+'</button></div></div></form>';
+      for(const key of ['step','count','offset','angle','centerX','centerY'])bindFormula($(key),Object.values(editing.parameterIds||{}));
+      pick=editing.objects.length?nextReference():'objects';
+      variationFields();sourceList();ctx.redraw();canvas.focus({preventScroll:true});
     }
     function save(ev){ev.preventDefault();try{
       const p=read();if(!window.FormaRules||window.FormaRules.patternAllowed(state().doc,state().result,p.id,p))P.plan(state().doc,state().result,previewPattern(p));
@@ -4703,22 +5007,180 @@ window.FormaPatternUI=(()=>{
         d.patterns.push(p);
       });close();U.toast('Ripetizione salvata e collegata agli originali.');
     }catch(err){host.querySelector('#pattern-error').textContent=err.message;}}
+    function beginPick(mode){
+      const refreshDrawing=state().doc.view.dimensions===false&&[pick,mode].some(value=>value?.startsWith('variation'));
+      pick=mode;keyboardRef=null;hoverRef=null;focusRef=null;
+      if(refreshDrawing)update();
+      else{syncControls(read());highlight();}
+      canvas.focus({preventScroll:true});
+    }
+    function nextReference(){
+      if($('type').value==='linear')return $('direction').value?null:'direction';
+      const mode=$('centerMode').value;
+      if(mode==='point')return $('centerPoint').value?null:'center';
+      if(mode==='intersection')return !$('centerA').value?'centerA':!$('centerB').value?'centerB':null;
+      return null;
+    }
+    function available(item){
+      if(!itemFor(item))return false;
+      if(pick==='objects')return supported(item);
+      if(pick==='center')return item.type==='point';
+      if(pick==='target')return ['point','segment'].includes(item.type);
+      if(pick==='anchor')return item.type==='point'?P.vertices(state().doc,editing,state().result).includes(item.id):
+        item.type!=='dimension'&&editing.objects.some(o=>sameRef(o,item));
+      if(pick?.startsWith('variation')){
+        if(item.type!=='dimension')return false;
+        const otherIndex=pick==='variation'?-1:Number(pick.slice(10));
+        const used=new Set(readVariations().items.filter((_,i)=>i!==otherIndex).map(row=>row.param));
+        return variationCandidates().some(q=>q.id===item.id&&!used.has(q.param));
+      }
+      if(item.type!=='segment')return false;
+      return !pick?.startsWith('guide:')||!editing.objects.some(o=>sameRef(o,item));
+    }
+    function chooseReference(item,position){
+      if(pick==='center'&&(item&&available(item)||position)){
+        if(item&&available(item)){$('centerMode').value='point';$('centerPoint').value=item.id;}
+        else{
+          const at=C.world(position);
+          $('centerMode').value='free';$('centerX').value=String(Number(at.x.toFixed(8)));$('centerY').value=String(Number(at.y.toFixed(8)));
+        }
+      }else{
+        if(!item||!available(item))return false;
+        if(pick==='objects'){
+          editing.objects=normalize(editing.objects.some(o=>sameRef(o,item))?editing.objects.filter(o=>!sameRef(o,item)):[...editing.objects,item]);
+          sourceList();return true;
+        }
+        if(pick?.startsWith('variation')){
+          const q=variationCandidates().find(row=>row.id===item.id),v=readVariations();
+          if(pick==='variation')v.items.push({param:q.param,expr:q.param+' + i * 0'});
+          else{
+            const row=v.items[Number(pick.slice(10))];
+            if(row.param!==q.param)row.expr=FormaParameterNames.rewrite(row.expr,row.param,q.param);
+            row.param=q.param;
+          }
+          v.enabled=true;editing.variation=v;$('variationEnabled').checked=true;
+          variationFields();
+        }else if(pick==='direction')$('direction').value=item.id;
+        else if(pick==='target')$('target').value=refValue(item);
+        else if(pick==='anchor'){$('anchorMode').value='selected';$('anchorRef').value=refValue(item);}
+        else if(pick==='centerA'||pick==='centerB')$(pick).value=item.id;
+        else if(pick?.startsWith('guide:'))$('dynamic_'+pick.slice(6)).value=item.id;
+      }
+      pick=pick==='centerA'&&!$('centerB').value?'centerB':null;
+      keyboardRef=null;C.setInteraction();
+      return true;
+    }
+    function setMode(setting,value){
+      if($(setting).value===value)return;
+      $(setting).value=value;
+      lastGood=null;keyboardRef=null;hoverRef=null;focusRef=null;
+      if(!editing.objects.length){pick='objects';return;}
+      if(setting==='type'){
+        if(value==='linear'&&$('dynamic').checked&&$('variationEnabled').checked){
+          $('dynamic').checked=false;U.toast('Adattamento alle guide disattivato.');
+        }
+        pick=value==='circular'?($('centerMode').value==='point'&&!$('centerPoint').value?'center':
+          $('centerMode').value==='intersection'?(!$('centerA').value?'centerA':!$('centerB').value?'centerB':null):null):
+          !$('direction').value?'direction':null;
+      }else if(setting==='centerMode')pick=value==='intersection'?(!$('centerA').value?'centerA':!$('centerB').value?'centerB':null):
+        value==='point'&&!$('centerPoint').value?'center':null;
+      else if(setting==='mode')pick=value==='reference'&&!$('target').value?'target':null;
+      else if(setting==='anchorMode')pick=value==='selected'&&!$('anchorRef').value?'anchor':null;
+    }
     host.addEventListener('submit',save);
-    host.addEventListener('input',ev=>{if(!editing)return;if(ev.target.hasAttribute('data-variation-formula')){host.querySelector('#pattern-summary').textContent='Formula in attesa · Invio aggiorna l’anteprima';host.querySelector('#pattern-apply').disabled=true;return;}if(ev.target.name==='preview'){previewOn=ev.target.checked;update();return;}clearTimeout(timer);timer=setTimeout(update,120);});
-    host.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.hasAttribute('data-variation-formula')){ev.preventDefault();ev.stopPropagation();update();}});
-    host.addEventListener('change',ev=>{if(!editing)return;if(ev.target.name==='type'){C.setReferenceHighlight();lastGood=null;pick=editing.objects.length?($('type').value==='circular'?'center':null):'objects';}if(ev.target.name==='centerMode')pick=$('centerMode').value==='intersection'?'centerA':$('centerMode').value==='point'?'center':null;update();});
+    host.addEventListener('input',ev=>{
+      if(!editing||ev.target.type==='checkbox')return;
+      if(ev.target.hasAttribute('data-variation-formula'))syncVariationPreview(read(),lastCount||3);
+      clearTimeout(timer);timer=setTimeout(update,160);
+    });
+    host.addEventListener('keydown',ev=>{
+      if(ev.key==='Enter'&&ev.target.hasAttribute('data-variation-formula')){
+        ev.preventDefault();ev.stopPropagation();update();
+      }
+    });
+    host.addEventListener('change',ev=>{
+      if(!editing)return;
+      if(ev.target.name==='preview')previewOn=ev.target.checked;
+      if(ev.target.name==='variationEnabled'||ev.target.name==='dynamic'){
+        if(ev.target.checked){
+          const key=ev.target.name==='dynamic'?'guides':'variation';
+          if(key==='variation'&&!readVariations().items.length&&!variationCandidates().length){
+            ev.target.checked=false;U.toast('Seleziona oggetti con quote indipendenti da variare.',true);return;
+          }
+          const other=$(key==='guides'?'variationEnabled':'dynamic');
+          if(other.checked&&$('type').value==='linear'){other.checked=false;U.toast(key==='guides'?'Formule per istanza disattivate.':'Adattamento alle guide disattivato.');}
+          host.querySelector('[data-pattern-pro="'+key+'"]').open=true;
+          if(key==='guides')dynamicFields();
+          if(key==='variation'&&!readVariations().items.length){beginPick('variation');return;}
+        }else if(pick?.startsWith(ev.target.name==='dynamic'?'guide:':'variation'))pick=null;
+      }
+      update();
+    });
     host.addEventListener('click',ev=>{
-      const b=ev.target.closest('button');if(!b||!editing)return;
-      if(b.hasAttribute('data-variation-add')){editing.variation=readVariations()||{enabled:true,items:[]};const ids=new Set(editing.variation.items.map(row=>row.param)),q=window.FormaPatternVariation?.candidates(state().doc,editing).find(q=>!ids.has(q.param));if(!q){U.toast('Seleziona oggetti con quote indipendenti da variare.',true);return;}if(ids.size>=10){U.toast('Massimo 10 quote da variare.',true);return;}editing.variation.enabled=true;editing.variation.items.push({param:q.param,expr:q.param+' + i * 10'});$('variationEnabled').checked=true;variationFields();update();}
-      else if(b.dataset.variationRemove!==undefined){editing.variation=readVariations();editing.variation.items.splice(Number(b.dataset.variationRemove),1);variationFields();update();}
-      else if(b.hasAttribute('data-pattern-close'))close();
-      else if(b.dataset.patternFlip){const input=$(b.dataset.patternFlip);input.checked=!input.checked;update();}
-      else if(b.dataset.patternSkip){toggleSkip(Number(b.dataset.patternSkip));}
-      else if(b.hasAttribute('data-pattern-reset-skips')){editing.skip=[];update();}
-      else if(b.hasAttribute('data-pattern-auto-guides')){dynamicFields(true);update();}
-      else if(b.hasAttribute('data-pattern-clear')){editing.objects=[];sourceList();update();}
-      else if(b.dataset.patternPick){pick=pick===b.dataset.patternPick?null:b.dataset.patternPick;update();}
-      else if(b.dataset.patternSource){editing.objects=editing.objects.filter(o=>o.type+':'+o.id!==b.dataset.patternSource);sourceList();update();}
+      const b=ev.target.closest('button');
+      if(!b||!editing)return;
+      if(b.hasAttribute('data-pattern-close')){close();return;}
+      if(b.dataset.patternPick){
+        if(b.dataset.patternPick.startsWith('variation')){
+          const count=readVariations().items.length;
+          if($('type').value==='linear'&&$('dynamic').checked){U.toast('Disattiva l’adattamento alle guide per usare le formule.',true);return;}
+          if(!variationCandidates().length){U.toast('Seleziona oggetti con quote indipendenti da variare.',true);return;}
+          if(count>=10&&b.dataset.patternPick==='variation'){U.toast('Massimo 10 quote da variare.',true);return;}
+        }
+        beginPick(b.dataset.patternPick);return;
+      }
+      if(b.dataset.patternSetting)setMode(b.dataset.patternSetting,b.dataset.value);
+      else if(b.dataset.variationRemove!==undefined){
+        editing.variation=readVariations();editing.variation.items.splice(Number(b.dataset.variationRemove),1);
+        if(!editing.variation.items.length){editing.variation.enabled=false;$('variationEnabled').checked=false;}
+        if(pick?.startsWith('variation')){pick=null;keyboardRef=null;}
+        variationFields();
+      }else if(b.dataset.patternFlip){const input=$(b.dataset.patternFlip);input.checked=!input.checked;}
+      else if(b.dataset.patternSkip){toggleSkip(Number(b.dataset.patternSkip));return;}
+      else if(b.hasAttribute('data-pattern-reset-skips'))editing.skip=[];
+      else if(b.dataset.patternClearGuide!==undefined)$('dynamic_'+b.dataset.patternClearGuide).value='';
+      else if(b.hasAttribute('data-pattern-auto-guides')){
+        try{dynamicFields(true);}
+        catch(err){U.toast(err.message,true);return;}
+        if($('variationEnabled').checked){$('variationEnabled').checked=false;U.toast('Formule per istanza disattivate.');}
+        $('dynamic').checked=true;
+      }else if(b.hasAttribute('data-pattern-clear')){editing.objects=[];pick='objects';sourceList();}
+      else return;
+      update();
+    });
+    const referenceRow=el=>el?.closest?.('[data-pattern-ref],[data-pattern-pick=objects]');
+    function trackReference(ev,key,entering){
+      if(!editing)return;
+      const row=referenceRow(ev.target);
+      if(!row||row===referenceRow(ev.relatedTarget))return;
+      if(key==='hover')hoverRef=entering?row:null;
+      else focusRef=entering?row:null;
+      highlight();
+    }
+    host.addEventListener('pointerover',ev=>trackReference(ev,'hover',true));
+    host.addEventListener('pointerout',ev=>trackReference(ev,'hover',false));
+    host.addEventListener('focusin',ev=>trackReference(ev,'focus',true));
+    host.addEventListener('focusout',ev=>trackReference(ev,'focus',false));
+    canvas.addEventListener('keydown',ev=>{
+      if(!editing||!pick||ev.target!==canvas||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter'].includes(ev.key))return;
+      ev.preventDefault();ev.stopPropagation();
+      if(ev.key==='Enter'){
+        if(keyboardRef&&chooseReference(keyboardRef))update();
+        else if(pick==='objects'&&editing.objects.length)beginPick(nextReference());
+        return;
+      }
+      const seen=new Set(),candidates=[];
+      for(const type of Object.keys(collections))for(const node of canvas.querySelectorAll('[data-'+type+']')){
+        const item={type,id:node.dataset[type]},key=refValue(item);
+        if(seen.has(key))continue;
+        seen.add(key);
+        if(available(item))candidates.push(item);
+      }
+      if(!candidates.length)return;
+      const idx=candidates.findIndex(item=>sameRef(item,keyboardRef)),forward=ev.key==='ArrowRight'||ev.key==='ArrowDown';
+      keyboardRef=candidates[idx<0?(forward?0:candidates.length-1):(idx+candidates.length+(forward?1:-1))%candidates.length];
+      highlight();
+      host.querySelector('#pattern-pick-hint').textContent=titleFor(keyboardRef)+' · Invio seleziona';
     });
     document.addEventListener('click',ev=>{const b=ev.target.closest('[data-pattern-edit],[data-pattern-delete]');if(!b)return;if(b.dataset.patternEdit!==undefined)open(b.dataset.patternEdit);else{if(editing)close(false);ctx.apply(d=>E.deleteGeometry(d,[{type:'pattern',id:b.dataset.patternDelete}],state().result));}});
     function refresh(){
@@ -4736,12 +5198,20 @@ window.FormaPatternUI=(()=>{
     }
     function hit(ev){
       const near=['target','anchor','center'].includes(pick)?C.nearestPoint(C.local(ev),true):null;
-      const h=near?{type:'point',id:near.id}:C.hit(ev);return h&&['point','segment','dimension','circle','arc','feature','text'].includes(h.type)?h:null;
+      const point=near&&{type:'point',id:near.id},item=point&&available(point)?point:C.hit(ev);
+      return item&&available(item)?item:null;
     }
     function pointerDown(ev){
       if(!editing||ev.button!==0||ev.target.closest('button,.canvas-tools,.canvas-topright,.canvas-controls'))return false;
-      const marker=ev.target.closest('[data-pattern-instance]');if(marker){box={instance:Number(marker.dataset.patternInstance)};return true;}
-      const h=hit(ev);box={start:C.local(ev),end:C.local(ev),hit:h,base:ev.ctrlKey||ev.shiftKey||ev.metaKey?[...editing.objects]:[],moved:false};document.getElementById('canvas').setPointerCapture(ev.pointerId);return true;
+      canvas.focus({preventScroll:true});
+      const marker=ev.target.closest('[data-pattern-instance]');
+      if(marker){box={instance:Number(marker.dataset.patternInstance)};return true;}
+      keyboardRef=null;
+      if(!pick)return true;
+      const start=C.local(ev);
+      box={start,end:start,hit:hit(ev),base:ev.ctrlKey||ev.shiftKey||ev.metaKey?[...editing.objects]:[],moved:false};
+      canvas.setPointerCapture(ev.pointerId);
+      return true;
     }
     function pointerMove(ev){
       if(!editing)return false;
@@ -4752,22 +5222,15 @@ window.FormaPatternUI=(()=>{
       return true;
     }
     function pointerUp(ev,cancel=false){
-      if(!box)return false;const b=box;box=null;C.setSelectionBox();if(cancel)return true;if(b.instance){toggleSkip(b.instance);return true;}
-      if(pick==='objects'){
-        if(b.moved){const items=C.itemsInRect(b.start,C.local(ev)).filter(supported),seen=new Set();editing.objects=[...b.base,...items].filter(o=>{const k=o.type+':'+o.id;if(seen.has(k))return false;seen.add(k);return true;});}
-        else if(supported(b.hit)){const o=b.hit,has=editing.objects.some(s=>s.type===o.type&&s.id===o.id);editing.objects=has?editing.objects.filter(s=>s.type!==o.type||s.id!==o.id):[...editing.objects,o];}
-        editing.objects=normalize(editing.objects);sourceList();
-      }else if(pick==='center'){
-        if(b.hit?.type==='point'){$('centerMode').value='point';$('centerPoint').value=b.hit.id;}
-        else {const at=C.world(C.local(ev));$('centerMode').value='free';$('centerX').value=String(Number(at.x.toFixed(8)));$('centerY').value=String(Number(at.y.toFixed(8)));}
-        pick=null;C.setInteraction();
-      }else if(b.hit){
-        if((pick==='centerA'||pick==='centerB')&&b.hit.type==='segment'){$(pick).value=b.hit.id;pick=pick==='centerA'?'centerB':null;}
-        if(pick?.startsWith('guide:')&&b.hit.type==='segment'){const input=$('dynamic_'+pick.slice(6));if(input)input.value=b.hit.id;pick=null;}
-        if(pick==='direction'&&b.hit.type==='segment'){$('direction').value=b.hit.id;pick=null;}
-        if(pick==='target'&&['point','segment'].includes(b.hit.type)){$('target').value=refValue(b.hit);pick=null;}
-        if(pick==='anchor'&&['point','segment','circle','arc','feature','text'].includes(b.hit.type)){$('anchorMode').value='selected';$('anchorRef').value=refValue(b.hit);pick=null;}
-      }update();return true;
+      if(!box)return false;
+      const b=box;box=null;
+      if(b.moved)C.setSelectionBox();
+      if(cancel)return true;
+      if(b.instance){toggleSkip(b.instance);return true;}
+      if(pick==='objects'&&b.moved){
+        editing.objects=normalize([...b.base,...C.itemsInRect(b.start,C.local(ev))]);sourceList();update();
+      }else if(chooseReference(b.hit,C.local(ev)))update();
+      return true;
     }
     return {open,refresh,close,pointerDown,pointerMove,pointerUp,active:()=>!!editing};
   }
